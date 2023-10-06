@@ -17,6 +17,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/redux/sagas/saga.js", "src/redux/store.jsx", "src/redux/reducer/reducer-root.jsx", "src/redux/reducer/reducer-posts.jsx"],
   "exclude": ["node_modules"]
 }
