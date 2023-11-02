@@ -9,7 +9,7 @@ import {
 } from "./actions";
 import { LOGIN_REQUEST, SIGNUP_REQUEST } from "./actionTypes";
 import { IAuth } from "./types";
-import { loginUserFn } from "@/api/service/atuth";
+import { loginUserFn } from "@/api/service/auth";
 import { enqueueSnackbar, useSnackbar } from "notistack";
 
 const signup = async (payload: { email: string; password: string }) => {
@@ -28,19 +28,17 @@ const signup = async (payload: { email: string; password: string }) => {
 };
 
 function* loginSaga(action: any) {
-
   try {
-    const response: { jwtToken: string } = yield call(loginUserFn, {
-      usernameOrEmail: action.payload.values.email,
+    const response: { token: string } = yield call(loginUserFn, {
+      code: action.payload.values.email,
       password: action.payload.values.password,
     });
-    // console.log("response", response.jwtToken);
     yield put(
       loginSuccess({
-        token: response.jwtToken,
+        token: response.token,
       })
     );
-    action.payload.callback(response.jwtToken);
+    action.payload.callback(response.token);
     enqueueSnackbar("Đăng nhập thành công!!", { variant: "success" });
   } catch (e: any) {
     yield put(

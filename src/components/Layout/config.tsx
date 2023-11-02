@@ -7,6 +7,7 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 import FaceIcon from "@mui/icons-material/Face";
 import LoginIcon from "@mui/icons-material/Login";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import ReceiptIcon from '@mui/icons-material/Receipt';
 export const items = [
   {
     title: "Tổng quan",
@@ -19,7 +20,7 @@ export const items = [
     disabled: false
   },
   {
-    title: "Tạo Hóa Đơn",
+    title: "Hóa Đơn",
     path: "/invoice",
     icon: (
       <SvgIcon fontSize="medium">

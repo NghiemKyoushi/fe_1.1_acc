@@ -1,7 +1,7 @@
 import { authApi } from "../authApi";
 
   interface loginProps{
-    usernameOrEmail: string,
+    code: string,
     password: string
 
   }

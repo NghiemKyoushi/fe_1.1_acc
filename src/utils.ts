@@ -1,5 +1,5 @@
 import cookie from "js-cookie";
-
+import dayjs from 'dayjs'
 export const cookieSetting = {
   get: (name: string) => cookie.get(name),
   set: (name: string, token: string) =>
@@ -14,3 +14,10 @@ export const getDateOfPresent = () => {
   const days = ("0" + dates.getDate()).slice(-2);
   return days + "-" + months + "-" + years;
 };
+const getValueWithComma = (res: any) => {
+  return res.toString().replace(/\B(?=(\d(3)+(?!\d)))/g, ",");
+};
+export const formatDateTime =(currentDate: string) => {
+  const date = dayjs(currentDate);
+  return date.format('DD-MM-YYYY HH:mm')
+}

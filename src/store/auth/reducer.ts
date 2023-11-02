@@ -44,7 +44,6 @@ import {
           isLoading: true,
         };
       case LOGIN_SUCCESS:
-        console.log("jjfjfjf", action)
         return {
           ...state,
           isLoading: false,

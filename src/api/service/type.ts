@@ -22,16 +22,17 @@ export interface PosSearchProps {
 export interface CardByCusIdProps {
   customerId: string;
 }
-
-
 export interface fetchInvoiceInfoPrams {
   employeeId?: string;
   customerCardId?: string;
   posId?: string;
-  startDate?: string;
-  endDate?: string;
-  page : Number;
-  pageSize: Number;
-  sorter: string;
-  sortDirection: string;
+  // startDate?: string;
+  // endDate?: string;
+  page?: Number;
+  pageSize?: Number;
+  sorter?: string;
+  sortDirection?: string;
+}
+export interface fetchPosParams {
+  posName:string
 }

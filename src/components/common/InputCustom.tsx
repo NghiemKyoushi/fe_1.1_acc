@@ -87,7 +87,6 @@ import {
           // disabled={props.disabled}
           size="small"
           style={{
-            // width: `${width}`,
             width: `${InputWidth}`,
             padding: "0px 6px",
             margin: "1px 10px",

@@ -12,12 +12,12 @@ export const authApi = axios.create({
   authApi.interceptors.request.use(
     function (config) {
       const token = cookieSetting.get("token");
-      config.headers.Authorization = token ? `Bearer ${token}` : "";
+      const test = "Bearer" + " " + token
+      config.headers.Authorization = token ? test : "";
       // Do something before request is sent
       return config;
     },
     function (error) {
-      // Do something with request error
       return Promise.reject(error);
     }
   );
@@ -38,31 +38,5 @@ export const authApi = axios.create({
     }
   );
 
-//   export const signUpUserFn = async (user: RegisterInput) => {
-//     const response = await authApi.post<GenericResponse>('auth/register', user);
-//     return response.data;
-//   };
-  // interface loginProps{
-  //   usernameOrEmail: string,
-  //   password: string
 
-  // }
-  // export const loginUserFn = async (user: loginProps) => {
-  //   const response = await authApi.post('/api/auth/login', user);
-  //   return response.data;
-  // };
-  
-  // export const logoutUserFn = async () => {
-  //   await cookieSetting.clear('userId');
-  //   await cookieSetting.clear('token');
-  // };
-  // interface userProps{
-  //   userId: string,
-
-  // }
-  // export const getMeFn = async () => {
-  //   const userId = cookieSetting.get('userId');
-  //   const response = await authApi.get(`api/users/${userId}`);
-  //   return response.data;
-  // };
   

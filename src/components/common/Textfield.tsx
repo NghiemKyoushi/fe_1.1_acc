@@ -1,40 +1,48 @@
-import TextField, { StandardTextFieldProps } from "@mui/material/TextField";
+import TextField, { StandardTextFieldProps, TextFieldVariants } from "@mui/material/TextField";
 import { FC, InputHTMLAttributes } from "react";
 import { GridFilterInputValueProps } from "@mui/x-data-grid";
 import { TextFieldProps } from "@mui/material/TextField";
+import { InputAdornment, SvgIconProps } from "@mui/material";
+import { forwardRef, ForwardedRef } from "react";
+
 export interface CustomTextFieldProps {
   name?: string;
   label?: string;
   type?: string;
+  border?: string;
   onChange?: (e: any) => void;
-  rest?: TextFieldProps;
-  textFieldProps?: StandardTextFieldProps;
-  forwardRef?: React.ForwardedRef<HTMLDivElement>
+  textfieldprops?: TextFieldProps;
+  forwardRef?: React.ForwardedRef<HTMLDivElement>;
+  iconend?: React.ReactNode;
+  style?: React.CSSProperties;
+  variantShow?: TextFieldVariants ;
 }
-export const TextFieldCustom: FC<CustomTextFieldProps> = ({
-  name,
-  label,
-  type,
-  onChange,
-  forwardRef,
-  ...textFieldProps
-}) => {
-  const handleLowerFilterChange = (e: any) => {
-    console.log("hdhddhh", e);
-  };
-  return (
-    <TextField
-      name={name}
-      placeholder="From"
-      label={label}
-      variant="standard"
-      // value={Number(filterValueState[0])}
-      onChange={onChange}
-      type={type}
-      // inputRef={focusElementRef}
-      sx={{ mr: 2, ml: 3 }}
-      {...textFieldProps}
-      ref ={forwardRef}
-    />
-  );
-};
+export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
+  (props, ref) => {
+    return (
+      <TextField
+        style={{
+          width: "100%",
+          padding: "0px 1px",
+          margin: "0px 0px",
+          backgroundColor: "transparent",
+          ...props.style,
+        }}
+        // style={props.style}
+        sx={{
+          "& fieldset": { border: props.border === "true" ? "none" : "" },
+        }}
+        variant={props.variantShow ? props.variantShow : 'outlined'}
+        size="small"
+        ref={ref as ForwardedRef<HTMLDivElement>}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="start">{props.iconend}</InputAdornment>
+          ),
+        }}
+        {...props}
+      />
+    );
+  }
+);
+TextFieldCustom.displayName = "TextFieldCustom";

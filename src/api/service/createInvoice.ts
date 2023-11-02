@@ -1,5 +1,5 @@
 import { authApi } from "@/api/authApi";
-import {InvoiceProps,CardByCusIdProps, PosSearchProps, CustomerSearchProps, fetchInvoiceInfoPrams } from './type'
+import {InvoiceProps,CardByCusIdProps, PosSearchProps, CustomerSearchProps, fetchInvoiceInfoPrams, fetchPosParams } from './type'
 
 export const fetchCreateInvoice = (props: InvoiceProps) => {
   const { percentageFee, branchId, shipmentFee, receiptBills,imageId, customerCardId  } = props;
@@ -14,8 +14,6 @@ export const fetchCreateInvoice = (props: InvoiceProps) => {
   return authApi.post("/api/receipts", dataSend);
 };
 
-
-
 export const fetcCardByCustomerId = (props: CardByCusIdProps) => {
   return authApi.get(`/api/customer-cards?customerId=${props}`);
 };
@@ -24,8 +22,9 @@ export const fetchCustomer = (props: CustomerSearchProps) => {
   const {name} =props
   return authApi.get(`/api/customers/searchCustomerByName?name=${name}`);
 };
-export const fetchPosSearch = (props: PosSearchProps) => {
-    return authApi.get(`/api/poses/searchByCode?searchKey=${props}`);
+export const fetchPosSearch = (props: fetchPosParams) => {
+  const {posName} =props
+    return authApi.get(`/api/poses/searchByCode?searchKey=${posName}`);
 };
 //sendImage 
 export const fetchSaveImage = (props: any) => {

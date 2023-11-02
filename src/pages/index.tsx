@@ -8,9 +8,12 @@ const inter = Inter({ subsets: ["latin"] });
 import React from "react";
 import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const dispatch = useDispatch();
+  // const counter = useSelector(state => state.counter)
+
   const initialInvoiceSearch = {
     employeeId: "",
     customerCardId: "",

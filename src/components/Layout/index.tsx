@@ -15,11 +15,11 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems, secondaryListItems } from "./listItems";
-import WithAuthGuard from "@/hocs/withAuth";
 import SideNavItem from "./SideNavItem";
 import { Stack } from "@mui/material";
 import { items } from "./config";
 import { usePathname } from "next/navigation";
+import WithAuthGuard from "@/hocs/WithAuth";
 
 const drawerWidth: number = 200;
 interface AppBarProps extends MuiAppBarProps {
@@ -180,7 +180,7 @@ export default function Dashboard(props: DashboardProps) {
                     sx={{
                       p: 2,
                       display: "flex",
-                      // flexDirection: "column",
+                      flexDirection: "column",
                       minHeight: 650,
                     }}
                   >
