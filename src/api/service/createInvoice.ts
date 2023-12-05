@@ -18,14 +18,8 @@ export const fetcCardByCustomerId = (props: CardByCusIdProps) => {
   return authApi.get(`/api/customer-cards?customerId=${props}`);
 };
 
-export const fetchCustomer = (props: CustomerSearchProps) => {
-  const {name} =props
-  return authApi.get(`/api/customers/searchCustomerByName?name=${name}`);
-};
-export const fetchPosSearch = (props: fetchPosParams) => {
-  const {posName} =props
-    return authApi.get(`/api/poses/searchByCode?searchKey=${posName}`);
-};
+
+
 //sendImage 
 export const fetchSaveImage = (props: any) => {
   const formData = new FormData();

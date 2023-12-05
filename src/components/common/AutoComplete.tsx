@@ -59,6 +59,7 @@ function SelectSearchComponent({
           return (
             <Autocomplete
               size="small"
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               options={results || []}
               getOptionLabel={(option) => {
                 return option?.values ? option?.values : "";
@@ -74,7 +75,12 @@ function SelectSearchComponent({
               onInputChange={(event, newInputValue) => {
                 getData(newInputValue);
               }}
-              sx={{ width: `${labelWidth}%`, padding: "0px 32px 0px 0px" }}
+              // style={{fontSize: 14}}
+              sx={{
+                width: `${labelWidth}%`,
+                padding: "0px 32px 0px 0px",
+                fontSize: 14,
+              }}
               renderInput={(params) => (
                 <TextFieldCustom
                   {...params}

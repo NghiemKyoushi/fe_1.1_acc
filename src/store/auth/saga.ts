@@ -29,13 +29,22 @@ const signup = async (payload: { email: string; password: string }) => {
 
 function* loginSaga(action: any) {
   try {
-    const response: { token: string } = yield call(loginUserFn, {
+    const response: {
+      token: string;
+      name: string;
+      branches: Array<any>;
+      id: string;
+    } = yield call(loginUserFn, {
       code: action.payload.values.email,
       password: action.payload.values.password,
     });
+    console.log("response", response);
     yield put(
       loginSuccess({
         token: response.token,
+        userName: response.name,
+        branchId: response.branches[0].id,
+        employeeId: response.id,
       })
     );
     action.payload.callback(response.token);

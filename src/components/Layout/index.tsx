@@ -16,11 +16,13 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems, secondaryListItems } from "./listItems";
 import SideNavItem from "./SideNavItem";
-import { Stack } from "@mui/material";
+import { Stack, SvgIcon } from "@mui/material";
 import { items } from "./config";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import WithAuthGuard from "@/hocs/WithAuth";
-
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { logoutUserFn } from "@/api/service/auth";
 const drawerWidth: number = 200;
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -79,7 +81,12 @@ export default function Dashboard(props: DashboardProps) {
   const { children } = props;
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
+  const handleSignOut = React.useCallback(() => {
+    logoutUserFn();
+    router.push("/auth/login");
+  }, [router]);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -119,12 +126,16 @@ export default function Dashboard(props: DashboardProps) {
                 backgroundColor: "#393A3D",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "flex-end",
+                justifyContent: !open ? "center" : "flex-end",
                 px: [1],
               }}
             >
               <IconButton onClick={toggleDrawer}>
-                <ChevronLeftIcon style={{ color: "#fff" }} />
+                {open ? (
+                  <ChevronLeftIcon style={{ color: "#fff" }} />
+                ) : (
+                  <ChevronRightIcon style={{ color: "#fff" }} />
+                )}
               </IconButton>
             </Toolbar>
             <Divider />
@@ -140,7 +151,22 @@ export default function Dashboard(props: DashboardProps) {
               >
                 {items.map((item) => {
                   const active = item.path ? pathname === item.path : false;
-
+                  if (item.path === "/auth/login") {
+                    return (
+                      <div key={item.title} onClick={handleSignOut}>
+                        <SideNavItem
+                          open={open}
+                          active={active}
+                          disabled={item.disabled}
+                          // external={item.external}
+                          icon={item.icon}
+                          key={item.title}
+                          path={''}
+                          title={item.title}
+                        />
+                      </div>
+                    );
+                  }
                   return (
                     <SideNavItem
                       open={open}
@@ -154,6 +180,19 @@ export default function Dashboard(props: DashboardProps) {
                     />
                   );
                 })}
+              </Stack>
+              <Stack
+                component="ul"
+                spacing={0.5}
+                sx={{
+                  listStyle: "none",
+                  p: 0,
+                  m: 0,
+                }}
+              >
+                {/* <SvgIcon onClick={handleSignOut} fontSize="small">
+                  <ExitToAppIcon />
+                </SvgIcon> */}
               </Stack>
               <Divider sx={{ my: 1 }} />
               {/* {secondaryListItems} */}

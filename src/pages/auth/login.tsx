@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import { useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,9 +15,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { loginRequest } from "@/store/auth/actions";
-import { useRouter } from 'next/router'
-import { RootState } from '@/reducers/rootReducer';
-import { cookieSetting } from '@/utils';
+import { useRouter } from "next/router";
+import { RootState } from "@/reducers/rootReducer";
+import { cookieSetting } from "@/utils";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -25,6 +25,10 @@ export default function SignIn() {
   const router = useRouter();
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.auth.token);
+  const userName = useSelector((state: RootState) => state.auth.userName);
+  const branchId = useSelector((state: RootState) => state.auth.branchId);
+  const employeeId = useSelector((state: RootState) => state.auth.employeeId);
+
   // console.log("selector", token);
   const {
     register,
@@ -42,11 +46,14 @@ export default function SignIn() {
 
   useEffect(() => {
     if (token) {
-      cookieSetting.set('token', token);
-      router.push('/')
+      cookieSetting.set("token", token);
+      cookieSetting.set("userName", userName);
+      cookieSetting.set("branchId", branchId);
+      cookieSetting.set("employeeId", employeeId);
+      router.push("/");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
   const callback = (data: any) => {
     console.log("Inside callback after login");
   };
@@ -77,7 +84,7 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Đăng nhập
           </Typography>
           <form onSubmit={onSubmitForm} style={{ marginTop: 1 }}>
             <TextField
@@ -86,7 +93,7 @@ export default function SignIn() {
               fullWidth
               {...register("email", { required: true })}
               id="email"
-              label="Email Address"
+              label="Tên đăng nhập"
               name="email"
               autoComplete="email"
               autoFocus
@@ -97,24 +104,24 @@ export default function SignIn() {
               fullWidth
               {...register("password", { required: true })}
               name="password"
-              label="Password"
+              label="Mật khẩu"
               type="password"
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Đăng nhập
             </Button>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
@@ -125,7 +132,7 @@ export default function SignIn() {
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </form>
         </Box>
       </Container>

@@ -25,7 +25,19 @@ export default function DrawerCustom(props: DrawerProps) {
   return (
     <div>
       <React.Fragment key={"right"}>
-        <Drawer anchor={"right"} open={isOpen} onClose={() => handleClose()}>
+        <Drawer
+          sx={{
+            width: widthDrawer,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: widthDrawer,
+              boxSizing: "border-box",
+            },
+          }}
+          anchor={"right"}
+          open={isOpen}
+          onClose={() => handleClose()}
+        >
           <StyleHeaderDrawer>
             <StyleTitle>{title}</StyleTitle>
             <StyleIcon onClick={() => handleClose()}>
@@ -37,7 +49,7 @@ export default function DrawerCustom(props: DrawerProps) {
 
           <Divider />
           <Box
-            sx={{ width: widthDrawer }}
+            // sx={{ width: widthDrawer }}
             role="presentation"
             // onClick={toggleDrawer(anchor, false)}
             // onKeyDown={toggleDrawer(anchor, false)}

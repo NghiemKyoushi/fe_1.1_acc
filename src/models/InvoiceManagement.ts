@@ -1,8 +1,10 @@
+import { FieldValues, UseFormRegister, UseFormSetValue } from "react-hook-form";
+
 export interface ReceiptParamsConditions {
   page: number;
   pageSize: number;
   sorter: string;
-  sortDirection: string;
+  sortDirection?: string;
   employeeId?: string;
   employeeCode?: string;
   fromCreatedDate?: string;
@@ -27,16 +29,16 @@ export interface ReceiptParamsConditions {
 }
 export interface ReceiptCreationParams {
   imageId: string;
-  branchId: string;
+  branchId?: string;
   customerCardId: string;
   percentageFee: number;
   shipmentFee: number;
-  intake: number;
-  payout: number;
-  loan: number;
-  repayment: string;
-  employeeId: string;
-  receiptBills: [];
+  intake: number; //thu
+  payout: number; // chi
+  loan: number; // công nợ
+  repayment: number; // thu nợ
+  employeeId?: string;
+  receiptBills: Array<BillCreationParams>;
 }
 export interface BillCreationParams {
   billId: string;
@@ -45,7 +47,6 @@ export interface BillCreationParams {
   fee: number;
   estimatedProfit: number;
 }
-
 export interface BillInfo {
   fee: number;
   posCode: string;
@@ -61,23 +62,71 @@ export interface InvoiceDetail {
   receiptStatus: string;
   bill: Array<BillInfo>;
 }
+export interface ValueFormCreate {
+  codeEmployee: string;
+  customerInfo: string;
+  customerName: Selection;
+  image_Id: string;
+  posSearch: string;
+  percentageFee: string;
+  shipmentFee: string;
+  cardCustomer: cardCustomerSelect;
+  totalBill: string;
+  invoices: Array<InvoiceCreate>;
+  invoicesCalculate: Array<InvoicesCalculateType>;
+}
+export interface InvoicesCalculateType {
+  intake: number; //thu
+  payout: number; // chi
+  loan: number; // công nợ
+  repayment: number; // thu nợ
+}
+export interface InvoiceCreate {
+  id: string;
+  pos: string;
+  posId: PosDetail;
+  money: string;
+  typeOfCard: string;
+  fee: string;
+  feeafterpay: string;
+  billcode: string;
+}
+export interface PosDetail {
+  key: string;
+  values: string;
+}
+export interface InvoiceSumTotal {
+  total: number;
+  totalIntake: number;
+  totalPayout: number;
+  totalLoan: number;
+  totalRepayment: number;
+  totalEstimatedProfit: number;
+  totalCalculatedProfit: number;
+}
+export interface Selection {
+  key: string;
+  values: string;
+  nationalId: string;
+}
+export interface cardCustomerSelect {
+  key: string;
+  values: string;
+}
 export interface InvoiceConfirmParams {
   receiptId: string;
   explanation: string;
 }
-
 export enum STATUS_CODE {
   PENDING = "PENDING",
   APPROVE = "APPROVED",
 }
-
 export interface ReceiptList {
   totalElements: number;
   size: 0;
   content: Array<ColReceiptList>;
   pageNumber: 0;
 }
-
 export interface ColReceiptList {
   id: string;
   code: string;
@@ -98,4 +147,22 @@ export interface ColReceiptList {
   employeeName: string;
   branchId: string;
   branchName: string;
+}
+export interface RangeNumberFilterProps<
+  TFieldValues extends FieldValues = FieldValues
+> {
+  fromNumberName: string;
+  toNumberName: string;
+  register: UseFormRegister<any>;
+  handleSearch: () => void;
+}
+export interface InvoiceConfirmParams {
+  receiptId: string;
+  explanation: string;
+}
+export enum ACTION_TYPE {
+  CREATE = "C",
+  DELETE = "D",
+  EDIT = "E",
+  VIEW = "V",
 }

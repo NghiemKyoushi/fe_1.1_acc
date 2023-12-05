@@ -5,6 +5,7 @@ export interface ChildProps {
 }
 const WithAuthGuard = (props: ChildProps) => {
   const { children } = props;
+  
   return <AuthGuard>{children}</AuthGuard>;
 };
 

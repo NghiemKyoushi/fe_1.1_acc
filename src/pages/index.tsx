@@ -11,23 +11,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const dispatch = useDispatch();
-  // const counter = useSelector(state => state.counter)
-
-  const initialInvoiceSearch = {
-    employeeId: "",
-    customerCardId: "",
-    posId: "",
-    title: "",
-    // startDate: " ",
-    // endDate: " ",
-    page: 0,
-    pageSize: 20,
-    sorter: "CREATED_DATE",
-    sortDirection: "DESC",
-  };
   
-  dispatch(fetchInvoice(initialInvoiceSearch));
   return (
     <>
       <Head>
@@ -36,7 +20,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}>
+      <main >
         <Dashboard>DUCNGHIEM DUONG</Dashboard>
       </main>
     </>

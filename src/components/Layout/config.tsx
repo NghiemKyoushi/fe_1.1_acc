@@ -7,26 +7,21 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 import FaceIcon from "@mui/icons-material/Face";
 import LoginIcon from "@mui/icons-material/Login";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import ReceiptIcon from '@mui/icons-material/Receipt';
+import CallToActionOutlinedIcon from "@mui/icons-material/CallToActionOutlined";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
+import SummarizeOutlinedIcon from "@mui/icons-material/SummarizeOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 export const items = [
   {
     title: "Tổng quan",
     path: "/",
     icon: (
       <SvgIcon fontSize="medium">
-        <BarChartIcon/>
+        <BarChartIcon />
       </SvgIcon>
     ),
-    disabled: false
-  },
-  {
-    title: "Hóa Đơn",
-    path: "/invoice",
-    icon: (
-      <SvgIcon fontSize="medium">
-        <DescriptionIcon/>
-      </SvgIcon>
-    ),
+    disabled: false,
   },
   {
     title: "Quản Lý Hóa Đơn",
@@ -36,61 +31,83 @@ export const items = [
         <FileCopyIcon />
       </SvgIcon>
     ),
-    disabled: false
-
+    disabled: false,
   },
   {
-    title: "Sổ Thu Chi",
+    title: "Sổ kế Toán",
+    path: "/accBookManagement",
+    icon: (
+      <SvgIcon fontSize="medium">
+        <AccountBalanceWalletOutlinedIcon />
+      </SvgIcon>
+    ),
+    disabled: false,
+  },
+  {
+    title: "Sổ kế toán tổng hợp",
+    path: "/generalAccBookManagement",
+    icon: (
+      <SvgIcon fontSize="medium">
+        <SummarizeOutlinedIcon />
+      </SvgIcon>
+    ),
+    disabled: false,
+  },
+  {
+    title: "Quản lý bill",
     path: "/accountingBook",
     icon: (
       <SvgIcon fontSize="medium">
         <MenuBookIcon />
       </SvgIcon>
     ),
-    disabled: false
-
+    disabled: false,
   },
   {
-    title: "Tài khoản",
-    path: "/account",
+    title: "Quản lý pos",
+    path: "/posManagement",
     icon: (
       <SvgIcon fontSize="medium">
-        <FaceIcon />
+        <CallToActionOutlinedIcon />
       </SvgIcon>
     ),
-    disabled: false
-
   },
   {
-    title: "Test",
-    path: "/test",
+    title: "Quản lý nhân viên",
+    path: "/empManagement",
+    icon: (
+      <SvgIcon fontSize="medium">
+        <ManageAccountsOutlinedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Quản lý thẻ khách",
+    path: "/invoice",
     icon: (
       <SvgIcon fontSize="medium">
         <DescriptionIcon />
       </SvgIcon>
     ),
-    disabled: false
-
   },
-  // {
-  //   title: 'Settings',
-  //   path: '/settings',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <CogIcon />
-  //     </SvgIcon>
-  //   )
-  // },
   {
-    title: "Đăng nhập",
+    title: "Cài đặt",
+    path: "/settings",
+    icon: (
+      <SvgIcon fontSize="small">
+        <SettingsOutlinedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Đăng xuất",
     path: "/auth/login",
     icon: (
       <SvgIcon fontSize="small">
         <LoginIcon />
       </SvgIcon>
     ),
-    disabled: false
-
+    disabled: false,
   },
   // {
   //   title: 'Register',

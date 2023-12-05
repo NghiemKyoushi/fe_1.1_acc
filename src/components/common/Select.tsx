@@ -9,7 +9,6 @@ export default function BasicSelect() {
   const [age, setAge] = React.useState('');
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log("event.target.value",event.target.value)
     setAge(event.target.value as string);
   };
 

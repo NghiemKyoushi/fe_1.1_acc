@@ -4,16 +4,41 @@ import {
   FETCH_INVOICE_SUCCESS,
   FETCH_POS,
   FETCH_POS_SUCCESS,
+  FETCH_SUM_INVOICE,
+  FETCH_SUM_INVOICE_FAILURE,
+  FETCH_SUM_INVOICE_SUCCESS,
 } from "@/constants/InvoiceManagement";
 
 const initialState = {
   isLoading: false,
-  listOfInvoice: {},
+  isLoadingSum: false,
+  listOfInvoice: [],
   pagination: {
     totalPages: 0,
     totalElements: 0,
     pageNumber: 0,
     size: 0,
+  },
+  totalSumRow: {
+    id: "1",
+    code: "TOTAL",
+    createdDate: "",
+    receiptStatusEnum: "",
+    percentageFee: 0,
+    shipmentFee: 0,
+    intake: 0,
+    payout: 0,
+    loan: 0,
+    repayment: 0,
+    transactionTotal: 0,
+    calculatedProfit: 0,
+    estimatedProfit: 0,
+    customerCardId: "",
+    customerCardName: "",
+    employeeId: "",
+    employeeName: "",
+    branchId: "",
+    branchName: "",
   },
   error: null,
   posList: [],
@@ -36,7 +61,7 @@ const InvoiceManagementReducers = (
       return {
         ...state,
         isLoading: false,
-        listOfInvoice: action.payload,
+        listOfInvoice: action.payload.content,
         pagination: {
           totalPages: action.payload.totalPages,
           pageNumber: action.payload.pageable.pageNumber,
@@ -49,19 +74,50 @@ const InvoiceManagementReducers = (
       return {
         ...state,
         isLoading: false,
-        token: "",
         error: action.payload.error,
       };
-
+    case FETCH_SUM_INVOICE:
+      return {
+        ...state,
+      };
+    case FETCH_SUM_INVOICE_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        totalSumRow: {
+          id: "1",
+          code: "TOTAL",
+          createdDate: "",
+          receiptStatusEnum: "",
+          percentageFee: 0,
+          shipmentFee: 0,
+          intake: action.payload.totalIntake,
+          payout: action.payload.totalPayout,
+          loan: action.payload.totalLoan,
+          repayment: action.payload.totalRepayment,
+          transactionTotal: action.payload.total,
+          calculatedProfit: action.payload.totalCalculatedProfit,
+          estimatedProfit: 0,
+          customerCardId: "",
+          customerCardName: "",
+          employeeId: "",
+          employeeName: "",
+          branchId: "",
+          branchName: "",
+        },
+      };
+    case FETCH_SUM_INVOICE_FAILURE:
+      return {
+        ...state,
+      };
     case FETCH_POS:
       return {
         ...state,
       };
     case FETCH_POS_SUCCESS:
-      console.log("action.payload", action.payload)
       return {
         ...state,
-        posList: action.payload.data
+        posList: action.payload.data,
       };
     default:
       return {
