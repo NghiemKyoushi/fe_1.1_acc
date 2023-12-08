@@ -18,6 +18,15 @@ import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import { formatDateTime } from "@/utils";
+import {
+  fetchGenAccBook,
+  fetchGenSumAccBook,
+} from "@/actions/GenAccBookActions";
+import { GenAccountingBookSearchParams } from "@/models/GenAccountingBookModel";
+import NewAccountBookDrawer from "./Drawer/NewAccountBookDrawer";
+import ViewAccountBookDrawer from "./Drawer/ViewAccountBookDrawer";
+import { fetchAccEntryType } from "@/actions/AccEntryTypeActions";
+import { fetchDetailGenAccountingBook } from "@/api/service/genAccountingBook";
 
 export const initialPosSearch = {
   page: 0,
@@ -27,27 +36,37 @@ export const initialPosSearch = {
 };
 export const GenAccBookManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const listOfAccBook = useSelector(
-    (state: RootState) => state.accBookManagement.accBookList
+  const [isOpenViewModal, setIsOpenViewModal] = useState(false);
+  const [rowInfo, setRowInfo] = useState();
+  const listOfGenAccBook = useSelector(
+    (state: RootState) => state.genAccBookManagement.genAccBookList
   );
   const sumOfAccBook = useSelector(
-    (state: RootState) => state.accBookManagement.totalSumRow
+    (state: RootState) => state.genAccBookManagement.totalSumRow
   );
   const pagination = useSelector(
-    (state: RootState) => state.accBookManagement.pagination
+    (state: RootState) => state.genAccBookManagement.pagination
   );
   const isLoading = useSelector(
-    (state: RootState) => state.accBookManagement.isLoading
+    (state: RootState) => state.genAccBookManagement.isLoading
   );
   const [searchCondition, setSearchCondition] =
-    useState<EmpManageParamSearch>(initialPosSearch);
-
+    useState<GenAccountingBookSearchParams>(initialPosSearch);
+  const accEntryType = useSelector(
+    (state: RootState) => state.accEntryType.accEntryTypeList
+  );
   const dispatch = useDispatch();
   const handleOpenModal = () => {
     setIsOpenModal(true);
   };
   const handleCloseModal = () => {
     setIsOpenModal(false);
+  };
+  const handleOpenViewDrawer = (id: string) => {
+    fetchDetailGenAccountingBook(id).then((res) => {
+      setRowInfo(res.data);
+      setIsOpenViewModal(true);
+    });
   };
   const onPageChange = (pageNumber: number) => {
     const searchPage = {
@@ -67,9 +86,15 @@ export const GenAccBookManagementContent = () => {
     dispatch(fetchEmp(searchCondition));
   };
   useEffect(() => {
-    dispatch(fetchAccBook(searchCondition));
-    dispatch(fetchSumAccBook(searchCondition));
+    dispatch(fetchAccEntryType());
+    dispatch(fetchGenAccBook(searchCondition));
+    dispatch(fetchGenSumAccBook(searchCondition));
   }, [searchCondition]);
+
+  const handleCloseViewModal = () => {
+    setIsOpenViewModal(false);
+  };
+
   const columns: GridColDef<ColAccountBook>[] = useMemo(
     () => [
       {
@@ -231,7 +256,10 @@ export const GenAccBookManagementContent = () => {
                   <IconButton color="success">
                     <FactCheckOutlinedIcon sx={{ fontSize: 20 }} />
                   </IconButton>
-                  <IconButton color="info">
+                  <IconButton
+                    color="info"
+                    onClick={() => handleOpenViewDrawer(row.id)}
+                  >
                     <EditOutlinedIcon sx={{ fontSize: 20 }} />
                   </IconButton>
                   <IconButton color="error">
@@ -244,7 +272,7 @@ export const GenAccBookManagementContent = () => {
         },
       },
     ],
-    []
+    [accEntryType]
   );
 
   const handleSortModelChange = (sortModel: GridSortModel) => {
@@ -254,7 +282,7 @@ export const GenAccBookManagementContent = () => {
         sorter: sortModel[0].field,
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
-      setSearchCondition(sortPage);
+      //   setSearchCondition(sortPage);
     }
   };
   const getRowId = (row: any) => {
@@ -262,7 +290,7 @@ export const GenAccBookManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>Sổ kế toán chi nhánh: </h3>
+      <h3 style={{ textAlign: "left" }}>Sổ kế toán tổng hợp </h3>
 
       <Box sx={{ margin: "7px 16px" }}>
         <Button
@@ -288,7 +316,7 @@ export const GenAccBookManagementContent = () => {
           >
             <TableDataComponent
               columns={columns}
-              dataInfo={[sumOfAccBook, ...listOfAccBook]}
+              dataInfo={[sumOfAccBook, ...listOfGenAccBook]}
               // itemFilter={itemFilter}
               onPageChange={onPageChange}
               onPageSizeChange={onPageSizeChange}
@@ -302,6 +330,16 @@ export const GenAccBookManagementContent = () => {
           </Box>
         </StyleDataGrid>
       </form>
+      <NewAccountBookDrawer
+        handleCloseDrawer={handleCloseModal}
+        handleSearch={handleSearch}
+        isOpen={isOpenModal}
+      />
+      <ViewAccountBookDrawer
+        handleCloseDrawer={handleCloseViewModal}
+        isOpen={isOpenViewModal}
+        rowInfo={rowInfo}
+      />
     </Dashboard>
   );
 };

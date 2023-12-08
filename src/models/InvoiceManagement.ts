@@ -83,13 +83,14 @@ export interface InvoicesCalculateType {
 }
 export interface InvoiceCreate {
   id: string;
-  pos: string;
+  pos: PosDetail;
   posId: PosDetail;
   money: string;
   typeOfCard: string;
   fee: string;
   feeafterpay: string;
   billcode: string;
+  check: string;
 }
 export interface PosDetail {
   key: string;
@@ -159,6 +160,12 @@ export interface RangeNumberFilterProps<
 export interface InvoiceConfirmParams {
   receiptId: string;
   explanation: string;
+}
+export interface ConfirmRepayParams {
+  receiptId: string;
+  explanation: string;
+  repaidAmount: number;
+  imageId: string;
 }
 export enum ACTION_TYPE {
   CREATE = "C",

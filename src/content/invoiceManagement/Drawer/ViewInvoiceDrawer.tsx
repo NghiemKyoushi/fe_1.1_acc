@@ -3,12 +3,15 @@ import TableDataComponent from "@/components/common/DataGrid";
 import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import { ValueFormCreate } from "@/models/InvoiceManagement";
-import { useEffect, useMemo } from "react";
+import {
+  ReceiptCreationParams,
+  ValueFormCreate,
+} from "@/models/InvoiceManagement";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import {
   GridCellParams,
   GridColDef,
@@ -17,7 +20,10 @@ import {
 } from "@mui/x-data-grid";
 import { InputSearchPos } from "./InvoiceDrawer";
 import { InputNumber } from "@/components/common/InputCustom";
-import { getValueWithComma } from "@/utils";
+import { cookieSetting, getValueWithComma } from "@/utils";
+import { enqueueSnackbar } from "notistack";
+import { fetchImagePath, updateInvoice } from "@/api/service/invoiceManagement";
+import ImageUpload from "@/components/common/ImageUpload";
 
 export interface ViewInvoiceDrawerProps {
   isOpen: boolean;
@@ -26,6 +32,9 @@ export interface ViewInvoiceDrawerProps {
 }
 export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const { isOpen, handleCloseDrawer, rowInfo } = props;
+  const branchId = cookieSetting.get("branchId");
+  const [imageId, setImageId] = useState("");
+  const [imagePath, setImagePath] = useState("");
   const {
     register,
     handleSubmit,
@@ -38,6 +47,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     defaultValues: useMemo(() => {
       return {
         codeEmployee: rowInfo?.percentageFee,
+        check: "",
       };
     }, [rowInfo]),
     // defaultValues: {
@@ -72,8 +82,18 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     control,
     name: "invoicesCalculate",
   } as never);
+  const handleGetFile = (file: any) => {};
+  const getPathImage = async (id: string) => {
+    const getFile = await fetchImagePath(id);
+    return getFile;
+  };
   useEffect(() => {
     if (rowInfo) {
+      getPathImage(rowInfo.imageId).then((res) => {
+        URL.createObjectURL(res.data);
+        setImagePath(URL.createObjectURL(res.data));
+      });
+
       let dataTable: any[] = [];
       let invoicesCalculate = [
         {
@@ -97,7 +117,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           });
         });
         dataTable.unshift({
-          pos: "",
+          pos: {
+            values: "",
+            key: "",
+          },
           id: "",
           money: "",
           fee: "",
@@ -353,6 +376,48 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     ],
     []
   );
+  const handleSubmitInvoice = () => {
+    let receiptBills: any[] = [];
+    console.log("watch", watch("invoices"));
+    watch("invoices").map((item, index) => {
+      if (item?.check !== "TOTAL") {
+        if (item.pos.key !== "") {
+          receiptBills.push({
+            billId: "",
+            posId: item?.posId?.key,
+            moneyAmount: +item?.money,
+            fee: +item?.money * (+watch("percentageFee") / 100),
+          });
+        }
+      }
+      return item;
+    });
+
+    const request: ReceiptCreationParams = {
+      imageId: "",
+      branchId: branchId,
+      customerCardId: watch("cardCustomer").key,
+      percentageFee: +watch("percentageFee"),
+      shipmentFee: +watch("shipmentFee"),
+      intake: watch("invoicesCalculate")[0].intake,
+      payout: watch("invoicesCalculate")[0].payout,
+      loan: watch("invoicesCalculate")[0].loan,
+      repayment: watch("invoicesCalculate")[0].repayment,
+      employeeId: rowInfo.employee.id,
+      receiptBills: receiptBills,
+    };
+    updateInvoice(rowInfo.id, request)
+      .then((res) => {
+        enqueueSnackbar("Cập nhật đơn thành công!!", { variant: "success" });
+        reset();
+        handleCloseDrawer();
+        // handleSearch();
+      })
+      .catch(function (error) {
+        // console.log("error", error);
+        enqueueSnackbar(error, { variant: "error" });
+      });
+  };
   const getDataCustomerFromApi = (value: string) => {
     if (value !== "") {
       // dispatch(fetchSearchCustomer({ customerName: value }));
@@ -380,7 +445,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       {rowInfo && (
         <form
           style={{ padding: 16 }}
-          // onSubmit={handleSubmit(handleSubmitInvoice)}
+          onSubmit={handleSubmit(handleSubmitInvoice)}
         >
           <PageContent>
             <SearchContainer>
@@ -523,7 +588,11 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 />
               </StyleInputContainer>
               <StyleInputContainer>
-                <LabelComponent require={true}>Ảnh chứng từ</LabelComponent>
+                <ImageUpload
+                  handleGetFile={handleGetFile}
+                  filePath={imagePath}
+                />
+
                 {/* <TextFieldCustom
                   type={"text"}
                   
@@ -531,7 +600,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 /> */}
               </StyleInputContainer>
             </ContainerSum>
-            {/* <Box
+            <Box
               sx={{
                 justifyContent: "flex-end",
                 display: "flex",
@@ -545,9 +614,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 type="submit"
                 // onClick={handleSubmitInvoice}
               >
-                Lưu Hóa Đơn
+                Cập nhật
               </Button>
-            </Box> */}
+            </Box>
           </PageContent>
           {/* <NewCardCustomer
             isOpen={isOpenCard}

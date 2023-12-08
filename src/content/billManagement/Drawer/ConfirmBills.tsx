@@ -1,4 +1,5 @@
 import CustomizedDialogs from "@/components/common/DialogComponent";
+import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { Divider } from "@mui/material";
@@ -8,11 +9,18 @@ interface InsertBookDialogProps {
   openDialog: boolean;
   handleClickClose: () => void;
   handleClickConfirm: () => void;
+  handleGetFile: (file: Array<any>) => void;
   control: Control<any>;
   // register: UseFormRegister<FieldValues>
 }
-export const ApproveDialogComponent = (props: InsertBookDialogProps) => {
-  const { openDialog, handleClickClose, handleClickConfirm, control } = props;
+export const ConfirmBillsDialogComponent = (props: InsertBookDialogProps) => {
+  const {
+    openDialog,
+    handleClickClose,
+    handleClickConfirm,
+    control,
+    handleGetFile,
+  } = props;
 
   return (
     <CustomizedDialogs
@@ -20,7 +28,7 @@ export const ApproveDialogComponent = (props: InsertBookDialogProps) => {
       open={openDialog}
       confirm={true}
       titleConfirmButton="Xác nhận"
-      title={"Xác nhận tạo bút toán"}
+      title={"Xác nhận bút toán"}
       handleClickClose={handleClickClose}
       handleClickConfirm={handleClickConfirm}
     >
@@ -29,12 +37,15 @@ export const ApproveDialogComponent = (props: InsertBookDialogProps) => {
         <TextareaComponent
           control={control}
           valueInput={""}
-          name={"formConfirm.explanation"}
+          name={"explanation"}
           label={"Diễn Giải"}
           width={""}
           type={""}
           disable={false}
         />
+      </div>
+      <div style={{ marginTop: 20 }}>
+        <ImageUpload handleGetFile={handleGetFile} filePath="" />
       </div>
     </CustomizedDialogs>
   );

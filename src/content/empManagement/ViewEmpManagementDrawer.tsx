@@ -112,7 +112,6 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         handleSearch();
       })
       .catch(function (error) {
-        // handle error
         enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
       });
   };
@@ -141,10 +140,9 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       }
     });
   }, []);
-  console.log("ưatccccc", watch());
   return (
     <DrawerCustom
-      widthDrawer={650}
+      widthDrawer={550}
       isOpen={isOpen}
       title="Tạo Nhân viên"
       handleClose={handleCloseDrawer}
@@ -267,6 +265,7 @@ const StyleInputContainer = styled.div`
 const StyleContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 4px;
 `;
 const SearchContainer = styled.div`

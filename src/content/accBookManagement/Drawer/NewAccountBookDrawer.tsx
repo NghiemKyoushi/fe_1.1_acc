@@ -1,17 +1,26 @@
+import { createNewAccountingBook } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
-import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
+import {
+  fetchBranch,
+  fetchRoles,
+  fetchSaveImage,
+} from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
+import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
-import { getDateOfPresent } from "@/utils";
+import { RootState } from "@/reducers/rootReducer";
+import { cookieSetting, getDateOfPresent } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
@@ -20,61 +29,76 @@ export interface NEmpManagementDrawerProps {
   handleCloseDrawer: () => void;
   handleSearch: () => void;
 }
-export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
+export const listTranType = [
+  { key: "INTAKE", values: "Thu" },
+  { key: "PAYOUT", values: "Chi" },
+  { key: "LOAN", values: "Công nợ" },
+  { key: "REPAYMENT", values: "Thu nợ" },
+];
+export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [imageId, setImageId] = useState("");
+
+  const accEntryType = useSelector(
+    (state: RootState) => state.accEntryType.accEntryTypeList
+  );
+  const branchId = cookieSetting.get("branchId");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
-    useForm<valueForm>({
+    useForm({
       defaultValues: {
         name: "",
-        phoneNumber: "",
+        moneyAmount: "",
         code: "",
-        branchIds: {
-          keys: "",
+        explanation: "",
+        entryType: {
+          key: "",
           values: "",
         },
-        roleIds: {
-          keys: "",
+        transactionType: {
+          key: "",
           values: "",
         },
-        startDate: new Date(),
-        email: "",
-        salary: "",
-        password: "",
+        imageId: "",
       },
     });
   const dispatch = useDispatch();
-
-  const handleCreateUser = () => {
-    const {
-      name,
-      branchIds,
-      code,
-      phoneNumber,
-      roleIds,
-      startDate,
-      password,
-      email,
-    } = getValues();
-    const bodySend: NewUserPrarams = {
-      name: name,
-      code: code,
-      email: email,
-      phoneNumber: phoneNumber,
-      password: password,
-      roleIds: roleIds?.keys ? [roleIds?.keys] : [],
-      branchIds: branchIds?.keys ? [branchIds?.keys] : [],
-    };
-    fetchCreateEmp(bodySend)
+  const handleGetFile = (file: any) => {
+    fetchSaveImage(file[0])
       .then((res) => {
-        enqueueSnackbar("Tạo thẻ mới thành công!!", { variant: "success" });
+        setImageId(res.data);
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
+      });
+  };
+
+  const handleCreateUser = async () => {
+    console.log("checkkkkkk");
+    const { name, code, moneyAmount, entryType, explanation, transactionType } =
+      getValues();
+    if (imageId === "") {
+      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
+      return;
+    }
+    const bodySend = {
+      entryType: entryType?.key,
+      transactionType: transactionType?.key,
+      moneyAmount: +moneyAmount,
+      explanation: explanation,
+      branchId: branchId,
+      imageId: imageId,
+    };
+    createNewAccountingBook(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Tạo bút toán thành công!!", { variant: "success" });
         handleCloseDrawer();
         handleSearch();
       })
       .catch(function (error) {
-        enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
+        enqueueSnackbar("Tạo bút toán thất bại", { variant: "error" });
       });
   };
   const getDataCustomerFromApi = (value: string) => {};
@@ -106,85 +130,21 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
     <DrawerCustom
       widthDrawer={550}
       isOpen={isOpen}
-      title="Tạo Nhân viên"
+      title="Tạo bút toán"
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form style={{ padding: 16 }} onSubmit={handleCreateUser}>
+        <form style={{ padding: 16 }} onSubmit={handleSubmit(handleCreateUser)}>
           <SearchContainer>
             <StyleContainer>
               <StyleInputContainer>
-                <LabelComponent require={true}>Họ và tên </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("name", { required: true })}
-                />
-              </StyleInputContainer>
-
-              <StyleInputContainer>
-                <LabelComponent require={true}>Số điện thoại </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("phoneNumber", { required: true })}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Chi nhánh</LabelComponent>
+                <LabelComponent require={true}>Phân loại </LabelComponent>
                 <SelectSearchComponent
                   control={control}
                   props={{
-                    name: "branchIds",
+                    name: "transactionType",
                     placeHoder: "",
-                    results: banchList,
-                    label: "",
-                    type: "text",
-                    setValue: setValue,
-                    labelWidth: "112",
-                    getData: getDataCustomerFromApi,
-                  }}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>
-                  Ngày bắt đầu làm việc{" "}
-                </LabelComponent>
-                <DateSiglePicker
-                  props={{ name: "startDate", setValue: setValue }}
-                  control={control}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Mật khẩu </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("password", { required: true })}
-                />
-              </StyleInputContainer>
-            </StyleContainer>
-            <StyleContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Mã nhân viên</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("code", { required: true })}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Email </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("email", { required: true })}
-                />
-              </StyleInputContainer>
-
-              <StyleInputContainer>
-                <LabelComponent require={true}>Chức vụ</LabelComponent>
-                <SelectSearchComponent
-                  control={control}
-                  props={{
-                    name: "roleIds",
-                    placeHoder: "",
-                    results: roles,
+                    results: listTranType,
                     label: "",
                     // getData:((value) => setValue("customerName", value)),
                     type: "text",
@@ -194,29 +154,71 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   }}
                 />
               </StyleInputContainer>
+
               <StyleInputContainer>
-                <LabelComponent require={true}>Lương tháng </LabelComponent>
+                <LabelComponent require={true}>Số tiền</LabelComponent>
                 <TextFieldCustom
                   type={"text"}
-                  {...register("salary", { required: true })}
+                  {...register("moneyAmount", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "moneyAmount",
+                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                    );
+                  }}
+                />
+              </StyleInputContainer>
+            </StyleContainer>
+            <StyleContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Định khoản</LabelComponent>
+                <SelectSearchComponent
+                  control={control}
+                  props={{
+                    name: "entryType",
+                    placeHoder: "",
+                    results: accEntryType,
+                    label: "",
+                    // getData:((value) => setValue("customerName", value)),
+                    type: "text",
+                    setValue: setValue,
+                    labelWidth: "114",
+                    getData: getDataCustomerFromApi,
+                  }}
                 />
               </StyleInputContainer>
             </StyleContainer>
           </SearchContainer>
+          <div>
+            <LabelComponent require={true}>Diễn giải</LabelComponent>
+            <TextareaComponent
+              control={control}
+              valueInput={""}
+              name={"explanation"}
+              label={"Diễn Giải"}
+              width={""}
+              type={""}
+              disable={false}
+            />
+          </div>
+          <div style={{ marginTop: 20 }}>
+            <ImageUpload handleGetFile={handleGetFile} filePath="" />
+          </div>
           <Button
             style={{ position: "fixed", bottom: 50, right: 32 }}
             variant="contained"
             size="medium"
-            onClick={() => handleCreateUser()}
+            type="submit"
+            // onClick={() => handleCreateUser()}
           >
-            Thêm nhân viên
+            Tạo bút toán
           </Button>
         </form>
       </PageContent>
     </DrawerCustom>
   );
 };
-export default EmpManagementDrawer;
+export default NewAccountBookDrawer;
 const StyleInputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -234,6 +236,7 @@ const StyleContainer = styled.div`
 const SearchContainer = styled.div`
   display: flex;
   flex-direction: row;
+  width: 96%;
   gap: 30px;
 `;
 

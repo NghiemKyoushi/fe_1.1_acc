@@ -50,7 +50,7 @@ export default function SignIn() {
       cookieSetting.set("userName", userName);
       cookieSetting.set("branchId", branchId);
       cookieSetting.set("employeeId", employeeId);
-      router.push("/");
+      router.push("/invoiceManagement");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);

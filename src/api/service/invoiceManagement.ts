@@ -21,6 +21,24 @@ export const fetchInvoiceSumTotal = (param: fetchInvoiceInfoPrams) => {
 export const fetchCreateInvoice = (params: ReceiptCreationParams) => {
   return authApi.post("/api/receipts", params);
 };
+export const updateInvoice = (id: string, body: ReceiptCreationParams) => {
+  return authApi.put(`/api/receipts/${id}`, body);
+};
+export const fetchSaveImage = async (file: any) => {
+  const formDatas = new FormData();
+  formDatas.append("file", file);
+  return await authApi.post("/api/files", formDatas, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const fetchImagePath = async (id: string) => {
+  const imageBlob = await authApi.get(`/api/files/${id}`, {
+    responseType: "blob",
+  });
+  return imageBlob;
+};
 export const fetchBranch = () => {
   return authApi.get("/api/branches");
 };
@@ -29,4 +47,8 @@ export const fetchRoles = () => {
 };
 export const conrimInvoice = (reason: InvoiceConfirmParams) => {
   return authApi.put("/api/receipts/confirmReceipt", reason);
+};
+
+export const conrimRepayInvoice = (reason: InvoiceConfirmParams) => {
+  return authApi.put("/api/receipts/repayReceipt", reason);
 };

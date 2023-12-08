@@ -17,12 +17,11 @@ export const getDateOfPresent = () => {
 export const getValueWithComma = (res: any) => {
   return res.toString().replace(/\B(?=(\d(3)+(?!\d)))/g, ",");
 };
-export const formatDateTime = (currentDate: string) => {
+export const formatDateTime = (currentDate: string | number | Date) => {
   const date = dayjs(currentDate);
   return date.format("DD-MM-YYYY HH:mm");
 };
-export const formatDate = (currentDate: string) => {
+export const formatDate = (currentDate: string | number | Date) => {
   const date = dayjs(currentDate);
   return date.format("DD-MM-YYYY");
 };
-

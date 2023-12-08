@@ -20,12 +20,14 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
   (props, ref) => {
     const { fromdatename, todatename, setvalue } = props;
     const dateFormat = "DD/MM/YYYY";
-
+    const date = new Date();
+    const previous = new Date(date.getTime());
+    previous.setDate(date.getDate() - 7);
     const [state, setState] = useState({
       displayCalendar: false,
-      inputValue: `${getDateOfPresent()}-${getDateOfPresent()}`,
+      inputValue: `${formatDate(previous)}-${getDateOfPresent()}`,
       anchorEl: null,
-      fromDate: new Date(),
+      fromDate: new Date(previous),
       toDate: new Date(),
     });
     const onAdornmentClick = (e: any) => {
@@ -74,8 +76,12 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
           variantshow="outlined"
           value={state.inputValue}
           iconend={
-            <IconButton size="small" style={{width: 0}} onClick={onAdornmentClick}>
-              <DateRangeIcon style={{fontSize: 20}}/>
+            <IconButton
+              size="small"
+              style={{ width: 0 }}
+              onClick={onAdornmentClick}
+            >
+              <DateRangeIcon style={{ fontSize: 20 }} />
             </IconButton>
           }
           {...props}

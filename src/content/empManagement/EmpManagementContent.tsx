@@ -151,9 +151,9 @@ export const EmpManagementContent = () => {
         renderCell: ({ row }) => {
           return (
             <>
-              <IconButton color="success">
+              {/* <IconButton color="success">
                 <FactCheckOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 color="info"
                 onClick={() => handleOpenModalEdit(row.id)}

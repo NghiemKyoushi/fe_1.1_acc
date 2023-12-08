@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Box from "@mui/material/Box";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import {
@@ -16,6 +16,10 @@ import {
   GridValidRowModel,
   GridRowIdGetter,
   GridRowModel,
+  GridCellParams,
+  MuiEvent,
+  useGridApiRef,
+  GridSelectionModel,
 } from "@mui/x-data-grid";
 import { styled } from "@mui/material";
 
@@ -219,6 +223,8 @@ export interface FilterCOmponent {
   isPage?: boolean;
   getRowId: GridRowIdGetter<GridValidRowModel>;
   processRowUpdate?: (newRow: any) => void;
+  handleGetListOfSelect?: (value: Array<string | number>) => void;
+  checkboxSelection?: boolean;
 }
 export default function TableDataComponent(props: FilterCOmponent) {
   const {
@@ -231,23 +237,13 @@ export default function TableDataComponent(props: FilterCOmponent) {
     loading,
     disableFilter,
     isPage,
+    checkboxSelection,
     onPageChange,
     onPageSizeChange,
     handleSortModelChange,
     processRowUpdate,
+    handleGetListOfSelect,
   } = props;
-
-  //paging
-  // const [filterModel, setFilterModel] = useState<GridFilterModel>({
-  //   items: itemFilter,
-  // });
-  // const handleProcessRowUpdate = useCallback(async (newRow: GridRowModel) => {
-  //   console.log("checkkkk", newRow);
-  //   // Make the HTTP request to save in the backend
-  //   // const response = await mutateRow(newRow);
-  //   // setSnackbar({ children: 'User successfully saved', severity: 'success' });
-  //   return {...newRow};
-  // }, [dataInfo]);
   const processRowUpdate1 = (
     newRow: GridValidRowModel,
     oldRow: GridValidRowModel
@@ -256,15 +252,32 @@ export default function TableDataComponent(props: FilterCOmponent) {
     processRowUpdate && processRowUpdate(updatedRow);
     return updatedRow;
   };
+  const handleGetSelect = (newSelectionModel: GridSelectionModel) => {
+    if (newSelectionModel && newSelectionModel.length > 0) {
+      handleGetListOfSelect?.(newSelectionModel);
+    }
+  };
+
+  const handleCellKeyDown = (
+    params: GridCellParams,
+    event: React.KeyboardEvent
+  ) => {
+    // Prevent default behavior for arrow keys on the main grid
+    if (event.key.startsWith("Arrow")) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
   return (
-    <Box
-      sx={{
-        width: "100%",
-      }}
-    >
+    <div style={{ width: "100%" }}>
       <StyledDataGrid
         localeText={viVN.components.MuiDataGrid.defaultProps.localeText}
         rows={dataInfo}
+        onCellKeyDown={handleCellKeyDown} // Custom onCellKeyDown handler to prevent default behavior for arrow keys
+        disableSelectionOnClick
+        isCellEditable={() => false}
+        {...dataInfo}
         columns={columns}
         //sorting
         sortingMode="server"
@@ -299,6 +312,8 @@ export default function TableDataComponent(props: FilterCOmponent) {
         components={{
           NoRowsOverlay: dataInfo.length < 1 ? CustomNoRowsOverlay : undefined,
         }}
+        checkboxSelection={checkboxSelection ? true : false}
+        onSelectionModelChange={handleGetSelect}
         componentsProps={{
           pagination: { classes: null },
           filterPanel: {
@@ -324,7 +339,19 @@ export default function TableDataComponent(props: FilterCOmponent) {
             },
           },
         }}
+        // onCellClick={(
+        //   params: GridCellParams,
+        //   event: MuiEvent<React.MouseEvent>
+        // ) => {
+        //   event.defaultMuiPrevented = true;
+        // }}
+        // onKeyDown={(event: any) => {
+        //   if (event.keyCode === 37 || event.keyCode === 39) {
+        //     event.preventDefault();
+        //   }
+        // }}
+        // onCellKeyDown={handleKeyDown}
       />
-    </Box>
+    </div>
   );
 }

@@ -43,7 +43,7 @@ export interface invoiceActionprops {
 }
 const AccBookReducers = (state = initialState, action: invoiceActionprops) => {
   switch (action.type) {
-    case "FETCH_ACCOUNT_BOOK":
+    case FETCH_ACCOUNT_BOOK:
       return {
         ...state,
       };
@@ -72,7 +72,6 @@ const AccBookReducers = (state = initialState, action: invoiceActionprops) => {
         ...state,
       };
     case FETCH_SUM_ACCOUNT_BOOK_SUCCESS:
-      console.log("action.payload", action.payload);
       return {
         ...state,
         totalSumRow: {

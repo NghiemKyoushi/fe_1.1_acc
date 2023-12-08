@@ -1,17 +1,23 @@
+import { createNewAccountingBook } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
+import { createNewGenAccountingBook } from "@/api/service/genAccountingBook";
 import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
+import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
-import { getDateOfPresent } from "@/utils";
+import { RootState } from "@/reducers/rootReducer";
+import { cookieSetting, getDateOfPresent } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
@@ -20,56 +26,58 @@ export interface NEmpManagementDrawerProps {
   handleCloseDrawer: () => void;
   handleSearch: () => void;
 }
-export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
+export const listTranType = [
+  { key: "INTAKE", values: "Thu" },
+  { key: "PAYOUT", values: "Chi" },
+  { key: "LOAN", values: "Công nợ" },
+  { key: "REPAYMENT", values: "Thu nợ" },
+];
+export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
+  const accEntryType = useSelector(
+    (state: RootState) => state.accEntryType.accEntryTypeList
+  );
+  const branchId = cookieSetting.get("branchId");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
-    useForm<valueForm>({
+    useForm({
       defaultValues: {
         name: "",
         phoneNumber: "",
         code: "",
-        branchIds: {
-          keys: "",
+        explanation: "",
+        entryType: {
+          key: "",
           values: "",
         },
-        roleIds: {
-          keys: "",
+        transactionType: {
+          key: "",
           values: "",
         },
-        startDate: new Date(),
-        email: "",
-        salary: "",
-        password: "",
+        imageId: "",
       },
     });
   const dispatch = useDispatch();
+  const handleGetFile = (file: any) => {};
 
-  const handleCreateUser = () => {
-    const {
-      name,
-      branchIds,
-      code,
-      phoneNumber,
-      roleIds,
-      startDate,
-      password,
-      email,
-    } = getValues();
-    const bodySend: NewUserPrarams = {
-      name: name,
-      code: code,
-      email: email,
-      phoneNumber: phoneNumber,
-      password: password,
-      roleIds: roleIds?.keys ? [roleIds?.keys] : [],
-      branchIds: branchIds?.keys ? [branchIds?.keys] : [],
+  const handleCreateUser = async () => {
+    const { name, code, phoneNumber, entryType, explanation, transactionType } =
+      getValues();
+    const bodySend = {
+      entryType: entryType?.key,
+      transactionType: transactionType?.key,
+      moneyAmount: 1000,
+      explanation: explanation,
+      branchId: branchId,
+      imageId: "",
     };
-    fetchCreateEmp(bodySend)
+    console.log("bodySend", bodySend);
+
+    createNewGenAccountingBook(bodySend)
       .then((res) => {
-        enqueueSnackbar("Tạo thẻ mới thành công!!", { variant: "success" });
+        enqueueSnackbar("Tạo bút toán thành công!!", { variant: "success" });
         handleCloseDrawer();
         handleSearch();
       })
@@ -106,7 +114,7 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
     <DrawerCustom
       widthDrawer={550}
       isOpen={isOpen}
-      title="Tạo Nhân viên"
+      title="Tạo bút toán"
       handleClose={handleCloseDrawer}
     >
       <PageContent>
@@ -114,77 +122,13 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
           <SearchContainer>
             <StyleContainer>
               <StyleInputContainer>
-                <LabelComponent require={true}>Họ và tên </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("name", { required: true })}
-                />
-              </StyleInputContainer>
-
-              <StyleInputContainer>
-                <LabelComponent require={true}>Số điện thoại </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("phoneNumber", { required: true })}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Chi nhánh</LabelComponent>
+                <LabelComponent require={true}>Phân loại </LabelComponent>
                 <SelectSearchComponent
                   control={control}
                   props={{
-                    name: "branchIds",
+                    name: "transactionType",
                     placeHoder: "",
-                    results: banchList,
-                    label: "",
-                    type: "text",
-                    setValue: setValue,
-                    labelWidth: "112",
-                    getData: getDataCustomerFromApi,
-                  }}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>
-                  Ngày bắt đầu làm việc{" "}
-                </LabelComponent>
-                <DateSiglePicker
-                  props={{ name: "startDate", setValue: setValue }}
-                  control={control}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Mật khẩu </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("password", { required: true })}
-                />
-              </StyleInputContainer>
-            </StyleContainer>
-            <StyleContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Mã nhân viên</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("code", { required: true })}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Email </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("email", { required: true })}
-                />
-              </StyleInputContainer>
-
-              <StyleInputContainer>
-                <LabelComponent require={true}>Chức vụ</LabelComponent>
-                <SelectSearchComponent
-                  control={control}
-                  props={{
-                    name: "roleIds",
-                    placeHoder: "",
-                    results: roles,
+                    results: listTranType,
                     label: "",
                     // getData:((value) => setValue("customerName", value)),
                     type: "text",
@@ -194,29 +138,64 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   }}
                 />
               </StyleInputContainer>
+
               <StyleInputContainer>
-                <LabelComponent require={true}>Lương tháng </LabelComponent>
+                <LabelComponent require={true}>Số tiền</LabelComponent>
                 <TextFieldCustom
                   type={"text"}
-                  {...register("salary", { required: true })}
+                  {...register("phoneNumber", { required: true })}
+                />
+              </StyleInputContainer>
+            </StyleContainer>
+            <StyleContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Định khoản</LabelComponent>
+                <SelectSearchComponent
+                  control={control}
+                  props={{
+                    name: "entryType",
+                    placeHoder: "",
+                    results: accEntryType,
+                    label: "",
+                    // getData:((value) => setValue("customerName", value)),
+                    type: "text",
+                    setValue: setValue,
+                    labelWidth: "114",
+                    getData: getDataCustomerFromApi,
+                  }}
                 />
               </StyleInputContainer>
             </StyleContainer>
           </SearchContainer>
+          <div>
+            <LabelComponent require={true}>Diễn giải</LabelComponent>
+            <TextareaComponent
+              control={control}
+              valueInput={""}
+              name={"explanation"}
+              label={"Diễn Giải"}
+              width={""}
+              type={""}
+              disable={false}
+            />
+          </div>
+          <div style={{ marginTop: 20 }}>
+            <ImageUpload handleGetFile={handleGetFile} filePath="" />
+          </div>
           <Button
             style={{ position: "fixed", bottom: 50, right: 32 }}
             variant="contained"
             size="medium"
             onClick={() => handleCreateUser()}
           >
-            Thêm nhân viên
+            Tạo bút toán
           </Button>
         </form>
       </PageContent>
     </DrawerCustom>
   );
 };
-export default EmpManagementDrawer;
+export default NewAccountBookDrawer;
 const StyleInputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -234,6 +213,7 @@ const StyleContainer = styled.div`
 const SearchContainer = styled.div`
   display: flex;
   flex-direction: row;
+  width: 96%;
   gap: 30px;
 `;
 

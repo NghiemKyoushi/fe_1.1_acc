@@ -1,4 +1,5 @@
 import { authApi } from "@/api/authApi";
+import { CreateEntryParams } from "@/models/AccountingBookModel";
 
 import { GenAccountingBookSearchParams } from "@/models/GenAccountingBookModel";
 export const fetchGenAccountingBook = (
@@ -8,6 +9,10 @@ export const fetchGenAccountingBook = (
     params: param,
   });
 };
+
+export const createNewGenAccountingBook = async (body: CreateEntryParams) => {
+  return await authApi.post("/api/generalAccountEntries", body);
+};
 export const fetchGenSumAccountingBook = (
   param: GenAccountingBookSearchParams
 ) => {
@@ -15,9 +20,15 @@ export const fetchGenSumAccountingBook = (
     params: param,
   });
 };
-// export const fetchDetailAccountingBook = (id: string) => {
-//   return authApi.get(`/api/branchAccountEntries/sumUp/${id}`);
-// };
+export const fetchDetailGenAccountingBook = (id: string) => {
+  return authApi.get(`/api/generalAccountEntries/${id}`);
+};
+export const updateDetailGenAccountingBook = (
+  id: string,
+  body: CreateEntryParams
+) => {
+  return authApi.put(`/api/branchAccountEntries/${id}`, body);
+};
 // export const createNewEntry = (body: CreateEntryParams) => {
 //   return authApi.post("/api/branch-account-entry", body);
 // };

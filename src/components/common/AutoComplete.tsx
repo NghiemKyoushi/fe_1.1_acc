@@ -28,6 +28,7 @@ interface InputProps {
   setValue: UseFormSetValue<any>;
   getData: (value: string) => void;
   border?: string;
+  variantType?: string;
 }
 
 function SelectSearchComponent({
@@ -47,6 +48,7 @@ function SelectSearchComponent({
     setValue,
     getData,
     border,
+    variantType
   } = props;
 
   return (
@@ -86,6 +88,7 @@ function SelectSearchComponent({
                   {...params}
                   border={border}
                   type={"text"}
+                  variantshow={variantType ? 'standard' : "outlined"}
                   iconend={<SearchIcon />}
                 />
               )}

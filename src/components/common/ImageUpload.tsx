@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 //@ts-ignore
 import { Box, Paper, Typography } from "@mui/material";
@@ -7,18 +7,22 @@ import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUpload
 
 export interface ImageUploadProps {
   handleGetFile: (file: any) => void;
+  filePath: string;
 }
 export default function ImageUpload(props: ImageUploadProps) {
-  const { handleGetFile } = props;
-  const [state, setstate] = useState("");
+  const { handleGetFile, filePath } = props;
+  const [state, setstate] = useState(filePath);
   var loadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
     if (event.target.files[0]) {
       setstate(URL?.createObjectURL(event.target.files[0]));
       const files = Array.from(event.target.files);
-    //   handleGetFile(files);
+      handleGetFile(files);
     }
   };
+  useEffect(() => {
+    setstate(filePath);
+  }, [filePath]);
   return (
     <Paper style={{ width: "200px" }}>
       <Box
@@ -36,7 +40,7 @@ export default function ImageUpload(props: ImageUploadProps) {
           onChange={loadFile}
           style={{ display: "none" }}
         />
-        <Typography variant="caption"> Profile image </Typography>
+        <Typography variant="subtitle2">Ảnh dẫn chứng</Typography>
 
         <img
           src={

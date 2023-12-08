@@ -13,16 +13,16 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import SummarizeOutlinedIcon from "@mui/icons-material/SummarizeOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 export const items = [
-  {
-    title: "Tổng quan",
-    path: "/",
-    icon: (
-      <SvgIcon fontSize="medium">
-        <BarChartIcon />
-      </SvgIcon>
-    ),
-    disabled: false,
-  },
+  // {
+  //   title: "Tổng quan",
+  //   path: "/",
+  //   icon: (
+  //     <SvgIcon fontSize="medium">
+  //       <BarChartIcon />
+  //     </SvgIcon>
+  //   ),
+  //   disabled: false,
+  // },
   {
     title: "Quản Lý Hóa Đơn",
     path: "/invoiceManagement",
@@ -45,7 +45,7 @@ export const items = [
   },
   {
     title: "Sổ kế toán tổng hợp",
-    path: "/generalAccBookManagement",
+    path: "/genAccBookManagement",
     icon: (
       <SvgIcon fontSize="medium">
         <SummarizeOutlinedIcon />
@@ -55,7 +55,7 @@ export const items = [
   },
   {
     title: "Quản lý bill",
-    path: "/accountingBook",
+    path: "/billManagement",
     icon: (
       <SvgIcon fontSize="medium">
         <MenuBookIcon />

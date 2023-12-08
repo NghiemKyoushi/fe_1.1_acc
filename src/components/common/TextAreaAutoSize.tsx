@@ -37,23 +37,16 @@ const TextareaComponent = <T extends FieldValues>({
   } = useController(other);
 
   return (
-    <div
-      className="field"
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {label !== undefined && (
+    <>
+      {/* {label !== undefined && (
         <label style={{ fontWeight: "bolder", width: 110 }}>{label}</label>
-      )}
+      )} */}
       <div
         style={{
-          width: "70%",
-          padding: "0px 0px",
-          margin: "1px 15px",
+          width: "100%",
+          // padding: "0px 0px",
+          // margin: "1px 15px",
+          height: 80,
           backgroundColor: "transparent",
         }}
       >
@@ -67,6 +60,12 @@ const TextareaComponent = <T extends FieldValues>({
             margin: "3px 0px",
             backgroundColor: "transparent",
           }}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: 14,
+              height: 50,
+            },
+          }}
           InputProps={{
             ...textFieldProps?.InputProps,
             rows: 5,
@@ -75,7 +74,7 @@ const TextareaComponent = <T extends FieldValues>({
           placeholder="Nhập diễn giải tại dây"
         />
       </div>
-    </div>
+    </>
   );
 };
 export default TextareaComponent;

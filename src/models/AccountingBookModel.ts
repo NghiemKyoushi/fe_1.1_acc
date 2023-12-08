@@ -46,11 +46,12 @@ export interface AccountingBookSearchParams {
 }
 
 export interface CreateEntryParams {
-  transactionTypeEnum: string;
+  transactionType: string;
+  entryType: string;
   moneyAmount: number;
-  purpose: string;
+  imageId: string;
   explanation: string;
-  branchId: string;
+  branchId?: string;
 }
 
 // export enum SORT {

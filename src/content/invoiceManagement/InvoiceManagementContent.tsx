@@ -54,6 +54,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import clsx from "clsx";
 import ViewInvoiceDrawer from "./Drawer/ViewInvoiceDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 const initialInvoiceSearch = {
   page: 0,
   pageSize: 10,
@@ -138,8 +139,8 @@ export default function InvoiceManagementContent() {
         toIntake: 0,
         toLoan: 0,
         toPayout: 0,
-        fromCreatedDate: new Date(),
-        toCreatedDate: new Date(),
+        fromCreatedDate: "",
+        toCreatedDate: "",
         toRepayment: 0,
         formConfirm: {
           receiptId: "",
@@ -198,7 +199,8 @@ export default function InvoiceManagementContent() {
       toCreatedDate,
     } = getValues();
     const fromDate = new Date(fromCreatedDate);
-    const toDate = new Date(toCreatedDate);
+    const gettoDate = new Date(toCreatedDate);
+    const formatDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
@@ -216,7 +218,7 @@ export default function InvoiceManagementContent() {
       toPayout: toPayout === 0 ? "" : toPayout,
       toRepayment: toRepayment === 0 ? "" : toRepayment,
       fromCreatedDate: fromDate.toISOString(),
-      toCreatedDate: toDate.toISOString(),
+      toCreatedDate: formatDate.toISOString(),
     };
     setSearchCondition(bodySend);
     dispatch(fetchInvoice(bodySend));
@@ -242,14 +244,18 @@ export default function InvoiceManagementContent() {
       receiptId: watch().formConfirm.receiptId,
       explanation: watch().formConfirm.explanation,
     };
+    console.log("chedck1");
+
     conrimInvoice(bodySend)
       .then((res) => {
+        console.log("chedck2");
+
         enqueueSnackbar("Xác nhận thành công!!", { variant: "success" });
         handleCloseApproveDialog();
         handleSearch();
         setValue("formConfirm.explanation", "");
       })
-      .catch(function (error) {
+      .catch(function (error: any) {
         enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
       });
   };
@@ -554,6 +560,15 @@ export default function InvoiceManagementContent() {
               >
                 {row.code !== "TOTAL" && (
                   <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                )}
+              </IconButton>
+
+              <IconButton
+                color="info"
+                onClick={() => handleOpenViewDrawer(row.id)}
+              >
+                {+row.loan > +row.repayment && (
+                  <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
                 )}
               </IconButton>
               <IconButton color="error">

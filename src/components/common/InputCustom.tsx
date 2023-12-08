@@ -3,6 +3,7 @@ import {
   StandardTextFieldProps,
   TextField,
 } from "@mui/material";
+import { GridCellParams } from "@mui/x-data-grid";
 import * as React from "react";
 import { forwardRef } from "react";
 import {
@@ -60,9 +61,19 @@ export const InputNumber = <T extends FieldValues>({
     fieldState: { error },
   } = useController(other);
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    console.log('Pressed key:', event.key);
+
+    // Handle key events within the custom TextField as needed
+    // You can allow arrow key navigation within the TextField here
+    // or perform other custom logic
+  };
   return (
     <>
       <TextField
+        autoFocus
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
         sx={{
           "& fieldset": { border: "none" },
           "& .MuiInputBase-input.Mui-disabled": {
