@@ -88,7 +88,7 @@ export interface InvoiceCreate {
   money: string;
   typeOfCard: string;
   fee: string;
-  feeafterpay: string;
+  feeafterpay: number;
   billcode: string;
   check: string;
 }

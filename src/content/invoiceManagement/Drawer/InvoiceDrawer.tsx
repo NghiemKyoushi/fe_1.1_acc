@@ -49,6 +49,7 @@ import {
 import { randomId } from "@mui/x-data-grid-generator";
 import { InputNumber } from "@/components/common/InputCustom";
 import ImageUpload from "@/components/common/ImageUpload";
+import _ from "lodash";
 const initialRow = [
   {
     id: randomId(),
@@ -168,6 +169,7 @@ export interface TotalHeader {
 }
 
 type Row = Item;
+
 const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch } = props;
   // const [rows, setRows] = useState<Row[]>(initialRow);
@@ -186,6 +188,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const cardType = useSelector(
     (state: RootState) => state.cardCustomer.cardType
   );
+  const [copyInvoice, setCopyInvoice] = useState<InvoiceCreate[]>([]);
   // [key: string]: string } |
   const {
     register,
@@ -217,7 +220,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         {
           id: "",
           pos: {
-            key: "TOTAL",
+            key: "",
             values: "",
           },
           posId: {
@@ -227,8 +230,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           money: "",
           typeOfCard: "",
           fee: "",
-          feeafterpay: "",
+          feeafterpay: 0,
           billcode: "",
+          check: "TOTAL",
         },
         {
           id: "",
@@ -243,8 +247,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           money: "",
           typeOfCard: "",
           fee: "",
-          feeafterpay: "",
+          feeafterpay: 0,
           billcode: "",
+          check: "",
         },
         {
           id: "",
@@ -259,8 +264,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           money: "",
           typeOfCard: "",
           fee: "",
-          feeafterpay: "",
+          feeafterpay: 0,
           billcode: "",
+          check: "",
         },
         {
           id: "",
@@ -275,8 +281,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           money: "",
           typeOfCard: "",
           fee: "",
-          feeafterpay: "",
+          feeafterpay: 0,
           billcode: "",
+          check: "",
         },
       ],
       invoicesCalculate: [
@@ -303,7 +310,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   } as never);
   const onAdd = () => {
     const item = {
-      id: "2",
+      id: "",
       pos: {
         key: "",
         values: "",
@@ -315,12 +322,21 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       money: "",
       typeOfCard: "",
       fee: "",
-      feeafterpay: "",
+      feeafterpay: 0,
       billcode: "",
       check: "",
     };
     append(item);
   };
+  useEffect(() => {
+    let arr: InvoiceCreate[] = [];
+    invoicesField.map((item) => {
+      if (_.isNumber(item.feeafterpay)) {
+        arr.push(item);
+      }
+    });
+    setCopyInvoice(arr);
+  }, [invoicesField]);
   const handleSubmitInvoice = () => {
     let receiptBills: any[] = [];
     if (watch("customerName").key === "") {
@@ -370,7 +386,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         // reset();
         handleCloseDrawer();
         handleSearch();
-      }).catch(function (error) {
+      })
+      .catch(function (error) {
         enqueueSnackbar(error, { variant: "error" });
       });
   };
@@ -402,19 +419,13 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         sortable: false,
         headerName: "STT",
         renderCell: (params: GridRenderCellParams<InvoiceCreate>) => {
-          if (params.row.pos.key === "TOTAL") {
+          if (params.row.check && params.row.check === "TOTAL") {
             return "";
           }
           const index = params.api.getRowIndex(params.row.id);
-          return +index + 1;
+          return +index;
         },
       },
-      // {
-      //   headerName: "Mã Bill",
-      //   field: "receiptCode",
-      //   width: 100,
-      //   sortable: false,
-      // },
       {
         headerName: "Mã Pos",
         field: "pos",
@@ -424,7 +435,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         // editable: true,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          if (params.row.pos.key !== "TOTAL") {
+          if (params.row.check !== "TOTAL" && !_.isNumber(params.row.check)) {
             return (
               <>
                 <InputSearchPos
@@ -436,10 +447,10 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
               </>
             );
           }
-          return <p>TỔNG</p>;
+          return <>check</>;
         },
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
-          if (params.row.pos.key !== "TOTAL") {
+          if (params.row.check !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
@@ -455,14 +466,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         headerAlign: "left",
         align: "left",
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
-          if (params.row.pos.key !== "TOTAL") {
+          if (params.row.check !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
         },
+        disableColumnFilter: true,
+        disableColumnMenu: true,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          if (params.row.pos.key !== "TOTAL") {
+          if (params.row.check !== "TOTAL" && !_.isNumber(params.row.check)) {
             return (
               <>
                 <InputNumber
@@ -496,14 +509,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
 
         valueGetter: (params: GridValueGetterParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          let restOfFee = 0;
-          if (watch(`invoices.${index}.money`) !== undefined) {
-            restOfFee =
-              +watch(`invoices.${index}.money`) *
-              (+watch("percentageFee") / 100);
-          }
-
-          if (params.row.pos.key === "TOTAL") {
+          if (params.row.check === "TOTAL") {
             let fee = 0;
             fee = watch("invoices").reduce(
               (total, { money }) =>
@@ -512,10 +518,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             );
             return fee;
           }
+          let restOfFee = 0;
+          if (watch(`invoices.${index}.money`)) {
+            restOfFee =
+              +watch(`invoices.${index}.money`) *
+              (+watch("percentageFee") / 100);
+          }
           return getValueWithComma(restOfFee);
         },
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
-          if (params.row.pos.key !== "TOTAL") {
+          if (params.row.check !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
@@ -532,7 +544,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         type: "number",
         valueGetter: (params: GridValueGetterParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          if (params.row.pos.key === "TOTAL") {
+          if (params.row.check === "TOTAL") {
             let fee = 0;
             fee = watch("invoices").reduce(
               (total, { money }) =>
@@ -551,7 +563,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           return feeafterpay;
         },
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
-          if (params.row.pos.key !== "TOTAL") {
+          if (params.row.check !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
@@ -571,7 +583,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         align: "center",
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          if (params.row.pos.key !== "TOTAL") {
+          console.log("params.row.check", params.row.check);
+          if (params.row.check !== "TOTAL") {
             return (
               <>
                 <IconButton color="error" onClick={() => remove(index)}>
@@ -585,8 +598,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [invoicesField]
   );
+
   const columnsOther: GridColDef[] = useMemo(
     () => [
       {
@@ -831,7 +845,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
               >
                 <TableDataComponent
                   columns={columns}
-                  dataInfo={invoicesField}
+                  dataInfo={copyInvoice}
                   disableFilter={true}
                   isPage={true}
                   rowCount={100}

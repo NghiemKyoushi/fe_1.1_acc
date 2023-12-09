@@ -225,31 +225,13 @@ export default function InvoiceManagementContent() {
     dispatch(fetchSumInvoice(bodySend));
   };
 
-  // const itemFilter = [
-  //   // {
-  //   //   id: "1",
-  //   //   columnField: "code",
-  //   //   value: "input",
-  //   //   operatorValue: "input",
-  //   // },
-  //   {
-  //     id: "2",
-  //     columnField: "percentageFee",
-  //     value: "SelectItem",
-  //     operatorValue: "SelectItem",
-  //   },
-  // ];
   const handleConfirmInvoice = () => {
     const bodySend: InvoiceConfirmParams = {
       receiptId: watch().formConfirm.receiptId,
       explanation: watch().formConfirm.explanation,
     };
-    console.log("chedck1");
-
     conrimInvoice(bodySend)
       .then((res) => {
-        console.log("chedck2");
-
         enqueueSnackbar("Xác nhận thành công!!", { variant: "success" });
         handleCloseApproveDialog();
         handleSearch();

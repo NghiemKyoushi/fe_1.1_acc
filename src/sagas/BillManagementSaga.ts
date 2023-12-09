@@ -27,8 +27,6 @@ function* fetchFilterBillsListSaga(action: any) {
     const response: { data: any } = yield call(fetchFilterBill, {
       ...action.payload,
     });
-    console.log('check2', response)
-
     yield put(fetchFilterBillsSuccess(response?.data));
   } catch (e: any) {
     yield put(fetchFilterBillsFailure(e));
