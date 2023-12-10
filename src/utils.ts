@@ -12,7 +12,7 @@ export const getDateOfPresent = () => {
   const years = dates.getFullYear();
   const months = ("0" + (1 + dates.getMonth())).slice(-2);
   const days = ("0" + dates.getDate()).slice(-2);
-  return days + "/" + months + "/" + years;
+  return years + "/" + months + "/" + days;
 };
 export const getValueWithComma = (res: any) => {
   return res.toString().replace(/\B(?=(\d(3)+(?!\d)))/g, ",");
@@ -23,5 +23,5 @@ export const formatDateTime = (currentDate: string | number | Date) => {
 };
 export const formatDate = (currentDate: string | number | Date) => {
   const date = dayjs(currentDate);
-  return date.format("DD-MM-YYYY");
+  return date.format("YYYY/MM/DD");
 };

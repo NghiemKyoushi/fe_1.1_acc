@@ -110,14 +110,14 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   };
 
   const handleUpdate = async () => {
-    const { name, code, entryType, explanation, transactionType } = getValues();
+    const { name, moneyAmount, entryType, explanation, transactionType } = getValues();
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
-      moneyAmount: 1000,
+      moneyAmount: +moneyAmount,
       explanation: explanation,
       branchId: branchId,
-      imageId: imageId,
+      imageId: rowInfo.imageId,
     };
     updateDetailAccountingBook(rowInfo.id, bodySend)
       .then((res) => {

@@ -35,6 +35,7 @@ const CardCustomertReducers = (
           return {
             values: item.name,
             key: item.id,
+            item: item,
           };
         });
       } else {

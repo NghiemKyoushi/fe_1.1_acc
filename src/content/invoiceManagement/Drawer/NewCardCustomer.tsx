@@ -77,7 +77,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
     <DrawerCustom
       widthDrawer={270}
       isOpen={isOpen}
-      title="Tạo Hóa đơn"
+      title="Tạo thẻ"
       handleClose={handleCloseDrawer}
     >
       <PageContent>

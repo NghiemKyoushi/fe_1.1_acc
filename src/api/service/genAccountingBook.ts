@@ -32,7 +32,9 @@ export const updateDetailGenAccountingBook = (
 // export const createNewEntry = (body: CreateEntryParams) => {
 //   return authApi.post("/api/branch-account-entry", body);
 // };
-
-// export const confirmNewEntry = (entryId: string) => {
-//   return authApi.put(`/api/branch-account-entry/confirm-entry/${entryId}`);
-// };
+export const deleteGenAccountingBook = (id: string) => {
+  return authApi.delete(`/api/generalAccountEntries/${id}`);
+};
+export const confirmGenNewEntry = (entryId: string) => {
+  return authApi.put(`/api/generalAccountEntries/approve/${entryId}`);
+};

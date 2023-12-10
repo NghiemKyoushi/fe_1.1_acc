@@ -21,6 +21,10 @@ import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import { fetchPos } from "@/actions/InvoiceManagementActions";
+import { enqueueSnackbar } from "notistack";
+import { fetchConfirmFilterBill } from "@/api/service/billManagement";
+import { ConfirmBillsDialogComponent } from "./ConfirmBills";
+import { fetchSaveImage } from "@/api/service/invoiceManagement";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -41,6 +45,11 @@ export interface NEmpManagementDrawerProps {
 }
 export const FilterBill = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer } = props;
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [listOfSelection, setListOfSelection] = useState<
+    Array<string | number>
+  >([]);
+  const [imageId, setImageId] = useState("");
 
   const listOfFilterBills = useSelector(
     (state: RootState) => state.billManagement.filterBill
@@ -83,6 +92,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           values: "",
         },
         moneyAmount: 0,
+        explanation: "",
       },
     });
   // console.log("watch", watch());
@@ -113,20 +123,16 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     dispatch(fetchFilterBills(bodySend));
     // dispatch(fetchSumBills(bodySend));
   };
-  const onPageChange = (pageNumber: number) => {
-    const searchPage = {
-      ...searchCondition,
-      page: pageNumber,
-    };
-    setSearchCondition(searchPage);
+  const handleGetFile = async (file: Array<any>) => {
+    fetchSaveImage(file[0])
+      .then((res) => {
+        setImageId(res.data);
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
+      });
   };
-  const onPageSizeChange = (pageSize: number) => {
-    const searchPage = {
-      ...searchCondition,
-      pageSize: pageSize,
-    };
-    setSearchCondition(searchPage);
-  };
+
   const handleSortModelChange = (sortModel: GridSortModel) => {
     if (sortModel[0]) {
       const sortPage = {
@@ -143,8 +149,48 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   useEffect(() => {
     dispatch(fetchFilterBills(searchCondition));
   }, [searchCondition]);
+
   const getDataFromApi = (value: string) => {
     dispatch(fetchPos({ posName: value }));
+  };
+  const handleGetListOfSelect = (value: Array<string | number>) => {
+    setListOfSelection(value);
+  };
+  const handleOpenConfirmBillDialog = () => {
+    if (listOfSelection.length < 1) {
+      enqueueSnackbar("Vui lòng chọn trước khi khớp bill", {
+        variant: "warning",
+      });
+      return;
+    }
+    setOpenConfirmDialog(true);
+  };
+  const handleCloseConfirmBillDialog = () => {
+    setValue("explanation", "");
+    setOpenConfirmDialog(false);
+  };
+  const handleConfirmInvoice = () => {
+    const { explanation } = getValues();
+    if (listOfSelection.length < 1) {
+      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", {
+        variant: "warning",
+      });
+      return;
+    }
+    const bodySend = {
+      explanation: explanation,
+      imageId: imageId,
+      billIds: listOfSelection,
+    };
+    fetchConfirmFilterBill(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Khớp bill thành công", { variant: "success" });
+        handleSearch();
+        handleCloseConfirmBillDialog();
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
+      });
   };
   const columns: GridColDef<ColBillInfo>[] = useMemo(
     () => [
@@ -445,13 +491,37 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
               columns={columns}
               dataInfo={listOfFilterBills}
               // itemFilter={itemFilter}
-              onPageChange={onPageChange}
               handleSortModelChange={handleSortModelChange}
               loading={isLoading}
               isPage={true}
               getRowId={getRowId}
               checkboxSelection={true}
+              handleGetListOfSelect={handleGetListOfSelect}
             />
+          </Box>
+          <ConfirmBillsDialogComponent
+            control={control}
+            handleGetFile={handleGetFile}
+            openDialog={openConfirmDialog}
+            handleClickClose={handleCloseConfirmBillDialog}
+            handleClickConfirm={handleConfirmInvoice}
+          />
+          <Box
+            sx={{
+              justifyContent: "flex-end",
+              display: "flex",
+              marginTop: 3,
+              padding: "0px 16px 8px 16px",
+            }}
+          >
+            <Button
+              size="small"
+              variant="contained"
+              type="submit"
+              onClick={handleOpenConfirmBillDialog}
+            >
+              Xác nhận khớp bill
+            </Button>
           </Box>
         </PageContent>
       </form>

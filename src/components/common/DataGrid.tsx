@@ -264,7 +264,6 @@ export default function TableDataComponent(props: FilterCOmponent) {
   ) => {
     // Prevent default behavior for arrow keys on the main grid
     if (event.key.startsWith("Arrow")) {
-      // event.preventDefault();
       event.stopPropagation();
     }
   };
@@ -272,7 +271,6 @@ export default function TableDataComponent(props: FilterCOmponent) {
   return (
     <div style={{ width: "100%" }}>
       <StyledDataGrid
-      
         localeText={viVN.components.MuiDataGrid.defaultProps.localeText}
         rows={dataInfo}
         onCellKeyDown={handleCellKeyDown} // Custom onCellKeyDown handler to prevent default behavior for arrow keys

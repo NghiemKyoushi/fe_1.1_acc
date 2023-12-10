@@ -76,7 +76,6 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   };
 
   const handleCreateUser = async () => {
-    console.log("checkkkkkk");
     const { name, code, moneyAmount, entryType, explanation, transactionType } =
       getValues();
     if (imageId === "") {

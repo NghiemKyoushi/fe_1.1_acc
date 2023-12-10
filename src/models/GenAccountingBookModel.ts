@@ -27,13 +27,11 @@ export interface BranchType {
   bank: string;
 }
 export interface GenAccountingBookSearchParams {
-  // branchId?: string;
-  // entryBookDate?: string;
-  // entryCodeSearchKey?: string;
-  page: number;
-  pageSize: number;
-  sorter: string;
-  sortDirection: string;
+  
+  page?: number;
+  pageSize?: number;
+  sorter?: string;
+  sortDirection?: string;
   fromCreatedDate?: string;
   toCreatedDate?: string;
   entryTypes?: Array<string>;

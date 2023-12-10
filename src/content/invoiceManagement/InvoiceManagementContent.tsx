@@ -28,7 +28,7 @@ import TableDataComponent from "@/components/common/DataGrid";
 import InvoiceDrawer from "./Drawer/InvoiceDrawer";
 import { Box, Button, IconButton } from "@mui/material";
 import styled from "styled-components";
-import { formatDateTime } from "@/utils";
+import { formatDate, formatDateTime, getDateOfPresent } from "@/utils";
 import {
   ColReceiptList,
   InvoiceConfirmParams,
@@ -46,6 +46,7 @@ import SearchDrawer from "./Drawer/SearchDrawer";
 import { ApproveDialogComponent } from "./Drawer/ApproveDialog";
 import {
   conrimInvoice,
+  deleteInvoice,
   fetchInvoiceDetail,
   fetchInvoiceSumTotal,
 } from "@/api/service/invoiceManagement";
@@ -55,11 +56,21 @@ import clsx from "clsx";
 import ViewInvoiceDrawer from "./Drawer/ViewInvoiceDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+const date = new Date();
+const previous = new Date(date.getTime());
+previous.setDate(date.getDate() - 7);
 const initialInvoiceSearch = {
   page: 0,
   pageSize: 10,
   sorter: "code",
   sortDirection: "ASC",
+  fromCreatedDate: new Date(
+    previous.getTime() - previous.getTimezoneOffset() * 60000
+  ).toISOString(),
+  toCreatedDate: new Date(
+    date.getTime() - date.getTimezoneOffset() * 60000
+  ).toISOString(),
 };
 
 export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
@@ -108,6 +119,8 @@ export default function InvoiceManagementContent() {
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const [isOpenViewDrawer, setIsOpenViewDrawer] = useState(false);
   const [rowInfo, setRowInfo] = useState();
+  const [isDeleteForm, setIsDeleteForm] = useState(false);
+  const [receiptsId, setReceiptsId] = useState("");
 
   const listOfInvoice = useSelector(
     (state: RootState) => state.invoiceManagement.listOfInvoice
@@ -139,8 +152,8 @@ export default function InvoiceManagementContent() {
         toIntake: 0,
         toLoan: 0,
         toPayout: 0,
-        fromCreatedDate: "",
-        toCreatedDate: "",
+        fromCreatedDate: formatDate(previous.getTime()),
+        toCreatedDate: getDateOfPresent(),
         toRepayment: 0,
         formConfirm: {
           receiptId: "",
@@ -149,6 +162,25 @@ export default function InvoiceManagementContent() {
         },
       },
     });
+
+  const handleCloseDeleteForm = () => {
+    setIsDeleteForm(false);
+  };
+  const handleOpenDeleteForm = (id: string) => {
+    setReceiptsId(id);
+    setIsDeleteForm(true);
+  };
+  const handleConfirmDeleteForm = () => {
+    deleteInvoice(receiptsId)
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
+  };
   const handleCloseInvoiceDraw = () => {
     setIsOpenDrawInvoice(false);
   };
@@ -179,7 +211,7 @@ export default function InvoiceManagementContent() {
     dispatch(fetchSumInvoice(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  const handleViewDrawerRepay = (id: string) => {};
   const handleSearch = () => {
     const {
       fromEstimatedProfit,
@@ -198,9 +230,19 @@ export default function InvoiceManagementContent() {
       fromCreatedDate,
       toCreatedDate,
     } = getValues();
+
     const fromDate = new Date(fromCreatedDate);
+    const offsetInMinutes = fromDate.getTimezoneOffset();
+    fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
+
     const gettoDate = new Date(toCreatedDate);
-    const formatDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+    const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+
+    const offsetInMinutes2 = toDate.getTimezoneOffset();
+    toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
+
+    // const formatDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
@@ -218,7 +260,7 @@ export default function InvoiceManagementContent() {
       toPayout: toPayout === 0 ? "" : toPayout,
       toRepayment: toRepayment === 0 ? "" : toRepayment,
       fromCreatedDate: fromDate.toISOString(),
-      toCreatedDate: formatDate.toISOString(),
+      toCreatedDate: toDate.toISOString(),
     };
     setSearchCondition(bodySend);
     dispatch(fetchInvoice(bodySend));
@@ -241,6 +283,7 @@ export default function InvoiceManagementContent() {
         enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
       });
   };
+
   const handleOpenApproveDialog = (id: string) => {
     setValue("formConfirm.receiptId", id);
     setOpenApprovingDialog(true);
@@ -510,12 +553,6 @@ export default function InvoiceManagementContent() {
           value: "input",
           label: "input",
         }),
-        // valueGetter: ({ row }) => {
-        //   if (row.createdDate === "TOTAL") {
-        //     // return row.total;
-        //   }
-        //   return 0;
-        // },
       },
       {
         headerName: "Thao Tác",
@@ -547,13 +584,18 @@ export default function InvoiceManagementContent() {
 
               <IconButton
                 color="info"
-                onClick={() => handleOpenViewDrawer(row.id)}
+                onClick={() => handleViewDrawerRepay(row.id)}
               >
-                {+row.loan > +row.repayment && (
+                {+row.loan > +row.repayment && row.code !== "TOTAL" ? (
                   <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
+                ) : (
+                  ""
                 )}
               </IconButton>
-              <IconButton color="error">
+              <IconButton
+                color="error"
+                onClick={() => handleOpenDeleteForm(row.id)}
+              >
                 {row.code === null && (
                   <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
                 )}
@@ -666,6 +708,12 @@ export default function InvoiceManagementContent() {
           handleCloseDrawer={handleCloseViewDrawer}
           isOpen={isOpenViewDrawer}
           rowInfo={rowInfo}
+        />
+        <DialogDeleteComponent
+          openDialog={isDeleteForm}
+          control={control}
+          handleClickClose={handleCloseDeleteForm}
+          handleClickConfirm={handleConfirmDeleteForm}
         />
       </div>
     </Dashboard>

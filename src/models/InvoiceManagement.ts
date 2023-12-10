@@ -173,3 +173,8 @@ export enum ACTION_TYPE {
   EDIT = "E",
   VIEW = "V",
 }
+export interface InfoCard {
+  cardType: string;
+  bank: string;
+  accountNumber: string;
+}

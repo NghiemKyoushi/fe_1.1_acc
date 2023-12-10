@@ -26,7 +26,15 @@ import { GenAccountingBookSearchParams } from "@/models/GenAccountingBookModel";
 import NewAccountBookDrawer from "./Drawer/NewAccountBookDrawer";
 import ViewAccountBookDrawer from "./Drawer/ViewAccountBookDrawer";
 import { fetchAccEntryType } from "@/actions/AccEntryTypeActions";
-import { fetchDetailGenAccountingBook } from "@/api/service/genAccountingBook";
+import {
+  confirmGenNewEntry,
+  deleteGenAccountingBook,
+  fetchDetailGenAccountingBook,
+} from "@/api/service/genAccountingBook";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { DialogConfirmComponent } from "../accBookManagement/Drawer/DialogConfirm";
+import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+import { enqueueSnackbar } from "notistack";
 
 export const initialPosSearch = {
   page: 0,
@@ -38,6 +46,11 @@ export const GenAccBookManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [rowInfo, setRowInfo] = useState();
+
+  const [isDeleteForm, setIsDeleteForm] = useState(false);
+  const [receiptsId, setReceiptsId] = useState("");
+  const [isConfirmForm, setIsConfirmForm] = useState(false);
+  const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
   const listOfGenAccBook = useSelector(
     (state: RootState) => state.genAccBookManagement.genAccBookList
   );
@@ -94,7 +107,43 @@ export const GenAccBookManagementContent = () => {
   const handleCloseViewModal = () => {
     setIsOpenViewModal(false);
   };
+  const handleCloseDeleteForm = () => {
+    setIsDeleteForm(false);
+  };
+  const handleOpenDeleteForm = (id: string) => {
+    setReceiptsId(id);
+    setIsDeleteForm(true);
+  };
+  const handleConfirmDeleteForm = () => {
+    deleteGenAccountingBook(receiptsId)
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
+  };
 
+  const handleCloseConfirmForm = () => {
+    setIsConfirmForm(false);
+  };
+  const handleOpenConfirmForm = (id: string) => {
+    setReceiptsIdConfirm(id);
+    setIsConfirmForm(true);
+  };
+  const handleConfirmForm = () => {
+    confirmGenNewEntry(receiptsIdConfirm)
+      .then((res) => {
+        enqueueSnackbar("Xác nhận thành công!!", { variant: "success" });
+        handleSearch();
+        handleCloseConfirmForm();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+      });
+  };
   const columns: GridColDef<ColAccountBook>[] = useMemo(
     () => [
       {
@@ -253,8 +302,13 @@ export const GenAccBookManagementContent = () => {
             <>
               {row.entryCode !== "TOTAL" && (
                 <>
-                  <IconButton color="success">
-                    <FactCheckOutlinedIcon sx={{ fontSize: 20 }} />
+                  <IconButton
+                    color="success"
+                    onClick={() => handleOpenConfirmForm(row.id)}
+                  >
+                    {row.entryCode === null && (
+                      <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
+                    )}{" "}
                   </IconButton>
                   <IconButton
                     color="info"
@@ -262,7 +316,10 @@ export const GenAccBookManagementContent = () => {
                   >
                     <EditOutlinedIcon sx={{ fontSize: 20 }} />
                   </IconButton>
-                  <IconButton color="error">
+                  <IconButton
+                    color="error"
+                    onClick={() => handleOpenDeleteForm(row.id)}
+                  >
                     <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
                   </IconButton>
                 </>
@@ -282,7 +339,7 @@ export const GenAccBookManagementContent = () => {
         sorter: sortModel[0].field,
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
-      //   setSearchCondition(sortPage);
+        setSearchCondition(sortPage);
     }
   };
   const getRowId = (row: any) => {
@@ -339,6 +396,16 @@ export const GenAccBookManagementContent = () => {
         handleCloseDrawer={handleCloseViewModal}
         isOpen={isOpenViewModal}
         rowInfo={rowInfo}
+      />
+      <DialogDeleteComponent
+        openDialog={isDeleteForm}
+        handleClickClose={handleCloseDeleteForm}
+        handleClickConfirm={handleConfirmDeleteForm}
+      />
+      <DialogConfirmComponent
+        openDialog={isConfirmForm}
+        handleClickClose={handleCloseConfirmForm}
+        handleClickConfirm={handleConfirmForm}
       />
     </Dashboard>
   );

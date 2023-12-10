@@ -117,6 +117,7 @@ export const BillManagementContent = () => {
     fetchConfirmFilterBill(bodySend)
       .then((res) => {
         enqueueSnackbar("Khớp bill thành công", { variant: "success" });
+        handleCloseConfirmBillDialog();
       })
       .catch(function (error) {
         enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
@@ -437,7 +438,7 @@ export const BillManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>Sổ kế toán chi nhánh: </h3>
+      <h3 style={{ textAlign: "left" }}>Quản lý Bill </h3>
 
       {/* <Box sx={{ margin: "7px 16px" }}> */}
       <Box
@@ -452,7 +453,7 @@ export const BillManagementContent = () => {
           size="small"
           onClick={() => handleOpenModal()}
         >
-          Lọc bill
+          Tính toán
         </Button>
         <Button
           variant="contained"

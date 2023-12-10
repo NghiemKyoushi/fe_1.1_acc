@@ -36,6 +36,7 @@ import { cookieSetting, getValueWithComma } from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import { fetchCardCustomer } from "@/actions/CardCustomerActions";
 import {
+  InfoCard,
   InvoiceCreate,
   ReceiptCreationParams,
   ValueFormCreate,
@@ -179,6 +180,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const branchId = cookieSetting.get("branchId");
   const employeeId = cookieSetting.get("employeeId");
   const [isOpenCard, setIsOpenCard] = useState(false);
+  const [infoCard, setInfoCard] = useState<InfoCard>({
+    cardType: "",
+    bank: "",
+    accountNumber: "",
+  });
+  console.log("check", infoCard);
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -383,9 +390,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     fetchCreateInvoice(request)
       .then((res) => {
         enqueueSnackbar("Tạo hóa đơn thành công!!", { variant: "success" });
-        // reset();
-        handleCloseDrawer();
+        reset();
         handleSearch();
+        handleCloseDrawer();
       })
       .catch(function (error) {
         enqueueSnackbar(error, { variant: "error" });
@@ -447,7 +454,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
               </>
             );
           }
-          return <>check</>;
+          return <></>;
         },
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
           if (params.row.check !== "TOTAL") {
@@ -583,7 +590,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         align: "center",
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          console.log("params.row.check", params.row.check);
           if (params.row.check !== "TOTAL") {
             return (
               <>
@@ -700,7 +706,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   }, [watch("customerName")]);
   useEffect(() => {
     if (watch("cardCustomer")?.key) {
-      console.log("checkkkkkvappppppppp");
+      cardType.map((item: any) => {
+        if (item.key === watch("cardCustomer")?.key) {
+          console.log("item", item)
+          setInfoCard({
+            cardType: item.item?.cardType?.name,
+            bank: item.item?.bank,
+            accountNumber: item.item?.accountNumber,
+          });
+        }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("cardCustomer")]);
@@ -820,9 +835,10 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                     </Button>
                   </StyleButtonSpan>
                 </StyleInputContainer>
-                <InfoBankCard>
+                <InfoBankCard style={{ minWidth: 300 }}>
                   <InfoOutlinedIcon />
-                  Credit Card - BIDV - 02135466987
+                  {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
+                  {infoCard && infoCard.accountNumber}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

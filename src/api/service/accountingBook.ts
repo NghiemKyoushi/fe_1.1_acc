@@ -24,6 +24,9 @@ export const createNewAccountingBook = async (body: CreateEntryParams) => {
 export const fetchDetailAccountingBook = (id: string) => {
   return authApi.get(`/api/branchAccountEntries/${id}`);
 };
+export const deleteAccountingBook = (id: string) => {
+  return authApi.delete(`/api/branchAccountEntries/${id}`);
+};
 export const updateDetailAccountingBook = (
   id: string,
   body: CreateEntryParams
@@ -31,5 +34,5 @@ export const updateDetailAccountingBook = (
   return authApi.put(`/api/branchAccountEntries/${id}`, body);
 };
 export const confirmNewEntry = (entryId: string) => {
-  return authApi.put(`/api/branch-account-entry/confirm-entry/${entryId}`);
+  return authApi.put(`/api/branchAccountEntries/approve/${entryId}`);
 };

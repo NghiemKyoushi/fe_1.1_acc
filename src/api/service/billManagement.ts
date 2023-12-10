@@ -23,9 +23,7 @@ export const fetchFilterBill = (param: AccountingBookSearchParams) => {
 export const fetchConfirmFilterBill = (body: MatchBills) => {
   return authApi.put("/api/bills/matchBill", body);
 };
-// export const fetchDetailAccountingBook = (id: string) => {
-//   return authApi.get(`/api/branchAccountEntries/sumUp/${id}`);
-// };
+
 // export const createNewEntry = (body: CreateEntryParams) => {
 //   return authApi.post("/api/branch-account-entry", body);
 // };
