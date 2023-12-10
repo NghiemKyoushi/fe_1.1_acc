@@ -347,7 +347,7 @@ export const GenAccBookManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>Sổ kế toán tổng hợp </h3>
+      <h3 style={{ textAlign: "left" }}>SỔ KẾ TOÁN TỔNG HỢP </h3>
 
       <Box sx={{ margin: "7px 16px" }}>
         <Button

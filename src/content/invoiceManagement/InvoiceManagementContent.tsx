@@ -639,7 +639,7 @@ export default function InvoiceManagementContent() {
 
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "center" }}>QUẢN LÝ HÓA ĐƠN</h3>
+      <h3 style={{ textAlign: "left" }}>QUẢN LÝ HÓA ĐƠN</h3>
       <div>
         <Box
           sx={{

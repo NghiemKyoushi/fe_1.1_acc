@@ -503,7 +503,7 @@ export const AccBookManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>Sổ kế toán chi nhánh </h3>
+      <h3 style={{ textAlign: "left" }}>SỔ KẾ TOÁN CHI NHÁNH </h3>
 
       {/* <Box sx={{ margin: "7px 16px" }}> */}
       <Box

@@ -22,7 +22,7 @@ import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
-import { formatDateTime } from "@/utils";
+import { formatDate, formatDateTime, getDateOfPresent } from "@/utils";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
@@ -38,12 +38,25 @@ import { enqueueSnackbar } from "notistack";
 import { fetchConfirmFilterBill } from "@/api/service/billManagement";
 import { fetchSaveImage } from "@/api/service/invoiceManagement";
 
+const date = new Date();
+const previous = new Date(date.getTime());
+previous.setDate(date.getDate() - 7);
+const offsetInMinutes = previous.getTimezoneOffset();
+previous.setMinutes(previous.getMinutes() - offsetInMinutes);
+const dateNext = new Date();
+const nextDay = new Date(dateNext.getTime());
+nextDay.setDate(dateNext.getDate() + 1);
+const offsetInMinutes2 = nextDay.getTimezoneOffset();
+nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 export const initialPosSearch = {
   page: 0,
   pageSize: 10,
   sorter: "createdDate",
   sortDirection: "ASC",
+  fromCreatedDate: previous.toISOString(),
+  toCreatedDate:nextDay.toISOString(),
 };
+
 export const BillManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -70,8 +83,8 @@ export const BillManagementContent = () => {
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
-        fromCreatedDate: new Date(),
-        toCreatedDate: new Date(),
+        fromCreatedDate: formatDate(previous.getTime()),
+        toCreatedDate: getDateOfPresent(),
         entryCode: "",
         entryType: "",
         explanation: "",
@@ -118,6 +131,7 @@ export const BillManagementContent = () => {
       .then((res) => {
         enqueueSnackbar("Khớp bill thành công", { variant: "success" });
         handleCloseConfirmBillDialog();
+        handleSearch();
       })
       .catch(function (error) {
         enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
@@ -149,9 +163,16 @@ export const BillManagementContent = () => {
   const handleSearch = () => {
     const { fromCreatedDate, toCreatedDate, entryCode, entryType } =
       getValues();
-    const fromDate = new Date(fromCreatedDate);
-    const gettoDate = new Date(toCreatedDate);
-    const formatDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+      const fromDate = new Date(fromCreatedDate);
+      const offsetInMinutes = fromDate.getTimezoneOffset();
+      fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
+  
+      const gettoDate = new Date(toCreatedDate);
+      const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+  
+      const offsetInMinutes2 = toDate.getTimezoneOffset();
+      toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
+  
     let arr: any[] = [];
     if (entryCode) {
       arr.push(entryCode);
@@ -159,7 +180,7 @@ export const BillManagementContent = () => {
     const bodySend = {
       ...searchCondition,
       fromCreatedDate: fromDate.toISOString(),
-      toCreatedDate: formatDate.toISOString(),
+      toCreatedDate: toDate.toISOString(),
       entryCode: arr,
       entryType: entryType,
     };
@@ -395,7 +416,10 @@ export const BillManagementContent = () => {
           if (row.createdBy === "TOTAL") {
             return "";
           }
-          return formatDateTime(row.returnedTime);
+          if (row.returnedTime) {
+            return formatDateTime(row.returnedTime);
+          }
+          return "";
         },
         //     cellClassName: (params: GridCellParams) => {
         //       if (params.row.entryCode !== "TOTAL") {
@@ -438,7 +462,7 @@ export const BillManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>Quản lý Bill </h3>
+      <h3 style={{ textAlign: "left" }}>QUẢN LÝ BILL </h3>
 
       {/* <Box sx={{ margin: "7px 16px" }}> */}
       <Box
@@ -453,7 +477,7 @@ export const BillManagementContent = () => {
           size="small"
           onClick={() => handleOpenModal()}
         >
-          Tính toán
+          Tính toán khớp bill
         </Button>
         <Button
           variant="contained"
