@@ -24,7 +24,7 @@ export const initialPosSearch = {
   page: 0,
   pageSize: 10,
   sorter: "code",
-  sortDirection: "ASC",
+  sortDirection: "DESC",
 };
 export const EmpManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -40,7 +40,6 @@ export const EmpManagementContent = () => {
   const isLoading = useSelector(
     (state: RootState) => state.empManagement.isLoading
   );
-
   const [searchCondition, setSearchCondition] =
     useState<EmpManageParamSearch>(initialPosSearch);
 

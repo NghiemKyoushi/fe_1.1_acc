@@ -6,6 +6,9 @@ import {
   FETCH_CREATE_CARD_CUSTOMER,
   FETCH_CREATE_CARD_CUSTOMER_FAILURE,
   FETCH_CREATE_CARD_CUSTOMER_SUCCESS,
+  FETCH_LIST_CARD_CUSTOMER,
+  FETCH_LIST_CARD_CUSTOMER_FAILURE,
+  FETCH_LIST_CARD_CUSTOMER_SUCCESS,
 } from "@/constants/CardCustomerManagement";
 import { cardType } from "@/models/CardCustomerModel";
 
@@ -35,5 +38,18 @@ export const fetchCreateCardCustomerSuccess = (payload: any) => ({
 });
 export const fetchCreateCardCustomerFailure = (payload: any) => ({
   type: FETCH_CREATE_CARD_CUSTOMER_FAILURE,
+  payload,
+});
+
+export const fetchListCardCustomer = (payload: any) => ({
+  type: FETCH_LIST_CARD_CUSTOMER,
+  payload,
+});
+export const fetchListCardCustomerSuccess = (payload: any) => ({
+  type: FETCH_LIST_CARD_CUSTOMER_SUCCESS,
+  payload,
+});
+export const fetchListCardCustomerFailure = (payload: any) => ({
+  type: FETCH_LIST_CARD_CUSTOMER_FAILURE,
   payload,
 });

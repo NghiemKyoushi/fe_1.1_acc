@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,15 +15,18 @@ import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { mainListItems, secondaryListItems } from "./listItems";
 import SideNavItem from "./SideNavItem";
 import { Stack, SvgIcon } from "@mui/material";
 import { items } from "./config";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import WithAuthGuard from "@/hocs/WithAuth";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import { logoutUserFn } from "@/api/service/auth";
+import { cookieSetting } from "@/utils";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { logout } from "@/store/auth/actions";
+
 const drawerWidth: number = 200;
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -82,11 +86,28 @@ export default function Dashboard(props: DashboardProps) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const [role, setRole] = React.useState<string | undefined>("");
+  const dispatch = useDispatch();
 
-  const handleSignOut = React.useCallback(() => {
-    logoutUserFn();
+  React.useEffect(() => {
+    // Kiểm tra giá trị từ cookies và cập nhật nếu cần
+    const roles = cookieSetting.get("roles");
+    setRole(roles);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
+
+  const handleSignOut = async () => {
+    // window.location.reload();
+    dispatch(logout());
+    Cookies.set("token", "", { expires: new Date(2000, 0, 1) });
+    Cookies.remove("userName");
+    Cookies.remove("employeeId");
+    Cookies.remove("roles");
+    Cookies.remove("branchName");
+    Cookies.remove("branchId");
     router.push("/auth/login");
-  }, [router]);
+  };
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -96,26 +117,7 @@ export default function Dashboard(props: DashboardProps) {
       <ThemeProvider theme={defaultTheme}>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          <AppBar color="transparent" position="absolute" open={open}>
-            {/* <Toolbar
-            sx={{
-              pr: "200px", // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: "36px",
-                ...(open && { display: "none" }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Toolbar> */}
-          </AppBar>
+          <AppBar color="transparent" position="absolute" open={open}></AppBar>
           <Drawer
             style={{ backgroundColor: "#393A3D" }}
             variant="permanent"
@@ -149,36 +151,43 @@ export default function Dashboard(props: DashboardProps) {
                   m: 0,
                 }}
               >
-                {items.map((item) => {
+                {items.map<React.ReactNode>((item, index) => {
                   const active = item.path ? pathname === item.path : false;
+                  let hasAccess = false;
+                  if (role) {
+                    hasAccess = !item.roles || item.roles?.includes(role);
+                  }
                   if (item.path === "/auth/login") {
                     return (
-                      <div key={item.title} onClick={handleSignOut}>
-                        <SideNavItem
-                          open={open}
-                          active={active}
-                          disabled={item.disabled}
-                          // external={item.external}
-                          icon={item.icon}
-                          key={item.title}
-                          path={''}
-                          title={item.title}
-                        />
-                      </div>
+                      <SideNavItem
+                        onClickIcon={handleSignOut}
+                        open={open}
+                        active={active}
+                        disabled={item.disabled}
+                        // external={item.external}
+                        icon={item.icon}
+                        key={index}
+                        path={""}
+                        title={item.title}
+                      />
                     );
                   }
-                  return (
-                    <SideNavItem
-                      open={open}
-                      active={active}
-                      disabled={item.disabled}
-                      // external={item.external}
-                      icon={item.icon}
-                      key={item.title}
-                      path={item.path}
-                      title={item.title}
-                    />
-                  );
+                  if (hasAccess) {
+                    return (
+                      <SideNavItem
+                        open={open}
+                        active={active}
+                        disabled={item.disabled}
+                        // external={item.external}
+                        icon={item.icon}
+                        key={index}
+                        path={item.path}
+                        title={item.title}
+                      />
+                    );
+                  } else {
+                    return <div key={item.title}></div>;
+                  }
                 })}
               </Stack>
               <Stack
@@ -189,13 +198,8 @@ export default function Dashboard(props: DashboardProps) {
                   p: 0,
                   m: 0,
                 }}
-              >
-                {/* <SvgIcon onClick={handleSignOut} fontSize="small">
-                  <ExitToAppIcon />
-                </SvgIcon> */}
-              </Stack>
+              ></Stack>
               <Divider sx={{ my: 1 }} />
-              {/* {secondaryListItems} */}
             </List>
           </Drawer>
           <Box

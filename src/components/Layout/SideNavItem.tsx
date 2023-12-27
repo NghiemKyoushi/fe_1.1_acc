@@ -3,16 +3,17 @@ import PropTypes from "prop-types";
 import { Box, ButtonBase } from "@mui/material";
 
 interface SideNavItemProps {
-  active: boolean;
+  active?: boolean;
   disabled?: boolean;
   external?: boolean;
-  icon: React.ReactNode;
-  path: String;
-  title: String;
-  open:boolean;
+  icon?: React.ReactNode;
+  path?: String;
+  title?: String;
+  open?: boolean;
+  onClickIcon?: () => void;
 }
 const SideNavItem = (props: SideNavItemProps) => {
-  const { active = false, disabled, external, icon, path, title, open } = props;
+  const { active = false, disabled, onClickIcon, external, icon, path, title, open } = props;
 
   const linkProps = path
     ? external
@@ -28,7 +29,7 @@ const SideNavItem = (props: SideNavItemProps) => {
     : {};
 
   return (
-    <li>
+    <li onClick={onClickIcon}>
       <ButtonBase
         sx={{
           alignItems: "center",

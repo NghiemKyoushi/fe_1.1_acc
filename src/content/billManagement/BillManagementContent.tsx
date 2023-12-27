@@ -6,6 +6,7 @@ import {
   GridColDef,
   GridSelectionModel,
   GridSortModel,
+  GridValueGetterParams,
 } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -22,7 +23,12 @@ import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
-import { formatDate, formatDateTime, getDateOfPresent } from "@/utils";
+import {
+  formatDate,
+  formatDateTime,
+  getDateOfPresent,
+  getValueWithComma,
+} from "@/utils";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
@@ -52,9 +58,9 @@ export const initialPosSearch = {
   page: 0,
   pageSize: 10,
   sorter: "createdDate",
-  sortDirection: "ASC",
+  sortDirection: "DESC",
   fromCreatedDate: previous.toISOString(),
-  toCreatedDate:nextDay.toISOString(),
+  toCreatedDate: nextDay.toISOString(),
 };
 
 export const BillManagementContent = () => {
@@ -89,6 +95,7 @@ export const BillManagementContent = () => {
         entryType: "",
         explanation: "",
         billId: "",
+        code: "",
       },
     });
   const dispatch = useDispatch();
@@ -132,6 +139,7 @@ export const BillManagementContent = () => {
         enqueueSnackbar("Khớp bill thành công", { variant: "success" });
         handleCloseConfirmBillDialog();
         handleSearch();
+        setListOfSelection([]);
       })
       .catch(function (error) {
         enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
@@ -161,18 +169,18 @@ export const BillManagementContent = () => {
     setSearchCondition(searchPage);
   };
   const handleSearch = () => {
-    const { fromCreatedDate, toCreatedDate, entryCode, entryType } =
+    const { fromCreatedDate, toCreatedDate, entryCode, entryType, code } =
       getValues();
-      const fromDate = new Date(fromCreatedDate);
-      const offsetInMinutes = fromDate.getTimezoneOffset();
-      fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
-  
-      const gettoDate = new Date(toCreatedDate);
-      const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
-  
-      const offsetInMinutes2 = toDate.getTimezoneOffset();
-      toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
-  
+    const fromDate = new Date(fromCreatedDate);
+    const offsetInMinutes = fromDate.getTimezoneOffset();
+    fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
+
+    const gettoDate = new Date(toCreatedDate);
+    const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+
+    const offsetInMinutes2 = toDate.getTimezoneOffset();
+    toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
+
     let arr: any[] = [];
     if (entryCode) {
       arr.push(entryCode);
@@ -183,6 +191,7 @@ export const BillManagementContent = () => {
       toCreatedDate: toDate.toISOString(),
       entryCode: arr,
       entryType: entryType,
+      code: code,
     };
     dispatch(fetchBills(bodySend));
     dispatch(fetchSumBills(bodySend));
@@ -190,10 +199,10 @@ export const BillManagementContent = () => {
   useEffect(() => {
     dispatch(fetchBills(searchCondition));
     dispatch(fetchSumBills(searchCondition));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
   const getDataCustomerFromApi = (value: string) => {};
 
-  console.log("watch", watch());
   const columns: GridColDef<ColBillInfo>[] = useMemo(
     () => [
       {
@@ -257,7 +266,7 @@ export const BillManagementContent = () => {
                     variantshow="standard"
                     textholder="Lọc giá trị"
                     focus={"true"}
-                    {...register("entryType")}
+                    {...register("code")}
                   />
                 </StyleFilterContainer>
                 <div
@@ -290,105 +299,51 @@ export const BillManagementContent = () => {
         headerAlign: "center",
         align: "center",
         valueGetter: ({ row }) => {
-          //   if (row.entryCode === "TOTAL") {
-          //     return row.moneyAmount;
-          //   }
-          //   return row.entryCode;
           return row.posCode;
         },
-        //     // cellClassName: (params: GridCellParams) => {
-        //     //   if (params.row.entryCode !== "TOTAL") {
-        //     //     return "";
-        //     //   }
-        //     //   return "super-app-theme--cell";
-        //     // },
-        //     // filterOperators: Operators({
-        //     //   inputComponent: () => {
-        //     //     return (
-        //     //       <>
-        //     //         <StyleFilterContainer>
-        //     //           <StyleTitleSearch>Giá trị</StyleTitleSearch>
-        //     //           <TextFieldCustom
-        //     //             type={"text"}
-        //     //             variantshow="standard"
-        //     //             textholder="Lọc giá trị"
-        //     //             focus={"true"}
-        //     //             {...register("entryCode")}
-        //     //           />
-        //     //         </StyleFilterContainer>
-        //     //         <div
-        //     //           style={{
-        //     //             display: "flex",
-        //     //             flexDirection: "row",
-        //     //             justifyContent: "flex-end",
-        //     //             marginTop: 2,
-        //     //           }}
-        //     //         >
-        //     //           <Button
-        //     //             onClick={handleSearch}
-        //     //             size="small"
-        //     //             style={{ width: 81 }}
-        //     //           >
-        //     //             xác nhận
-        //     //           </Button>
-        //     //         </div>
-        //     //       </>
-        //     //     );
-        //     //   },
-        //     //   value: "input",
-        //     //   label: "input",
-        //     // }),
       },
       {
         headerName: "Tổng giao dịch ",
         field: "moneyAmount",
-        width: 150,
+        width: 160,
         headerAlign: "center",
         align: "center",
         sortable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(+params.value);
+        },
         cellClassName: (params: GridCellParams) => {
           if (params.row.createdBy !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
         },
-        //     // valueGetter: ({ row }) => {
-        //     //   if (row.transactionType === "INTAKE") {
-        //     //     return row.moneyAmount;
-        //     //   }
-        //     //   if (row.entryCode === "TOTAL") {
-        //     //     return row.intake;
-        //     //   }
-        //     //   return "";
-        //     // },
       },
       {
-        headerName: "Phí",
-        field: "fee",
-        width: 150,
+        headerName: "%Phí",
+        field: "posCardFee",
+        width: 160,
         headerAlign: "center",
         align: "center",
         sortable: false,
-        // cellClassName: (params: GridCellParams) => {
-        //   if (params.row.createdBy !== "TOTAL") {
-        //     return "";
-        //   }
-        //   return "super-app-theme--cell";
-        // },
-        valueGetter: ({ row }) => {
-          if (row.createdBy === "TOTAL") {
+
+        valueGetter: (params: GridValueGetterParams) => {
+          if (params.row.createdBy === "TOTAL") {
             return "";
           }
-          return row.fee;
+          return params.row.posCardFee;
         },
       },
       {
         headerName: "Ước tính",
         field: "estimatedProfit",
-        width: 150,
+        width: 160,
         headerAlign: "center",
         align: "center",
         sortable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(+params.value);
+        },
         cellClassName: (params: GridCellParams) => {
           if (params.row.createdBy !== "TOTAL") {
             return "";
@@ -412,36 +367,19 @@ export const BillManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        valueGetter: ({ row }) => {
-          if (row.createdBy === "TOTAL") {
+        valueGetter: (params: GridValueGetterParams) => {
+          if (params.row.createdBy === "TOTAL") {
             return "";
           }
-          if (row.returnedTime) {
-            return formatDateTime(row.returnedTime);
+          if (params.row.returnedTime) {
+            return formatDateTime(params.row.returnedTime);
           }
           return "";
         },
-        //     cellClassName: (params: GridCellParams) => {
-        //       if (params.row.entryCode !== "TOTAL") {
-        //         return "";
-        //       }
-        //       return "super-app-theme--cell";
-        //     },
-        //     // valueGetter: ({ row }) => {
-        //     //   if (row.transactionType === "REPAYMENT") {
-        //     //     return row.moneyAmount;
-        //     //   }
-        //     //   if (row.entryCode === "TOTAL") {
-        //     //     return row.repayment;
-        //     //   }
-        //     //   return "";
-        //     // },
       },
       {
         ...GRID_CHECKBOX_SELECTION_COL_DEF,
         width: 100,
-        // field: "id",
-        // checkboxSelection: true,
       },
     ],
     []
@@ -464,7 +402,6 @@ export const BillManagementContent = () => {
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ BILL </h3>
 
-      {/* <Box sx={{ margin: "7px 16px" }}> */}
       <Box
         sx={{
           margin: "0px 13px",
@@ -491,7 +428,6 @@ export const BillManagementContent = () => {
       <form style={{ width: "100%" }}>
         <Box
           sx={{
-            // height: 300,
             width: "100%",
             "& .super-app-theme--cell": {
               backgroundColor: "#EAEAEA",
@@ -503,7 +439,6 @@ export const BillManagementContent = () => {
           <TableDataComponent
             columns={columns}
             dataInfo={[sumOfBills, ...listOfBills]}
-            // itemFilter={itemFilter}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
             page={pagination?.pageNumber}
@@ -513,6 +448,7 @@ export const BillManagementContent = () => {
             loading={isLoading}
             getRowId={getRowId}
             checkboxSelection={true}
+            selectionModel={listOfSelection}
             handleGetListOfSelect={handleGetListOfSelect}
           />
         </Box>

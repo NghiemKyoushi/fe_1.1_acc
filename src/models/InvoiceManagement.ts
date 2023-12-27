@@ -118,6 +118,12 @@ export interface InvoiceConfirmParams {
   receiptId: string;
   explanation: string;
 }
+export interface RepayConfirmParams {
+  receiptId: string;
+  explanation: string;
+  repaidAmount: number;
+  imageId: string;
+}
 export enum STATUS_CODE {
   PENDING = "PENDING",
   APPROVE = "APPROVED",

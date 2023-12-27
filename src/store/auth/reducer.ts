@@ -5,6 +5,7 @@ import {
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
+  LOGOUT,
 } from "./actionTypes";
 
 import { AuthActions, AuthState } from "./types";
@@ -14,7 +15,9 @@ const initialState: AuthState = {
   token: "",
   userName: "",
   branchId: "",
+  branchName: "",
   employeeId: "",
+  roles: "",
   error: null,
 };
 
@@ -53,7 +56,9 @@ const reducers = (state = initialState, action: AuthActions) => {
         token: action.payload.token,
         userName: action.payload.userName,
         branchId: action.payload.branchId,
+        branchName: action.payload.branchName,
         employeeId: action.payload.employeeId,
+        roles: action.payload.roles,
         error: null,
       };
     case LOGIN_FAILURE:
@@ -62,6 +67,19 @@ const reducers = (state = initialState, action: AuthActions) => {
         isLoading: false,
         token: "",
         error: action.payload.error,
+      };
+    case LOGIN_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
+        token: "",
+        error: action.payload.error,
+      };
+    case LOGOUT:
+      return {
+        ...state,
+        isLoading: false,
+        token: "",
       };
     default:
       return {

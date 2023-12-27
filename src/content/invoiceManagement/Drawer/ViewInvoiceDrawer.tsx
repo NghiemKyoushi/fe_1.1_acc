@@ -378,7 +378,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   );
   const handleSubmitInvoice = () => {
     let receiptBills: any[] = [];
-    console.log("watch", watch("invoices"));
     watch("invoices").map((item, index) => {
       if (item?.check !== "TOTAL") {
         if (item.pos.key !== "") {

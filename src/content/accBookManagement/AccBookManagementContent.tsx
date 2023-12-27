@@ -4,7 +4,6 @@ import { Box, Button, IconButton } from "@mui/material";
 import { GridCellParams, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useSelector } from "react-redux";
@@ -17,10 +16,14 @@ import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
-import { formatDate, formatDateTime, getDateOfPresent } from "@/utils";
-import NewAccountBookDrawer, {
-  listTranType,
-} from "./Drawer/NewAccountBookDrawer";
+import {
+  cookieSetting,
+  formatDate,
+  formatDateTime,
+  getDateOfPresent,
+  getValueWithComma,
+} from "@/utils";
+import NewAccountBookDrawer from "./Drawer/NewAccountBookDrawer";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import { useForm } from "react-hook-form";
 import { TextFieldCustom } from "@/components/common/Textfield";
@@ -36,6 +39,7 @@ import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { DialogConfirmComponent } from "./Drawer/DialogConfirm";
+import SearchDrawer from "./Drawer/SearchDrawer";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -51,9 +55,9 @@ export const initialPosSearch = {
   page: 0,
   pageSize: 10,
   sorter: "createdDate",
-  sortDirection: "ASC",
+  sortDirection: "DESC",
   fromCreatedDate: previous.toISOString(),
-  toCreatedDate:nextDay.toISOString(),
+  toCreatedDate: nextDay.toISOString(),
 };
 export const AccBookManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -63,6 +67,8 @@ export const AccBookManagementContent = () => {
   const [receiptsId, setReceiptsId] = useState("");
   const [isConfirmForm, setIsConfirmForm] = useState(false);
   const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
+  const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
+
   const listOfAccBook = useSelector(
     (state: RootState) => state.accBookManagement.accBookList
   );
@@ -80,7 +86,13 @@ export const AccBookManagementContent = () => {
   );
   const [searchCondition, setSearchCondition] =
     useState<EmpManageParamSearch>(initialPosSearch);
-
+  const [role, setRole] = useState<string | undefined>("");
+  const [branchName, setBranchName] = useState<string | undefined>("");
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    setBranchName(cookieSetting.get("branchName"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
@@ -100,9 +112,12 @@ export const AccBookManagementContent = () => {
   const handleCloseModal = () => {
     setIsOpenModal(false);
   };
-  // const handleOpenViewModal = () => {
-  //   setIsOpenViewModal(true);
-  // };
+  const handleCloseSearchDrawer = () => {
+    setIsOpenSearchDrawer(false);
+  };
+  const handleOpenSearchDrawer = () => {
+    setIsOpenSearchDrawer(true);
+  };
   const handleCloseDeleteForm = () => {
     setIsDeleteForm(false);
   };
@@ -121,7 +136,6 @@ export const AccBookManagementContent = () => {
         enqueueSnackbar("Xóa thất bại", { variant: "error" });
       });
   };
-
   const handleCloseConfirmForm = () => {
     setIsConfirmForm(false);
   };
@@ -197,6 +211,7 @@ export const AccBookManagementContent = () => {
     dispatch(fetchAccEntryType());
     dispatch(fetchAccBook(searchCondition));
     dispatch(fetchSumAccBook(searchCondition));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
   const getDataCustomerFromApi = (value: string) => {};
 
@@ -252,6 +267,12 @@ export const AccBookManagementContent = () => {
         width: 165,
         headerAlign: "center",
         align: "center",
+        valueGetter: ({ row }) => {
+          if (row.entryCode === "TOTAL") {
+            return "";
+          }
+          return row.entryCode;
+        },
         filterOperators: Operators({
           inputComponent: () => {
             return (
@@ -291,13 +312,13 @@ export const AccBookManagementContent = () => {
       },
       {
         headerName: "Định khoản",
-        field: "entryTypes",
+        field: "entryType",
         width: 165,
         headerAlign: "center",
         align: "center",
         valueGetter: ({ row }) => {
           if (row.entryCode === "TOTAL") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           return row.entryType;
         },
@@ -313,7 +334,6 @@ export const AccBookManagementContent = () => {
               <>
                 <StyleFilterContainer>
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
-                  {/* accEntryType */}
                   <SelectSearchComponent
                     control={control}
                     props={{
@@ -368,10 +388,10 @@ export const AccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "INTAKE") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.intake;
+            return getValueWithComma(row.intake);
           }
           return "";
         },
@@ -391,10 +411,10 @@ export const AccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "PAYOUT") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.payout;
+            return getValueWithComma(row.payout);
           }
           return "";
         },
@@ -414,10 +434,10 @@ export const AccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "LOAN") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.loan;
+            return getValueWithComma(row.loan);
           }
           return "";
         },
@@ -437,10 +457,10 @@ export const AccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "REPAYMENT") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.repayment;
+            return getValueWithComma(row.repayment);
           }
           return "";
         },
@@ -503,9 +523,9 @@ export const AccBookManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>SỔ KẾ TOÁN CHI NHÁNH </h3>
-
-      {/* <Box sx={{ margin: "7px 16px" }}> */}
+      <h3 style={{ textAlign: "left" }}>
+        SỔ KẾ TOÁN CHI NHÁNH {branchName?.toUpperCase()}{" "}
+      </h3>
       <Box
         sx={{
           margin: "0px 13px",
@@ -523,17 +543,14 @@ export const AccBookManagementContent = () => {
         <Button
           variant="contained"
           size="small"
-          // onClick={() => handleOpenSearchDrawer()}
+          onClick={() => handleOpenSearchDrawer()}
         >
           Tìm kiếm
         </Button>
       </Box>
-      {/* </Box> */}
       <form style={{ width: "100%" }}>
-        {/* <StyleDataGrid> */}
         <Box
           sx={{
-            // height: 300,
             width: "100%",
             "& .super-app-theme--cell": {
               backgroundColor: "#EAEAEA",
@@ -545,7 +562,6 @@ export const AccBookManagementContent = () => {
           <TableDataComponent
             columns={columns}
             dataInfo={[sumOfAccBook, ...listOfAccBook]}
-            // itemFilter={itemFilter}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
             page={pagination?.pageNumber}
@@ -556,7 +572,6 @@ export const AccBookManagementContent = () => {
             getRowId={getRowId}
           />
         </Box>
-        {/* </StyleDataGrid> */}
       </form>
       <NewAccountBookDrawer
         handleCloseDrawer={handleCloseModal}
@@ -578,6 +593,10 @@ export const AccBookManagementContent = () => {
         openDialog={isConfirmForm}
         handleClickClose={handleCloseConfirmForm}
         handleClickConfirm={handleConfirmForm}
+      />
+      <SearchDrawer
+        handleCloseDrawer={handleCloseSearchDrawer}
+        isOpen={isOpenSearchDrawer}
       />
     </Dashboard>
   );

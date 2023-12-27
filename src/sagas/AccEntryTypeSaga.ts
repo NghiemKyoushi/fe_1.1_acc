@@ -19,6 +19,7 @@ function* fetchAccountEntryListSaga(action: any) {
     if (response) {
       response.data.map((item: any) => {
         valueArr.push({
+          id: item.id,
           key: item.title,
           values: item.title,
         });

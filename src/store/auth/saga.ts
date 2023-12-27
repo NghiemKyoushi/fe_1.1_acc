@@ -34,17 +34,19 @@ function* loginSaga(action: any) {
       name: string;
       branches: Array<any>;
       id: string;
+      roles: Array<any>;
     } = yield call(loginUserFn, {
       code: action.payload.values.email,
       password: action.payload.values.password,
     });
-    console.log("response", response);
     yield put(
       loginSuccess({
         token: response.token,
         userName: response.name,
         branchId: response.branches[0].id,
+        branchName: response.branches[0].name,
         employeeId: response.id,
+        roles: response.roles[0].title,
       })
     );
     action.payload.callback(response.token);

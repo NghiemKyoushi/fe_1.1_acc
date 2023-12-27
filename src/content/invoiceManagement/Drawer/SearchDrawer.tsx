@@ -135,7 +135,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       page: 0,
       pageSize: 10,
       sorter: "code",
-      sortDirection: "ASC",
+      sortDirection: "DESC",
       receiptCode: receiptCode,
       fromTransactionTotal: fromTransactionTotal,
       toTransactionTotal: toTransactionTotal,

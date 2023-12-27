@@ -6,11 +6,16 @@ import {
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import { ColBillInfo } from "@/models/BillManagementModel";
+import { ColBillInfo, ColFilterBill } from "@/models/BillManagementModel";
 import { RootState } from "@/reducers/rootReducer";
-import { formatDateTime } from "@/utils";
+import { formatDateTime, getValueWithComma } from "@/utils";
 import { Box, Button } from "@mui/material";
-import { GridCellParams, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import {
+  GridCellParams,
+  GridColDef,
+  GridSortModel,
+  GridValueGetterParams,
+} from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -50,15 +55,10 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     Array<string | number>
   >([]);
   const [imageId, setImageId] = useState("");
+  const [listOfBills, setListOfBills] = useState<ColFilterBill[]>([]);
 
   const listOfFilterBills = useSelector(
     (state: RootState) => state.billManagement.filterBill
-  );
-  const sumOfBills = useSelector(
-    (state: RootState) => state.billManagement.totalSumRow
-  );
-  const pagination = useSelector(
-    (state: RootState) => state.billManagement.pagination
   );
   const isLoading = useSelector(
     (state: RootState) => state.billManagement.isLoading
@@ -148,7 +148,36 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   };
   useEffect(() => {
     dispatch(fetchFilterBills(searchCondition));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
+
+  useEffect(() => {
+    if (listOfFilterBills.length > 0) {
+      let countSum = 0;
+      let estimateBill = 0;
+      listOfFilterBills.map((item: ColFilterBill) => {
+        (countSum = countSum + item.moneyAmount),
+          (estimateBill = estimateBill + item.estimatedProfit);
+      });
+      const sumBill: ColFilterBill = {
+        createdBy: "",
+        createdDate: "",
+        lastModifiedBy: "",
+        lastModifiedDate: "",
+        recordStatusEnum: "",
+        id: "12233",
+        code: "TOTAL",
+        timeStampSeq: 0,
+        moneyAmount: countSum,
+        fee: 0,
+        estimatedProfit: estimateBill,
+        returnedProfit: 0,
+        returnedTime: "0",
+      };
+      setListOfBills([sumBill, ...listOfFilterBills]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listOfFilterBills]);
 
   const getDataFromApi = (value: string) => {
     dispatch(fetchPos({ posName: value }));
@@ -201,7 +230,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         headerAlign: "center",
         align: "center",
         valueGetter: ({ row }) => {
-          if (row.createdBy === "TOTAL") {
+          if (row.code === "TOTAL") {
             return "";
           }
           return formatDateTime(row.createdDate);
@@ -244,6 +273,13 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         width: 145,
         headerAlign: "center",
         align: "center",
+        valueGetter: ({ row }) => {
+          if (row.code === "TOTAL") {
+            return "";
+          }
+          //   return row.entryCode;
+          return row.code;
+        },
         filterOperators: Operators({
           inputComponent: () => {
             return (
@@ -294,48 +330,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           //   return row.entryCode;
           return row.posCode;
         },
-        //     // cellClassName: (params: GridCellParams) => {
-        //     //   if (params.row.entryCode !== "TOTAL") {
-        //     //     return "";
-        //     //   }
-        //     //   return "super-app-theme--cell";
-        //     // },
-        //     // filterOperators: Operators({
-        //     //   inputComponent: () => {
-        //     //     return (
-        //     //       <>
-        //     //         <StyleFilterContainer>
-        //     //           <StyleTitleSearch>Giá trị</StyleTitleSearch>
-        //     //           <TextFieldCustom
-        //     //             type={"text"}
-        //     //             variantshow="standard"
-        //     //             textholder="Lọc giá trị"
-        //     //             focus={"true"}
-        //     //             {...register("entryCode")}
-        //     //           />
-        //     //         </StyleFilterContainer>
-        //     //         <div
-        //     //           style={{
-        //     //             display: "flex",
-        //     //             flexDirection: "row",
-        //     //             justifyContent: "flex-end",
-        //     //             marginTop: 2,
-        //     //           }}
-        //     //         >
-        //     //           <Button
-        //     //             onClick={handleSearch}
-        //     //             size="small"
-        //     //             style={{ width: 81 }}
-        //     //           >
-        //     //             xác nhận
-        //     //           </Button>
-        //     //         </div>
-        //     //       </>
-        //     //     );
-        //     //   },
-        //     //   value: "input",
-        //     //   label: "input",
-        //     // }),
       },
       {
         headerName: "Tổng giao dịch ",
@@ -345,20 +339,14 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         align: "center",
         sortable: false,
         cellClassName: (params: GridCellParams) => {
-          if (params.row.createdBy !== "TOTAL") {
+          if (params.row.code !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
         },
-        //     // valueGetter: ({ row }) => {
-        //     //   if (row.transactionType === "INTAKE") {
-        //     //     return row.moneyAmount;
-        //     //   }
-        //     //   if (row.entryCode === "TOTAL") {
-        //     //     return row.intake;
-        //     //   }
-        //     //   return "";
-        //     // },
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
       },
       {
         headerName: "Phí",
@@ -367,17 +355,11 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        // cellClassName: (params: GridCellParams) => {
-        //   if (params.row.createdBy !== "TOTAL") {
-        //     return "";
-        //   }
-        //   return "super-app-theme--cell";
-        // },
-        valueGetter: ({ row }) => {
-          if (row.createdBy === "TOTAL") {
+        valueGetter: (params: GridValueGetterParams) => {
+          if (params.row.code === "TOTAL") {
             return "";
           }
-          return row.fee;
+          return params.row.fee;
         },
       },
       {
@@ -387,21 +369,15 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
         cellClassName: (params: GridCellParams) => {
-          if (params.row.createdBy !== "TOTAL") {
+          if (params.row.code !== "TOTAL") {
             return "";
           }
           return "super-app-theme--cell";
         },
-        // valueGetter: ({ row }) => {
-        //   //   if (row.transactionType === "LOAN") {
-        //   //     return row.moneyAmount;
-        //   //   }
-        //   //   if (row.entryCode === "TOTAL") {
-        //   return row.pos.code;
-        //   //   }
-        //   //   return "";
-        // },
       },
 
       {
@@ -411,7 +387,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         // checkboxSelection: true,
       },
     ],
-    []
+    [listOfBills]
   );
   return (
     <DrawerCustom
@@ -489,7 +465,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           >
             <TableDataComponent
               columns={columns}
-              dataInfo={listOfFilterBills}
+              dataInfo={listOfBills}
               // itemFilter={itemFilter}
               handleSortModelChange={handleSortModelChange}
               loading={isLoading}

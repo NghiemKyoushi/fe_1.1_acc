@@ -12,17 +12,9 @@ import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalance
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import SummarizeOutlinedIcon from "@mui/icons-material/SummarizeOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import ContactMailOutlinedIcon from '@mui/icons-material/ContactMailOutlined';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 export const items = [
-  // {
-  //   title: "Tổng quan",
-  //   path: "/",
-  //   icon: (
-  //     <SvgIcon fontSize="medium">
-  //       <BarChartIcon />
-  //     </SvgIcon>
-  //   ),
-  //   disabled: false,
-  // },
   {
     title: "Quản Lý Hóa Đơn",
     path: "/invoiceManagement",
@@ -32,6 +24,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
+    roles: ["ADMIN", "EMPLOYEE", 'SUB-MANAGER']
   },
   {
     title: "Sổ kế Toán",
@@ -42,6 +35,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
+    roles: ["ADMIN", 'SUB-MANAGER']
   },
   {
     title: "Sổ kế toán tổng hợp",
@@ -52,6 +46,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
+    roles: ["ADMIN"]
   },
   {
     title: "Quản lý bill",
@@ -62,6 +57,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
+    roles: ["ADMIN"]
   },
   {
     title: "Quản lý pos",
@@ -71,6 +67,17 @@ export const items = [
         <CallToActionOutlinedIcon />
       </SvgIcon>
     ),
+    roles: ["ADMIN"]
+  },
+  {
+    title: "Quản lý chi nhánh",
+    path: "/branchManagement",
+    icon: (
+      <SvgIcon fontSize="medium">
+        <AccountTreeOutlinedIcon />
+      </SvgIcon>
+    ),
+    roles: ["ADMIN"]
   },
   {
     title: "Quản lý nhân viên",
@@ -80,24 +87,37 @@ export const items = [
         <ManageAccountsOutlinedIcon />
       </SvgIcon>
     ),
+    roles: ["ADMIN"]
+  },
+  {
+    title: "Quản lý khách hàng",
+    path: "/customerManagement",
+    icon: (
+      <SvgIcon fontSize="medium">
+        <ContactMailOutlinedIcon />
+      </SvgIcon>
+    ),
+    roles: ["ADMIN"]
   },
   {
     title: "Quản lý thẻ khách",
-    path: "/invoice",
+    path: "/cardCustomer",
     icon: (
       <SvgIcon fontSize="medium">
         <DescriptionIcon />
       </SvgIcon>
     ),
+    roles: ["ADMIN"]
   },
   {
     title: "Cài đặt",
-    path: "/settings",
+    path: "/settingManagement",
     icon: (
       <SvgIcon fontSize="small">
         <SettingsOutlinedIcon />
       </SvgIcon>
     ),
+    roles: ["ADMIN"]
   },
   {
     title: "Đăng xuất",
@@ -109,22 +129,4 @@ export const items = [
     ),
     disabled: false,
   },
-  // {
-  //   title: 'Register',
-  //   path: '/auth/register',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <UserPlusIcon />
-  //     </SvgIcon>
-  //   )
-  // },
-  // {
-  //   title: 'Error',
-  //   path: '/404',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <XCircleIcon />
-  //     </SvgIcon>
-  //   )
-  // }
 ];

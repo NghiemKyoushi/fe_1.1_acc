@@ -18,6 +18,7 @@ import { loginRequest } from "@/store/auth/actions";
 import { useRouter } from "next/router";
 import { RootState } from "@/reducers/rootReducer";
 import { cookieSetting } from "@/utils";
+import Cookies from "js-cookie";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -28,6 +29,8 @@ export default function SignIn() {
   const userName = useSelector((state: RootState) => state.auth.userName);
   const branchId = useSelector((state: RootState) => state.auth.branchId);
   const employeeId = useSelector((state: RootState) => state.auth.employeeId);
+  const roles = useSelector((state: RootState) => state.auth.roles);
+  const branchName = useSelector((state: RootState) => state.auth.branchName);
 
   // console.log("selector", token);
   const {
@@ -45,11 +48,14 @@ export default function SignIn() {
   });
 
   useEffect(() => {
-    if (token) {
-      cookieSetting.set("token", token);
-      cookieSetting.set("userName", userName);
-      cookieSetting.set("branchId", branchId);
-      cookieSetting.set("employeeId", employeeId);
+    console.log("token", token)
+    if (token !== '') {
+      Cookies.set("token", token, { expires: 1 / 24 });
+      Cookies.set("userName", userName);
+      Cookies.set("branchId", branchId);
+      Cookies.set("employeeId", employeeId);
+      Cookies.set("roles", roles);
+      Cookies.set("branchName", branchName);
       router.push("/invoiceManagement");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

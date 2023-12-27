@@ -33,6 +33,7 @@ export interface ColBillInfo {
   createdBy: string;
   createdDate: string;
   timeStampOrder: number;
+  posCardFee: number;
 }
 export interface receiptInfo {
   id: string;
@@ -41,7 +42,7 @@ export interface receiptInfo {
 export interface posInfo {
   id: string;
   code: string;
-  maxBillAmount: number;
+  maxBillAmount?: number;
 }
 
 export interface FilterBillParam {
@@ -50,12 +51,12 @@ export interface FilterBillParam {
   fromCreatedDate: string;
   toCreatedDate: string;
 }
-export interface ColFilterBill {
-  moneyAmount: number;
-  posId: string;
-  fromCreatedDate: string;
-  toCreatedDate: string;
-}
+// export interface ColFilterBill {
+//   moneyAmount: number;
+//   posId: string;
+//   fromCreatedDate: string;
+//   toCreatedDate: string;
+// }
 export interface ColFilterBill {
   createdBy: string;
   createdDate: string;
@@ -70,7 +71,7 @@ export interface ColFilterBill {
   estimatedProfit: number;
   returnedProfit: number;
   returnedTime: string;
-  pos: PosType;
+  pos?: PosType;
 }
 export interface PosType {
   id: string;

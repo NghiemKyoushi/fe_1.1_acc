@@ -47,6 +47,7 @@ export interface FormCurrencyFieldProps<T extends FieldValues>
   currency?: string;
   label?: string;
   InputWidth: string;
+  type?: boolean;
 }
 
 export const InputNumber = <T extends FieldValues>({
@@ -54,6 +55,7 @@ export const InputNumber = <T extends FieldValues>({
   currency,
   label,
   InputWidth,
+  type,
   ...other
 }: FormCurrencyFieldProps<T>) => {
   const {
@@ -66,7 +68,7 @@ export const InputNumber = <T extends FieldValues>({
         autoFocus
         tabIndex={0}
         sx={{
-          "& fieldset": { border: "none" },
+          "& fieldset": { border: type ? "" : "none" },
           "& .MuiInputBase-input.Mui-disabled": {
             WebkitTextFillColor: "#000000",
           },

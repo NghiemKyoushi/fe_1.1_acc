@@ -32,8 +32,55 @@ export interface NewCardTypeFrorm {
   accountNumber: string;
   bank: string;
   paymentLimit: string;
-  paymentDueDate: string;
+  paymentDueDate: Date;
   customerId: SearchForm;
+  nationalId: string;
+}
+export interface CustomerCardSearch {
+  page: number;
+  pageSize: number;
+  sorter: string;
+  sortDirection: string;
+  customerName: string;
+  name: string;
+  cardTypeIds: Array<string>;
+  bank: string;
+  nationalId: string;
+  fromPaymentLimit: number;
+  toPaymentLimit: number;
+  fromPaymentDueDate: string;
+  toPaymentDueDate: string;
+}
+export interface ColCustomerCard {
+  name: string;
+  id: string;
+  cardType: CardType;
+  accountNumber: string;
+  bank: string;
+  paymentLimit: number;
+  paymentDueDate: string;
+  createdDate: string;
+  customer: customerType;
+}
+export interface ColCustomerCardDetail {
+  name: string;
+  id: string;
+  cardType: string;
+  accountNumber: string;
+  bank: string;
+  paymentLimit: number;
+  paymentDueDate: string;
+  createdDate: string;
+  customerName: string;
+}
+export interface customerType {
+  name: string;
+  id: string;
+  nationalId?: string;
+}
+export interface CardType {
+  name: string;
+  id: string;
 }
 export interface SearchForm {
   key: string;

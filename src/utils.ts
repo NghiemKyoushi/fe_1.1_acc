@@ -5,6 +5,7 @@ export const cookieSetting = {
   set: (name: string, value: string) =>
     cookie.set(name, value, { expires: 1 / 24 }),
   clear: (name: string) => cookie.remove(name),
+  setWithoutTime: (name: string, value: string) => cookie.set(name, value),
 };
 
 export const getDateOfPresent = () => {
@@ -15,7 +16,7 @@ export const getDateOfPresent = () => {
   return years + "/" + months + "/" + days;
 };
 export const getValueWithComma = (res: any) => {
-  return res.toString().replace(/\B(?=(\d(3)+(?!\d)))/g, ",");
+  return res.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 export const formatDateTime = (currentDate: string | number | Date) => {
   const date = dayjs(currentDate);
@@ -25,3 +26,9 @@ export const formatDate = (currentDate: string | number | Date) => {
   const date = dayjs(currentDate);
   return date.format("YYYY/MM/DD");
 };
+
+export enum ROLE {
+  ADMIN = "ADMIN",
+  SUBMANAGER = "SUB-MANAGER",
+  EMPLOYEE = "EMPLOYEE",
+}

@@ -2,6 +2,7 @@ import { authApi } from "@/api/authApi";
 import {
   InvoiceConfirmParams,
   ReceiptCreationParams,
+  RepayConfirmParams,
 } from "@/models/InvoiceManagement";
 import { fetchInvoiceInfoPrams } from "./type";
 
@@ -49,7 +50,7 @@ export const conrimInvoice = (reason: InvoiceConfirmParams) => {
   return authApi.put("/api/receipts/confirmReceipt", reason);
 };
 
-export const conrimRepayInvoice = (reason: InvoiceConfirmParams) => {
+export const conrimRepayInvoice = (reason: RepayConfirmParams) => {
   return authApi.put("/api/receipts/repayReceipt", reason);
 };
 

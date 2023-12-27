@@ -20,10 +20,14 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import NewPosDrawer from "./Drawer/NewPosDrawer";
 import FullScreenLoader from "@/components/common/FullScreenLoader";
+import ViewPosDrawer from "./Drawer/ViewPosDrawer";
+import { fetchPosDetail } from "@/api/service/posManagerApis";
 
 export default function PosManagementContent() {
   const dispatch = useDispatch();
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenViewModal, setIsOpenViewModal] = useState(false);
+  const [rowInfo, setRowInfo] = useState();
   const listOfPos = useSelector(
     (state: RootState) => state.posManagement.posList
   );
@@ -39,10 +43,17 @@ export default function PosManagementContent() {
   const handleCloseModal = () => {
     setIsOpenModal(false);
   };
+  const handleOpenViewModal = (id: string) => {
+    fetchPosDetail(id).then((res) => {
+      setRowInfo(res.data);
+      setIsOpenViewModal(true);
+    });
+  };
+  const handleCloseViewModal = () => {
+    setIsOpenViewModal(false);
+  };
   //   const { createdDate: "TOTAL", label: "Total", total: 686.4 }
-  const columns: GridColDef<
-    ColPosManagement | { createdDate: string; label: string; total: number }
-  >[] = useMemo(
+  const columns: GridColDef<ColPosManagement>[] = useMemo(
     () => [
       {
         headerName: "Mã Pos",
@@ -128,10 +139,10 @@ export default function PosManagementContent() {
         renderCell: ({ row }) => {
           return (
             <>
-              <IconButton color="success">
-                <FactCheckOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-              <IconButton color="info">
+              <IconButton
+                color="info"
+                onClick={() => handleOpenViewModal(row.id)}
+              >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
               <IconButton color="error">
@@ -149,7 +160,7 @@ export default function PosManagementContent() {
     page: 0,
     pageSize: 10,
     sorter: "code",
-    sortDirection: "ASC",
+    sortDirection: "DESC",
   };
   const [searchCondition, setSearchCondition] =
     useState<PosSearchParams>(initialPosSearch);
@@ -187,46 +198,48 @@ export default function PosManagementContent() {
   };
   return (
     <Dashboard>
-      {isLoading ? (
-        <FullScreenLoader />
-      ) : (
-        <>
-          <Box sx={{ margin: "7px 16px" }}>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => handleOpenModal()}
-            >
-              Thêm Pos
-            </Button>
-            {/* <DateRangePicker/> */}
-          </Box>
-          <form style={{ width: "100%" }}>
-            <StyleDataGrid>
-              <TableDataComponent
-                columns={columns}
-                dataInfo={
-                  // { createdDate: "TOTAL", label: "Total", total: 686.4 },
-                  listOfPos
-                }
-                // itemFilter={itemFilter}
-                onPageChange={onPageChange}
-                onPageSizeChange={onPageSizeChange}
-                page={pagination?.pageNumber}
-                pageSize={pagination?.size}
-                rowCount={pagination?.totalElements}
-                handleSortModelChange={handleSortModelChange}
-                loading={isLoading}
-                getRowId={getRowId}
-              />
-            </StyleDataGrid>
-          </form>
-          <NewPosDrawer
-            isOpen={isOpenModal}
-            handleCloseDrawer={handleCloseModal}
+      <h3 style={{ textAlign: "left" }}>QUẢN LÝ POS</h3>
+
+      <Box sx={{ margin: "7px 16px" }}>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => handleOpenModal()}
+        >
+          Thêm Pos
+        </Button>
+        {/* <DateRangePicker/> */}
+      </Box>
+      <form style={{ width: "100%" }}>
+        <StyleDataGrid>
+          <TableDataComponent
+            columns={columns}
+            dataInfo={
+              // { createdDate: "TOTAL", label: "Total", total: 686.4 },
+              listOfPos
+            }
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            page={pagination?.pageNumber}
+            pageSize={pagination?.size}
+            rowCount={pagination?.totalElements}
+            handleSortModelChange={handleSortModelChange}
+            loading={isLoading}
+            getRowId={getRowId}
           />
-        </>
-      )}
+        </StyleDataGrid>
+      </form>
+      <NewPosDrawer
+        searchCondition={searchCondition}
+        isOpen={isOpenModal}
+        handleCloseDrawer={handleCloseModal}
+      />
+      <ViewPosDrawer
+        searchCondition={searchCondition}
+        isOpen={isOpenViewModal}
+        handleCloseDrawer={handleCloseViewModal}
+        rowInfo={rowInfo}
+      />
     </Dashboard>
   );
 }

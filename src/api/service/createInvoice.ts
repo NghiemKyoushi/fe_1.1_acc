@@ -36,7 +36,6 @@ export const fetcCardByCustomerId = (props: CardByCusIdProps) => {
 export const fetchSaveImage = (props: any) => {
   const formData = new FormData();
   formData.append("file", props);
-  console.log("formData", formData)
   return authApi.post("/api/files", formData);
 };
 export const fetchGetImage = (props: any) => {

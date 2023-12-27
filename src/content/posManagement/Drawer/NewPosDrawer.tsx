@@ -6,25 +6,33 @@ import { TextFieldCustom } from "@/components/common/Textfield";
 import { cardType } from "@/models/CardCustomerModel";
 import {
   ColCardType,
+  FormParams,
   PosParamBodySend,
   SupportedCardTypesParam,
 } from "@/models/PortManagementModel";
 import { Button, IconButton } from "@mui/material";
-import { GridColDef, GridRowModel } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridRenderCellParams,
+  GridRowModel,
+} from "@mui/x-data-grid";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { fetchCreatePos } from "@/api/service/posManagerApis";
 import { enqueueSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
+import { InputNumber } from "@/components/common/InputCustom";
+import { fetchPosManagement } from "@/actions/PosManagementActions";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
+  searchCondition: any
 }
 const NewPosDrawer = (props: NewPosDrawerProps) => {
-  const { isOpen, handleCloseDrawer } = props;
+  const { isOpen, handleCloseDrawer, searchCondition } = props;
   const [listOfCard, setListOfCard] = useState<ColCardType[]>([]);
   const {
     register,
@@ -35,14 +43,15 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     reset,
     control,
     getValues,
-  } = useForm({
+  } = useForm<FormParams>({
     defaultValues: {
       code: "",
       name: "",
       address: "",
       accountNumber: "",
       bank: "",
-      maxBillAmount:''
+      maxBillAmount: "",
+      posFeeTable: []
     },
   });
   const dispatch = useDispatch();
@@ -52,16 +61,22 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         let getCard: ColCardType[] = [];
         res.data.map((item: cardType, index: number) => {
           getCard.push({
-            id: index,
+            id: item.id,
             name: item.name,
             cardTypeId: item.id,
-            posCardFee: "",
+            posCardFee: 0,
           });
         });
+        setValue('posFeeTable', getCard)
         setListOfCard([...getCard]);
       }
     });
   }, []);
+  const { fields: posFeeTable } = useFieldArray({
+    control,
+    name: "posFeeTable",
+  });
+   console.log('ưatch', watch())
   const columnsOther: GridColDef[] = useMemo(
     () => [
       {
@@ -69,7 +84,6 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         field: "name",
         width: 150,
         sortable: false,
-        editable: true,
       },
       {
         headerName: "Phí",
@@ -77,6 +91,19 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         width: 105,
         sortable: false,
         editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          return (
+            <>
+              <InputNumber
+                InputWidth="100%"
+                key={index}
+                name={`posFeeTable.${index}.posCardFee`}
+                control={control}
+              />
+            </>
+          );
+        },
       },
       {
         headerName: "Thao Tác",
@@ -96,30 +123,13 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     ],
     [listOfCard]
   );
-  const handleProcessRowUpdate2 = useCallback(
-    async (newRow: GridRowModel) => {
-      const oldRowData = [...listOfCard];
-      let rowIndex = oldRowData.findIndex(
-        (element) => element.id === newRow.id
-      );
-      oldRowData[rowIndex] = {
-        id: newRow.id,
-        name: newRow.name,
-        cardTypeId: newRow.cardTypeId,
-        posCardFee: newRow.posCardFee,
-      };
-      setListOfCard(oldRowData);
-      return null;
-    },
-    [listOfCard]
-  );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code,maxBillAmount } = getValues();
-    let formatList: SupportedCardTypesParam[] = [];
-    listOfCard.map((item) => {
+    const { accountNumber, address, bank, code, maxBillAmount } = getValues();
+    let formatList: ColCardType[] = [];
+    watch("posFeeTable").map((item) => {
       formatList.push({
         cardTypeId: item.cardTypeId,
-        posCardFee: +item.posCardFee,
+        posCardFee: item.posCardFee,
       });
     });
     const request: PosParamBodySend = {
@@ -130,12 +140,13 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       accountNumber: accountNumber,
       supportedCardTypes: formatList,
       posStatus: "AVAILABLE",
-      maxBillAmount: maxBillAmount
+      maxBillAmount: maxBillAmount,
     };
     fetchCreatePos(request)
       .then((res) => {
         enqueueSnackbar("Tạo Pos thành công!!", { variant: "success" });
         handleCloseDrawer();
+        dispatch(fetchPosManagement(searchCondition));
         reset();
       })
       .catch(function (error) {
@@ -148,7 +159,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
   return (
     <>
       <DrawerCustom
-        widthDrawer={650}
+        widthDrawer={540}
         isOpen={isOpen}
         title="Tạo mã pos"
         handleClose={handleCloseDrawer}
@@ -216,10 +227,9 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
             <StyleDataGrid>
               <TableDataComponent
                 columns={columnsOther}
-                dataInfo={listOfCard}
+                dataInfo={posFeeTable}
                 disableFilter={true}
                 isPage={true}
-                processRowUpdate={handleProcessRowUpdate2}
                 rowCount={100}
                 getRowId={getRowId}
               />

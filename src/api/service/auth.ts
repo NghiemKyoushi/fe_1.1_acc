@@ -10,9 +10,16 @@ export const loginUserFn = async (user: loginProps) => {
   return response.data;
 };
 export const logoutUserFn = async () => {
-  await cookieSetting.clear("token");
-  await cookieSetting.clear("userName");
-  await cookieSetting.clear("employeeId");
-
-  await cookieSetting.clear("branchId");
+  try {
+    await Promise.all([
+      cookieSetting.clear("token"),
+      cookieSetting.clear("userName"),
+      cookieSetting.clear("employeeId"),
+      cookieSetting.clear("roles"),
+      cookieSetting.clear("branchName"),
+      cookieSetting.clear("branchId"),
+    ]);
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
 };

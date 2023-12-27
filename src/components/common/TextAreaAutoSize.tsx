@@ -35,7 +35,7 @@ const TextareaComponent = <T extends FieldValues>({
     field,
     fieldState: { error },
   } = useController(other);
-
+ 
   return (
     <>
       {/* {label !== undefined && (
@@ -46,7 +46,7 @@ const TextareaComponent = <T extends FieldValues>({
           width: "100%",
           // padding: "0px 0px",
           // margin: "1px 15px",
-          height: 80,
+          height: 'auto',
           backgroundColor: "transparent",
         }}
       >
@@ -71,7 +71,7 @@ const TextareaComponent = <T extends FieldValues>({
             rows: 5,
             inputComponent: "textarea",
           }}
-          placeholder="Nhập diễn giải tại dây"
+          placeholder="Nhập tại dây"
         />
       </div>
     </>

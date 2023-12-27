@@ -185,7 +185,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     bank: "",
     accountNumber: "",
   });
-  console.log("check", infoCard);
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -482,7 +481,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         disableColumnMenu: true,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          if (params.row.check !== "TOTAL" && !_.isNumber(params.row.check)) {
+          if (params.row.check !== "TOTAL") {
             return (
               <>
                 <InputNumber
@@ -499,6 +498,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             (total, { money }) => (total += +money),
             0
           );
+          if (isNaN(money)) {
+            return 0;
+          }
           return money;
         },
         Footer: () => {
@@ -513,7 +515,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         editable: false,
         align: "left",
         type: "number",
-
         valueGetter: (params: GridValueGetterParams) => {
           const index = params.api.getRowIndex(params.row.id);
           if (params.row.check === "TOTAL") {
@@ -523,6 +524,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 (total += +money * (+watch("percentageFee") / 100)),
               0
             );
+            if (isNaN(fee)) {
+              return 0;
+            }
             return fee;
           }
           let restOfFee = 0;
@@ -558,6 +562,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 (total += +money - +money * (+watch("percentageFee") / 100)),
               0
             );
+            if (isNaN(fee)) {
+              return 0;
+            }
             return fee;
           }
           let feeafterpay = 0;
@@ -612,7 +619,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       {
         headerName: "Thu",
         field: "intake",
-        width: 100,
+        width: 162,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
@@ -631,7 +638,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       {
         headerName: "Chi",
         field: "payout",
-        width: 100,
+        width: 162,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
@@ -650,7 +657,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       {
         headerName: "Công nợ",
         field: "loan",
-        width: 100,
+        width: 162,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
@@ -669,7 +676,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       {
         headerName: "Thu nợ",
         field: "repayment",
-        width: 100,
+        width: 164,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => {
           const index = params.api.getRowIndex(params.row.id);
@@ -708,7 +715,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     if (watch("cardCustomer")?.key) {
       cardType.map((item: any) => {
         if (item.key === watch("cardCustomer")?.key) {
-          console.log("item", item)
           setInfoCard({
             cardType: item.item?.cardType?.name,
             bank: item.item?.bank,
@@ -889,7 +895,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   // {...register("totalBill")}
                 />
               </StyleInputContainer>
-              <StyleInputContainer style={{ marginTop: -168 }}>
+              <StyleInputContainer>
                 <ImageUpload handleGetFile={handleGetFile} filePath="" />
               </StyleInputContainer>
             </ContainerSum>
@@ -962,7 +968,7 @@ const StyleDataGrid = styled.div`
 `;
 const StyleDataGrid2 = styled.div`
   margin-top: -15px;
-  width: 432px;
+  width: 683px;
   padding: 0px 16px;
 `;
 const PageContent = styled.div`

@@ -186,7 +186,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     display: "none",
   },
   "& .MuiDataGrid-columnHeader, .MuiDataGrid-cell": {
-    borderRight: `1px solid ${
+    borderRight: `3px solid ${
       theme.palette.mode === "light" ? "#f0f0f0" : "#303030"
     }`,
   },
@@ -225,6 +225,7 @@ export interface FilterCOmponent {
   processRowUpdate?: (newRow: any) => void;
   handleGetListOfSelect?: (value: Array<string | number>) => void;
   checkboxSelection?: boolean;
+  selectionModel?: Array<any>;
 }
 export default function TableDataComponent(props: FilterCOmponent) {
   const {
@@ -238,6 +239,7 @@ export default function TableDataComponent(props: FilterCOmponent) {
     disableFilter,
     isPage,
     checkboxSelection,
+    selectionModel,
     onPageChange,
     onPageSizeChange,
     handleSortModelChange,
@@ -312,6 +314,7 @@ export default function TableDataComponent(props: FilterCOmponent) {
           NoRowsOverlay: dataInfo.length < 1 ? CustomNoRowsOverlay : undefined,
         }}
         checkboxSelection={checkboxSelection ? true : false}
+        selectionModel={selectionModel}
         onSelectionModelChange={handleGetSelect}
         componentsProps={{
           pagination: { classes: null },

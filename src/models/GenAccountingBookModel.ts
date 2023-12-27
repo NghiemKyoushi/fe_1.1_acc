@@ -35,5 +35,5 @@ export interface GenAccountingBookSearchParams {
   fromCreatedDate?: string;
   toCreatedDate?: string;
   entryTypes?: Array<string>;
-  transactionTypes?: Array<string>;
+  transactionTypes?: string;
 }

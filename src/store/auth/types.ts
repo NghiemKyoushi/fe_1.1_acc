@@ -5,6 +5,7 @@ import {
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
+  LOGOUT,
 } from "./actionTypes";
 
 export interface IAuth {
@@ -16,7 +17,9 @@ export interface AuthState {
   token: string;
   userName: string;
   branchId: string;
+  branchName: string;
   employeeId: string;
+  roles: string;
   error: string | null;
 }
 
@@ -29,7 +32,9 @@ export interface LoginSuccessPayload {
   userName: string;
   token: string;
   branchId: string;
+  branchName: string;
   employeeId: string;
+  roles: string;
 }
 
 export interface LoginFailurePayload {
@@ -79,10 +84,15 @@ export type SignupFailure = {
   payload: SignupFailurePayload;
 };
 
+export type Logout = {
+  type: typeof LOGOUT;
+};
+
 export type AuthActions =
   | LoginRequest
   | LoginSuccess
   | LoginFailure
   | SignupFailure
   | SignupSuccess
-  | SignupRequest;
+  | SignupRequest
+  | Logout;

@@ -12,6 +12,7 @@ import {
   GridFilterOperator,
   GridRenderCellParams,
   GridSortModel,
+  GridValueGetterParams,
 } from "@mui/x-data-grid";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -28,13 +29,19 @@ import TableDataComponent from "@/components/common/DataGrid";
 import InvoiceDrawer from "./Drawer/InvoiceDrawer";
 import { Box, Button, IconButton } from "@mui/material";
 import styled from "styled-components";
-import { formatDate, formatDateTime, getDateOfPresent } from "@/utils";
+import {
+  formatDate,
+  formatDateTime,
+  getDateOfPresent,
+  getValueWithComma,
+} from "@/utils";
 import {
   ColReceiptList,
   InvoiceConfirmParams,
   InvoiceSumTotal,
   RangeNumberFilterProps,
   ReceiptParamsConditions,
+  RepayConfirmParams,
 } from "@/models/InvoiceManagement";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
@@ -46,9 +53,11 @@ import SearchDrawer from "./Drawer/SearchDrawer";
 import { ApproveDialogComponent } from "./Drawer/ApproveDialog";
 import {
   conrimInvoice,
+  conrimRepayInvoice,
   deleteInvoice,
   fetchInvoiceDetail,
   fetchInvoiceSumTotal,
+  fetchSaveImage,
 } from "@/api/service/invoiceManagement";
 import { enqueueSnackbar } from "notistack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -57,20 +66,26 @@ import ViewInvoiceDrawer from "./Drawer/ViewInvoiceDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+import { RepayDialogComponent } from "./Drawer/RepayDialog";
+
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 7);
+const offsetInMinutes = previous.getTimezoneOffset();
+previous.setMinutes(previous.getMinutes() - offsetInMinutes);
+const dateNext = new Date();
+const nextDay = new Date(dateNext.getTime());
+nextDay.setDate(dateNext.getDate() + 1);
+const offsetInMinutes2 = nextDay.getTimezoneOffset();
+nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
+
 const initialInvoiceSearch = {
   page: 0,
   pageSize: 10,
   sorter: "code",
-  sortDirection: "ASC",
-  fromCreatedDate: new Date(
-    previous.getTime() - previous.getTimezoneOffset() * 60000
-  ).toISOString(),
-  toCreatedDate: new Date(
-    date.getTime() - date.getTimezoneOffset() * 60000
-  ).toISOString(),
+  sortDirection: "DESC",
+  fromCreatedDate: previous.toISOString(),
+  toCreatedDate: nextDay.toISOString(),
 };
 
 export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
@@ -118,9 +133,12 @@ export default function InvoiceManagementContent() {
   const [isOpenDrawInvoice, setIsOpenDrawInvoice] = useState(false);
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const [isOpenViewDrawer, setIsOpenViewDrawer] = useState(false);
+  const [isOpenRepay, setIsOpenRepay] = useState(false);
+
   const [rowInfo, setRowInfo] = useState();
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [receiptsId, setReceiptsId] = useState("");
+  const [imageId, setImageId] = useState("");
 
   const listOfInvoice = useSelector(
     (state: RootState) => state.invoiceManagement.listOfInvoice
@@ -157,8 +175,8 @@ export default function InvoiceManagementContent() {
         toRepayment: 0,
         formConfirm: {
           receiptId: "",
-          category1: 1,
           explanation: "",
+          repaidAmount: 0,
         },
       },
     });
@@ -202,16 +220,49 @@ export default function InvoiceManagementContent() {
       setIsOpenViewDrawer(true);
     });
   };
-  const getSumTotalRow = async () => {
-    const response = await fetchInvoiceSumTotal(searchCondition);
-    return response;
+  const handleCloseRepay = () => {
+    reset({
+      formConfirm: {
+        receiptId: "",
+        explanation: "",
+        repaidAmount: 0,
+      },
+    });
+    setIsOpenRepay(false);
+  };
+  const handleOpenRepay = (id: string) => {
+    setReceiptsId(id);
+    setIsOpenRepay(true);
+  };
+  const handleClickConfirmRepay = () => {
+    const bodySend: RepayConfirmParams = {
+      receiptId: receiptsId,
+      explanation: watch("formConfirm.explanation"),
+      repaidAmount: watch("formConfirm.repaidAmount"),
+      imageId: imageId,
+    };
+    conrimRepayInvoice(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Hoàn trả thành công", { variant: "success" });
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Hoàn trả thất bại", { variant: "error" });
+      });
+  };
+  const handleGetFile = (file: any) => {
+    fetchSaveImage(file[0])
+      .then((res) => {
+        setImageId(res.data);
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
+      });
   };
   useEffect(() => {
     dispatch(fetchInvoice(searchCondition));
     dispatch(fetchSumInvoice(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const handleViewDrawerRepay = (id: string) => {};
   const handleSearch = () => {
     const {
       fromEstimatedProfit,
@@ -404,6 +455,9 @@ export default function InvoiceManagementContent() {
           }
           return "super-app-theme--cell";
         },
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
         filterOperators: Operators({
           inputComponent: () => {
             return (
@@ -430,6 +484,9 @@ export default function InvoiceManagementContent() {
             return "";
           }
           return "super-app-theme--cell";
+        },
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
         },
         filterOperators: Operators({
           inputComponent: () => {
@@ -458,6 +515,9 @@ export default function InvoiceManagementContent() {
           }
           return "super-app-theme--cell";
         },
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
         filterOperators: Operators({
           inputComponent: () => {
             return (
@@ -479,6 +539,9 @@ export default function InvoiceManagementContent() {
         width: 140,
         headerAlign: "center",
         align: "center",
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
         cellClassName: (params: GridCellParams<ColReceiptList>) => {
           if (params.row.code !== "TOTAL") {
             return "";
@@ -506,6 +569,9 @@ export default function InvoiceManagementContent() {
         width: 140,
         headerAlign: "center",
         align: "center",
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
         cellClassName: (params: GridCellParams<ColReceiptList>) => {
           if (params.row.code !== "TOTAL") {
             return "";
@@ -533,6 +599,9 @@ export default function InvoiceManagementContent() {
         headerAlign: "center",
         align: "center",
         width: 140,
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
         cellClassName: (params: GridCellParams<ColReceiptList>) => {
           if (params.row.code !== "TOTAL") {
             return "";
@@ -569,29 +638,34 @@ export default function InvoiceManagementContent() {
                 color="success"
                 onClick={() => handleOpenApproveDialog(row.id)}
               >
-                {row.code === null && (
+                {row.code === null ? (
                   <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
+                ) : (
+                  <div></div>
                 )}
               </IconButton>
               <IconButton
                 color="info"
                 onClick={() => handleOpenViewDrawer(row.id)}
               >
-                {row.code !== "TOTAL" && (
+                {row.code !== "TOTAL" ? (
                   <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
-                )}
-              </IconButton>
-
-              <IconButton
-                color="info"
-                onClick={() => handleViewDrawerRepay(row.id)}
-              >
-                {+row.loan > +row.repayment && row.code !== "TOTAL" ? (
-                  <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
                 ) : (
-                  ""
+                  <div></div>
                 )}
               </IconButton>
+              {+row.loan > +row.repayment &&
+              row.code !== "TOTAL" &&
+              row.receiptStatusEnum === "COMPLETED" ? (
+                <IconButton
+                  color="info"
+                  onClick={() => handleOpenRepay(row.id)}
+                >
+                  <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              ) : (
+                <div></div>
+              )}
               <IconButton
                 color="error"
                 onClick={() => handleOpenDeleteForm(row.id)}
@@ -636,7 +710,6 @@ export default function InvoiceManagementContent() {
   const getRowId = (row: any) => {
     return row.id;
   };
-
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ HÓA ĐƠN</h3>
@@ -714,6 +787,13 @@ export default function InvoiceManagementContent() {
           control={control}
           handleClickClose={handleCloseDeleteForm}
           handleClickConfirm={handleConfirmDeleteForm}
+        />
+        <RepayDialogComponent
+          openDialog={isOpenRepay}
+          handleClickConfirm={handleClickConfirmRepay}
+          control={control}
+          handleClickClose={handleCloseRepay}
+          handleGetFile={handleGetFile}
         />
       </div>
     </Dashboard>
