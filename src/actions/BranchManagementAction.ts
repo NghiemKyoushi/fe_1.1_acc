@@ -4,9 +4,8 @@ import {
   FETCH_BRANCH_SUCCESS,
 } from "@/constants/BranchManagement";
 
-export const fetchBranch = (payload: any) => ({
+export const fetchBranch = () => ({
   type: FETCH_BRANCH,
-  payload,
 });
 export const fetchBranchSuccess = (payload: any) => ({
   type: FETCH_BRANCH_SUCCESS,

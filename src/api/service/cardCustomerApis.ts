@@ -16,6 +16,12 @@ export const fetchGetAllCard = async () => {
 export const fetchCreateCardCustomer = (props: NewCardType) => {
   return authApi.post(`/api/customerCards`, props);
 };
+export const updateCardCustomer = (id: string, props: NewCardType) => {
+  return authApi.put(`/api/customerCards/${id}`, props);
+};
+export const getDetailCardCustomer = (id: string) => {
+  return authApi.get(`/api/customerCards/${id}`);
+};
 export const fetchCardCustomer = (param: CustomerCardSearch) => {
   return authApi.get(`/api/customerCards`, {
     params: param,

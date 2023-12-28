@@ -1,11 +1,17 @@
-// export const createCardType = async (name: string) => {
-//     return authApi.post(`/api/cardTypes`, { name: name });
-//   };
-  
-//   export const updateCardType = async (name: string, id: string) => {
-//     return authApi.put(`/api/cardTypes/${id}`, { name: name });
-//   };
-  
-//   export const deleteCardType = async (id: string) => {
-//     return authApi.delete(`/api/cardTypes/${id}`);
-//   };
+import { BranchParamSend } from "@/models/BranchManagementModel";
+import { authApi } from "../authApi";
+
+export const getAllBranch = async () => {
+  return authApi.get(`/api/branches`);
+};
+export const getDetailBranch = async (id: string) => {
+  return authApi.get(`/api/branches/${id}`);
+};
+
+export const createNewBranch = async (body: BranchParamSend) => {
+  return authApi.post(`/api/branches`, body);
+};
+
+export const updateNewBranch = async (id: string, body: BranchParamSend) => {
+    return authApi.post(`/api/branches/${id}`, body);
+  };

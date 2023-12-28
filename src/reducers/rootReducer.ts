@@ -10,6 +10,7 @@ import AccBookReducers from "./AccBookRecuder";
 import GenAccBookReducers from "./GenAccBookRecuder";
 import BillManagementReducers from "./BillManagementReducer";
 import AccEntryTypeReducers from "./AccEntryTypeReducer";
+import BranchReducers from "./BranchReducer";
 const rootReducer = combineReducers({
   auth: authReducer,
   invoiceManagement: InvoiceManagementReducers,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   genAccBookManagement: GenAccBookReducers,
   billManagement: BillManagementReducers,
   accEntryType: AccEntryTypeReducers,
+  branchManaement: BranchReducers,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

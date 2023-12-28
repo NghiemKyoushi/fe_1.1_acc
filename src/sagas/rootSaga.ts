@@ -10,6 +10,7 @@ import fetchAccBookSaga from "./AccBookSaga";
 import fetchGenAccBookSaga from "./GenAccBookSaga";
 import fetchBillsSaga from "./BillManagementSaga";
 import fetchAccEntryTypeSaga from "./AccEntryTypeSaga";
+import branchSaga from "./BranchManagementSaga";
 export function* rootSaga() {
   yield all([fork(authSaga)]);
   yield all([fork(invoiceSaga)]);
@@ -21,4 +22,6 @@ export function* rootSaga() {
   yield all([fork(fetchGenAccBookSaga)]);
   yield all([fork(fetchBillsSaga)]);
   yield all([fork(fetchAccEntryTypeSaga)]);
+  yield all([fork(branchSaga)]);
+
 }

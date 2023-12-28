@@ -25,15 +25,17 @@ import {
   ColCustomerCardDetail,
 } from "@/models/CardCustomerModel";
 import NewCardCustomer from "./Drawer/NewCardCustomer";
+import { getDetailCardCustomer } from "@/api/service/cardCustomerApis";
+import ViewCardCustomer from "./Drawer/ViewCardCustomer";
 
 export default function CardCustomerContent() {
   const dispatch = useDispatch();
-  const [isOpenModal, setIsOpenModal] = useState(false);
   const [listCardCustomer, setListCardCustomer] = useState<
     ColCustomerCardDetail[]
   >([]);
   const [isOpenCard, setIsOpenCard] = useState(false);
-
+  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
+  const [rowInfo, setRowInfo] = useState();
   const listOfCardCustomer = useSelector(
     (state: RootState) => state.cardCustomer.cardCustomerList
   );
@@ -43,11 +45,14 @@ export default function CardCustomerContent() {
   const isLoading = useSelector(
     (state: RootState) => state.cardCustomer.isLoading
   );
-  const handleOpenModal = () => {
-    setIsOpenModal(true);
+  const handleOpenModalEdit = (id: string) => {
+    getDetailCardCustomer(id).then((res) => {
+      setRowInfo(res.data);
+      setIsOpenModalEdit(true);
+    });
   };
-  const handleCloseModal = () => {
-    setIsOpenModal(false);
+  const handleCloseModalEdit = () => {
+    setIsOpenModalEdit(false);
   };
   const handleOpenAddCard = () => {
     setIsOpenCard(true);
@@ -204,7 +209,10 @@ export default function CardCustomerContent() {
         renderCell: ({ row }) => {
           return (
             <>
-              <IconButton color="info">
+              <IconButton
+                color="info"
+                onClick={() => handleOpenModalEdit(row.id)}
+              >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
               <IconButton color="error">
@@ -279,7 +287,6 @@ export default function CardCustomerContent() {
           <TableDataComponent
             columns={columns}
             dataInfo={listCardCustomer}
-            // itemFilter={itemFilter}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
             page={pagination?.pageNumber}
@@ -294,11 +301,13 @@ export default function CardCustomerContent() {
             handleCloseDrawer={handleCloseAddCard}
             handleSearch={handleSearch}
           />
+          <ViewCardCustomer
+            isOpen={isOpenModalEdit}
+            handleCloseDrawer={handleCloseModalEdit}
+            handleSearch={handleSearch}
+            rowInfo={rowInfo}
+          />
         </form>
-        {/* <NewPosDrawer
-            isOpen={isOpenModal}
-            handleCloseDrawer={handleCloseModal}
-          /> */}
       </>
     </Dashboard>
   );

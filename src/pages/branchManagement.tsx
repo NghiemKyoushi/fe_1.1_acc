@@ -1,9 +1,9 @@
-import CardCustomerContent from "@/content/cardCustomer.tsx/CardCustomerContent";
+import BranchManagementContent from "@/content/branchManagement/branchManagementContent";
 
 export default function BranchManagement() {
   return (
     <>
-      <CardCustomerContent />
+      <BranchManagementContent />
     </>
   );
 }
