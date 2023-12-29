@@ -28,7 +28,10 @@ import {
 } from "@/models/CustomerManager";
 import { fetchListCustomer } from "@/actions/CustomerManagerAction";
 import NewCustomerDrawer from "./Drawer/NewCustomerDrawer";
-import { deleteCustomer, fetchCustomerById } from "@/api/service/customerManagerApis";
+import {
+  deleteCustomer,
+  fetchCustomerById,
+} from "@/api/service/customerManagerApis";
 import ViewCustomerDrawer from "./Drawer/ViewCustomerDrawer";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
@@ -289,7 +292,7 @@ export default function CustomerManagementContent() {
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ KHÁCH HÀNG</h3>
       <>
-        <Box sx={{ margin: "7px 16px" }}>
+        <Box sx={{ margin: "7px 0px" }}>
           <Button
             variant="contained"
             size="small"
@@ -297,7 +300,6 @@ export default function CustomerManagementContent() {
           >
             Thêm khách hàng
           </Button>
-          {/* <DateRangePicker/> */}
         </Box>
         <form style={{ width: "100%" }}>
           <StyleDataGrid>

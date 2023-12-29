@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import {
+  ROLE,
   cookieSetting,
   formatDate,
   formatDateTime,
@@ -40,6 +41,8 @@ import { enqueueSnackbar } from "notistack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { DialogConfirmComponent } from "./Drawer/DialogConfirm";
 import SearchDrawer from "./Drawer/SearchDrawer";
+import Cookies from "js-cookie";
+import { fetchBranch } from "@/actions/BranchManagementAction";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -68,7 +71,7 @@ export const AccBookManagementContent = () => {
   const [isConfirmForm, setIsConfirmForm] = useState(false);
   const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
-
+  const [branch, setBranch] = useState<Array<any> | undefined>([]);
   const listOfAccBook = useSelector(
     (state: RootState) => state.accBookManagement.accBookList
   );
@@ -83,6 +86,10 @@ export const AccBookManagementContent = () => {
   );
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
+  );
+
+  const listOfBranch = useSelector(
+    (state: RootState) => state.branchManaement.branchList
   );
   const [searchCondition, setSearchCondition] =
     useState<EmpManageParamSearch>(initialPosSearch);
@@ -100,6 +107,10 @@ export const AccBookManagementContent = () => {
         toCreatedDate: getDateOfPresent(),
         entryCode: "",
         entryType: {
+          key: "",
+          values: "",
+        },
+        branch: {
           key: "",
           values: "",
         },
@@ -208,12 +219,51 @@ export const AccBookManagementContent = () => {
     dispatch(fetchSumAccBook(bodySend));
   };
   useEffect(() => {
+    if (listOfBranch.length > 0) {
+      let arr: any[] = [];
+      listOfBranch.map((item: any) => {
+        arr.push({
+          key: item?.code,
+          values: item?.name,
+        });
+      });
+      setBranch([...arr]);
+      setValue("branch", {
+        key: listOfBranch[0].code,
+        values: listOfBranch[0].name,
+      });
+      // reset({
+      //   branch: {
+      //     key: listOfBranch[0].code,
+      //     values: listOfBranch[0].name,
+      //   },
+      // });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listOfBranch]);
+  console.log("wwatch111", watch());
+  useEffect(() => {
+    dispatch(fetchBranch());
     dispatch(fetchAccEntryType());
     dispatch(fetchAccBook(searchCondition));
     dispatch(fetchSumAccBook(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
   const getDataCustomerFromApi = (value: string) => {};
+  const handleChangeBranch = (value: string) => {
+    console.log("branch", branch)
+    const getBranch = branch?.find((item) => item.values
+    === value);
+    console.log("getBranch", getBranch)
+    if (getBranch) {
+      const paramSearch = {
+        ...searchCondition,
+        branchCodes: getBranch.key,
+      };
+      dispatch(fetchAccBook(paramSearch));
+      dispatch(fetchSumAccBook(paramSearch));
+    }
+  };
 
   const columns: GridColDef<ColAccountBook>[] = useMemo(
     () => [
@@ -342,7 +392,6 @@ export const AccBookManagementContent = () => {
                       results: accEntryType,
                       label: "",
                       variantType: "standard",
-                      // getData:((value) => setValue("customerName", value)),
                       type: "text",
                       setValue: setValue,
                       labelWidth: "100",
@@ -523,12 +572,42 @@ export const AccBookManagementContent = () => {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>
-        SỔ KẾ TOÁN CHI NHÁNH {branchName?.toUpperCase()}{" "}
-      </h3>
+      {role === ROLE.ADMIN ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h3>SỔ KẾ TOÁN CHI NHÁNH</h3>
+          <SelectSearchComponent
+            control={control}
+            props={{
+              name: "branch",
+              placeHoder: "",
+              results: branch,
+              label: "",
+              variantType: "standard",
+              type: "text",
+              setValue: setValue,
+              labelWidth: "17",
+              getData: handleChangeBranch,
+            }}
+          />
+        </div>
+      ) : role === ROLE.SUBMANAGER ? (
+        <h3 style={{ textAlign: "left" }}>
+          SỔ KẾ TOÁN CHI NHÁNH {branchName?.toUpperCase()}
+        </h3>
+      ) : (
+        ""
+      )}
+
       <Box
         sx={{
-          margin: "0px 13px",
+          margin: "7px 0px",
           display: "flex",
           justifyContent: "space-between",
         }}

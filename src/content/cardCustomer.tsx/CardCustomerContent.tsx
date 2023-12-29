@@ -273,7 +273,7 @@ export default function CardCustomerContent() {
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ THẺ KHÁCH HÀNG</h3>
       <>
-        <Box sx={{ margin: "7px 16px" }}>
+        <Box sx={{ margin: "7px 0px" }}>
           <Button
             variant="contained"
             size="small"

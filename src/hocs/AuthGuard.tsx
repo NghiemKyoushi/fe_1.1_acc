@@ -20,9 +20,7 @@ const AuthGuard = (props: AuthGuardProps) => {
   // const [checked, setChecked] = useState(false)
 
   useEffect(() => {
-    console.log("check111111111", isAuthenticated)
-    if (isAuthenticated === undefined) {
-      // console.log("Not authenticated, redirecting");
+    if (isAuthenticated === undefined || isAuthenticated === "") {
       router
         .replace({
           pathname: "/auth/login",

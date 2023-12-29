@@ -185,6 +185,8 @@ export const EmpManagementContent = () => {
   };
   return (
     <Dashboard>
+      <h3 style={{ textAlign: "left" }}>QUẢN LÝ NHÂN VIÊN</h3>
+
       <Box sx={{ margin: "7px 16px" }}>
         <Button
           variant="contained"

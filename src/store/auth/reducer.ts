@@ -18,6 +18,7 @@ const initialState: AuthState = {
   branchName: "",
   employeeId: "",
   roles: "",
+  branch: [],
   error: null,
 };
 
@@ -59,6 +60,7 @@ const reducers = (state = initialState, action: AuthActions) => {
         branchName: action.payload.branchName,
         employeeId: action.payload.employeeId,
         roles: action.payload.roles,
+        branch: action.payload.branch,
         error: null,
       };
     case LOGIN_FAILURE:

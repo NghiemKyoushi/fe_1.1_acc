@@ -404,7 +404,7 @@ export const BillManagementContent = () => {
 
       <Box
         sx={{
-          margin: "0px 13px",
+          margin: "7px 0px",
           display: "flex",
           justifyContent: "space-between",
         }}

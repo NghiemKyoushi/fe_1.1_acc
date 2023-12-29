@@ -18,6 +18,7 @@ export interface AuthState {
   userName: string;
   branchId: string;
   branchName: string;
+  branch: Array<any>
   employeeId: string;
   roles: string;
   error: string | null;
@@ -35,6 +36,7 @@ export interface LoginSuccessPayload {
   branchName: string;
   employeeId: string;
   roles: string;
+  branch: Array<any>
 }
 
 export interface LoginFailurePayload {

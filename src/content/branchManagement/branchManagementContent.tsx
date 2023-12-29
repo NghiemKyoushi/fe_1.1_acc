@@ -177,6 +177,7 @@ export const BranchManagementContent = () => {
   };
   return (
     <Dashboard>
+      <h3 style={{ textAlign: "left" }}>QUẢN LÝ CHI NHÁNH</h3>
       <Box sx={{ margin: "7px 16px" }}>
         <Button
           variant="contained"
@@ -203,7 +204,7 @@ export const BranchManagementContent = () => {
         handleSearch={handleSearch}
         isOpen={isOpenModal}
       />
-       <ViewBranchDrawer
+      <ViewBranchDrawer
         handleCloseDrawer={handleCloseModalEdit}
         isOpen={isOpenModalEdit}
         rowInfo={rowInfo}

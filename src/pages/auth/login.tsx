@@ -31,7 +31,7 @@ export default function SignIn() {
   const employeeId = useSelector((state: RootState) => state.auth.employeeId);
   const roles = useSelector((state: RootState) => state.auth.roles);
   const branchName = useSelector((state: RootState) => state.auth.branchName);
-
+  const branch = useSelector((state: RootState) => state.auth.branch);
   // console.log("selector", token);
   const {
     register,
@@ -55,6 +55,7 @@ export default function SignIn() {
       Cookies.set("branchId", branchId);
       Cookies.set("employeeId", employeeId);
       Cookies.set("roles", roles);
+      Cookies.set("branch",JSON.stringify(branch));
       Cookies.set("branchName", branchName);
       router.push("/invoiceManagement");
     }

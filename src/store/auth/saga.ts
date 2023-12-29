@@ -45,6 +45,7 @@ function* loginSaga(action: any) {
         userName: response.name,
         branchId: response.branches[0].id,
         branchName: response.branches[0].name,
+        branch: response.branches,
         employeeId: response.id,
         roles: response.roles[0].title,
       })

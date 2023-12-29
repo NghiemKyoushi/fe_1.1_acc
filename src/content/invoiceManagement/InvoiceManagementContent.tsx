@@ -396,7 +396,7 @@ export default function InvoiceManagementContent() {
         align: "center",
         valueGetter: ({ row }) => {
           if (row.code === "TOTAL") {
-            return "TỔNG";
+            return "";
           }
           return row.code;
         },
@@ -716,7 +716,7 @@ export default function InvoiceManagementContent() {
       <div>
         <Box
           sx={{
-            margin: "0px 13px",
+            margin: "7px 0px",
             display: "flex",
             justifyContent: "space-between",
           }}

@@ -413,8 +413,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       });
   };
   const totalfee = watch("invoices").reduce(
-    (total, { money }) =>
-      (total += +money - +money * (+watch("percentageFee") / 100)),
+    (total, { money }) => (total += +money),
     0
   );
   const columns: GridColDef<InvoiceCreate>[] = useMemo(
@@ -887,7 +886,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>
-                <LabelComponent>Tổng tiền chi</LabelComponent>
+                <LabelComponent>Tổng giao dịch</LabelComponent>
                 <TextFieldCustom
                   type={"text"}
                   disable="true"
