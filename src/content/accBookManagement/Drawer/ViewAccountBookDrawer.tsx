@@ -32,6 +32,7 @@ export interface ViewAccountBookProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
   rowInfo: any;
+  handleSearch: () => void;
 }
 export const listTranType = [
   { key: "INTAKE", values: "Thu" },
@@ -40,7 +41,7 @@ export const listTranType = [
   { key: "REPAYMENT", values: "Thu nợ" },
 ];
 export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
-  const { isOpen, handleCloseDrawer, rowInfo } = props;
+  const { isOpen, handleCloseDrawer,handleSearch, rowInfo } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imagePath, setImagePath] = useState("");
@@ -126,7 +127,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           variant: "success",
         });
         handleCloseDrawer();
-        // handleSearch();
+        handleSearch();
       })
       .catch(function (error) {
         enqueueSnackbar("Cập nhật bút toán thất bại", { variant: "error" });

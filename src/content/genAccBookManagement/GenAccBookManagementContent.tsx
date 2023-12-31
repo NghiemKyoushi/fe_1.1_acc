@@ -578,6 +578,7 @@ export const GenAccBookManagementContent = () => {
         handleCloseDrawer={handleCloseViewModal}
         isOpen={isOpenViewModal}
         rowInfo={rowInfo}
+        handleSearch={handleSearch}
       />
       <DialogDeleteComponent
         openDialog={isDeleteForm}
