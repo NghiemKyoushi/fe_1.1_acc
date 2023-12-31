@@ -33,11 +33,11 @@ export const fetcCardByCustomerId = (props: CardByCusIdProps) => {
 };
 
 //sendImage
-export const fetchSaveImage = (props: any) => {
-  const formData = new FormData();
-  formData.append("file", props);
-  return authApi.post("/api/files", formData);
-};
+// export const fetchSaveImage = (props: any) => {
+//   const formData = new FormData();
+//   formData.append("file", props);
+//   return authApi.post("/api/files", formData);
+// };
 export const fetchGetImage = (props: any) => {
   const formData = new FormData();
   formData.append("file", props);

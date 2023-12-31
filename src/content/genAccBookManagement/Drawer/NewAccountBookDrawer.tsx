@@ -2,7 +2,7 @@ import { createNewAccountingBook } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
 import { createNewGenAccountingBook } from "@/api/service/genAccountingBook";
-import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
+import { fetchBranch, fetchRoles, fetchSaveImage } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
@@ -36,6 +36,8 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [imageId, setImageId] = useState("");
+
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
@@ -60,21 +62,31 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       },
     });
   const dispatch = useDispatch();
-  const handleGetFile = (file: any) => {};
 
+  const handleGetFile = (file: any) => {
+    fetchSaveImage(file[0])
+      .then((res) => {
+        setImageId(res.data);
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
+      });
+  };
   const handleCreateUser = async () => {
     const { name, code, phoneNumber, entryType, explanation, transactionType } =
       getValues();
+    if (imageId === "") {
+      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
+      return;
+    }
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
       moneyAmount: 1000,
       explanation: explanation,
       branchId: branchId,
-      imageId: "",
+      imageId: imageId,
     };
-    console.log("bodySend", bodySend);
-
     createNewGenAccountingBook(bodySend)
       .then((res) => {
         enqueueSnackbar("Tạo bút toán thành công!!", { variant: "success" });

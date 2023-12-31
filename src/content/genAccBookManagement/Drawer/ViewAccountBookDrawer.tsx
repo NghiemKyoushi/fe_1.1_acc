@@ -4,7 +4,12 @@ import {
 } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
-import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
+import {
+  fetchBranch,
+  fetchImagePath,
+  fetchRoles,
+  fetchSaveImage,
+} from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
@@ -38,10 +43,12 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   const { isOpen, handleCloseDrawer, rowInfo } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [imagePath, setImagePath] = useState("");
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
   const branchId = cookieSetting.get("branchId");
+  const [imageId, setImageId] = useState("");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm({
@@ -61,9 +68,16 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
         imageId: "",
       },
     });
-
+  const getPathImage = async (id: string) => {
+    const getFile = await fetchImagePath(id);
+    return getFile;
+  };
   useEffect(() => {
     if (rowInfo) {
+      getPathImage(rowInfo.imageId).then((res) => {
+        URL.createObjectURL(res.data);
+        setImagePath(URL.createObjectURL(res.data));
+      });
       reset({
         name: rowInfo?.name,
         code: rowInfo?.code,
@@ -84,17 +98,25 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
     }
   }, [rowInfo]);
   const dispatch = useDispatch();
-  const handleGetFile = (file: any) => {};
-
+  const handleGetFile = (file: any) => {
+    fetchSaveImage(file[0])
+      .then((res) => {
+        setImageId(res.data);
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
+      });
+  };
   const handleUpdate = async () => {
-    const { name, code, entryType, explanation, transactionType } = getValues();
+    const { imageId, entryType, moneyAmount, explanation, transactionType } =
+      getValues();
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
-      moneyAmount: 1000,
+      moneyAmount: +moneyAmount,
       explanation: explanation,
       branchId: branchId,
-      imageId: "",
+      imageId: imageId,
     };
     updateDetailAccountingBook(rowInfo.id, bodySend)
       .then((res) => {
@@ -203,7 +225,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
             />
           </div>
           <div style={{ marginTop: 20 }}>
-            <ImageUpload handleGetFile={handleGetFile} filePath="" />
+            <ImageUpload handleGetFile={handleGetFile} filePath={imagePath} />
           </div>
           <Button
             style={{ position: "fixed", bottom: 50, right: 32 }}
