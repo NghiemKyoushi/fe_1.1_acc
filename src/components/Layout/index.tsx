@@ -98,13 +98,13 @@ export default function Dashboard(props: DashboardProps) {
   }, [cookieSetting.get("roles")]);
 
   const handleSignOut = async () => {
-    // window.location.reload();
     dispatch(logout());
     Cookies.set("token", "", { expires: new Date(2000, 0, 1) });
     Cookies.remove("userName");
     Cookies.remove("employeeId");
     Cookies.remove("roles");
     Cookies.remove("branchName");
+    Cookies.remove("branchCode");
     Cookies.remove("branchId");
     router.push("/auth/login");
   };

@@ -74,13 +74,12 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       name: name,
       paymentDueDate: getDate.toISOString(),
       paymentLimit: 0,
-      nationalId: "1234567",
+      nationalId: "99",
     };
     fetchCreateCardCustomer(bodySend)
       .then((res) => {
         enqueueSnackbar("Tạo thẻ khách thành công!!", { variant: "success" });
         handleCloseDrawer();
-
         handleSearch();
       })
       .catch(function (error) {

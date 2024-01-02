@@ -76,8 +76,7 @@ export const BillManagementContent = () => {
   const isLoading = useSelector(
     (state: RootState) => state.billManagement.isLoading
   );
-  const [searchCondition, setSearchCondition] =
-    useState<any>(initialPosSearch);
+  const [searchCondition, setSearchCondition] = useState<any>(initialPosSearch);
 
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
@@ -118,11 +117,18 @@ export const BillManagementContent = () => {
     setOpenConfirmDialog(false);
   };
   const handleGetListOfSelect = (value: Array<string | number>) => {
+    console.log("value",value)
     setListOfSelection(value);
   };
   const handleConfirmInvoice = () => {
     const { explanation } = getValues();
-    if (listOfSelection.length < 1) {
+    if (explanation === "") {
+      enqueueSnackbar("Vui lòng nhập diễn giải", {
+        variant: "warning",
+      });
+      return;
+    }
+    if (imageId === "") {
       enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", {
         variant: "warning",
       });

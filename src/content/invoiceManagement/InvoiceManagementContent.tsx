@@ -30,6 +30,7 @@ import InvoiceDrawer from "./Drawer/InvoiceDrawer";
 import { Box, Button, IconButton } from "@mui/material";
 import styled from "styled-components";
 import {
+  cookieSetting,
   formatDate,
   formatDateTime,
   getDateOfPresent,
@@ -82,7 +83,7 @@ nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 const initialInvoiceSearch = {
   page: 0,
   pageSize: 10,
-  sorter: "code",
+  sorter: "createdDate",
   sortDirection: "DESC",
   fromCreatedDate: previous.toISOString(),
   toCreatedDate: nextDay.toISOString(),
@@ -139,7 +140,7 @@ export default function InvoiceManagementContent() {
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [receiptsId, setReceiptsId] = useState("");
   const [imageId, setImageId] = useState("");
-
+  const branchCodes = cookieSetting.get("branchCode");
   const listOfInvoice = useSelector(
     (state: RootState) => state.invoiceManagement.listOfInvoice
   );
@@ -152,7 +153,10 @@ export default function InvoiceManagementContent() {
   const isLoading = useSelector(
     (state: RootState) => state.invoiceManagement.isLoading
   );
-  const [searchCondition, setSearchCondition] = useState(initialInvoiceSearch);
+  const [searchCondition, setSearchCondition] = useState({
+    ...initialInvoiceSearch,
+    branchCodes: branchCodes,
+  });
   const [openApprovingDialog, setOpenApprovingDialog] = useState(false);
 
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =

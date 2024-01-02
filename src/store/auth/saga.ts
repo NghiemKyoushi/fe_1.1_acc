@@ -45,8 +45,8 @@ function* loginSaga(action: any) {
     Cookies.set("branchId", response.branches[0].id);
     Cookies.set("employeeId", response.branches[0].name);
     Cookies.set("roles", response.roles[0].title);
-    Cookies.set("branch", JSON.stringify(response.branches));
     Cookies.set("branchName", response.branches[0].name);
+    Cookies.set("branchCode", response.branches[0].code);
     yield put(
       loginSuccess({
         token: response.token,

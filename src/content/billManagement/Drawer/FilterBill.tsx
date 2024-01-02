@@ -467,7 +467,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
             <TableDataComponent
               columns={columns}
               dataInfo={listOfBills}
-              // itemFilter={itemFilter}
+              rowCount={100}
               handleSortModelChange={handleSortModelChange}
               loading={isLoading}
               isPage={true}

@@ -41,7 +41,6 @@ import {
   ReceiptCreationParams,
   ValueFormCreate,
 } from "@/models/InvoiceManagement";
-import NewCardCustomer from "./NewCardCustomer";
 import { enqueueSnackbar } from "notistack";
 import {
   fetchCreateInvoice,
@@ -51,6 +50,7 @@ import { randomId } from "@mui/x-data-grid-generator";
 import { InputNumber } from "@/components/common/InputCustom";
 import ImageUpload from "@/components/common/ImageUpload";
 import _ from "lodash";
+import NewCardCustomer from "@/content/cardCustomer.tsx/Drawer/NewCardCustomer";
 const initialRow = [
   {
     id: randomId(),
@@ -744,7 +744,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     },
     [rows2]
   );
-
+  const handleSearchCheck = () => {};
   return (
     <>
       <DrawerCustom
@@ -919,6 +919,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           <NewCardCustomer
             isOpen={isOpenCard}
             handleCloseDrawer={handleCloseAddCard}
+            handleSearch={handleSearchCheck}
           />
         </form>
       </DrawerCustom>

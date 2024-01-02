@@ -255,7 +255,7 @@ export default function TableDataComponent(props: FilterCOmponent) {
     return updatedRow;
   };
   const handleGetSelect = (newSelectionModel: GridSelectionModel) => {
-    if (newSelectionModel && newSelectionModel.length > 0) {
+    if (newSelectionModel) {
       handleGetListOfSelect?.(newSelectionModel);
     }
   };
@@ -307,7 +307,6 @@ export default function TableDataComponent(props: FilterCOmponent) {
           }
         }}
         rowHeight={40}
-        // disableSelectionOnClick ={true}
         getRowId={getRowId}
         // onFilterModelChange={(model) => setFilterModel(model)}
         components={{
