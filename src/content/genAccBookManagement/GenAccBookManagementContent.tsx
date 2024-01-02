@@ -40,10 +40,10 @@ import { useForm } from "react-hook-form";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import SearchDrawer from "./Drawer/SearchDrawer";
-
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 const date = new Date();
 const previous = new Date(date.getTime());
-previous.setDate(date.getDate() - 7);
+previous.setDate(date.getDate() - 30);
 const offsetInMinutes = previous.getTimezoneOffset();
 previous.setMinutes(previous.getMinutes() - offsetInMinutes);
 const dateNext = new Date();
@@ -485,13 +485,19 @@ export const GenAccBookManagementContent = () => {
                     color="info"
                     onClick={() => handleOpenViewDrawer(row.id)}
                   >
-                    <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                    {row.entryCode === null ? (
+                      <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                    ) : (
+                      <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                    )}
                   </IconButton>
                   <IconButton
                     color="error"
                     onClick={() => handleOpenDeleteForm(row.id)}
                   >
-                    <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                    {row.entryCode === null && (
+                      <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                    )}
                   </IconButton>
                 </>
               )}

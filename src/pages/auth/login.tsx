@@ -25,14 +25,15 @@ const defaultTheme = createTheme();
 export default function SignIn() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state.auth.token);
-  const userName = useSelector((state: RootState) => state.auth.userName);
-  const branchId = useSelector((state: RootState) => state.auth.branchId);
-  const employeeId = useSelector((state: RootState) => state.auth.employeeId);
-  const roles = useSelector((state: RootState) => state.auth.roles);
-  const branchName = useSelector((state: RootState) => state.auth.branchName);
-  const branch = useSelector((state: RootState) => state.auth.branch);
+  // const token = useSelector((state: RootState) => state.auth.token);
+  // const userName = useSelector((state: RootState) => state.auth.userName);
+  // const branchId = useSelector((state: RootState) => state.auth.branchId);
+  // const employeeId = useSelector((state: RootState) => state.auth.employeeId);
+  // const roles = useSelector((state: RootState) => state.auth.roles);
+  // const branchName = useSelector((state: RootState) => state.auth.branchName);
+  // const branch = useSelector((state: RootState) => state.auth.branch);
   // console.log("selector", token);
+  const tokenCookie = Cookies.get("token");
   const {
     register,
     handleSubmit,
@@ -46,22 +47,8 @@ export default function SignIn() {
       password: "",
     },
   });
-
-  useEffect(() => {
-    console.log("token", token)
-    if (token !== '') {
-      Cookies.set("token", token, { expires: 1 / 24 });
-      Cookies.set("userName", userName);
-      Cookies.set("branchId", branchId);
-      Cookies.set("employeeId", employeeId);
-      Cookies.set("roles", roles);
-      Cookies.set("branch",JSON.stringify(branch));
-      Cookies.set("branchName", branchName);
-      router.push("/invoiceManagement");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
   const callback = (data: any) => {
+    router.push("/invoiceManagement");
     console.log("Inside callback after login");
   };
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {

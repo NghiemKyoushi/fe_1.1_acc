@@ -33,7 +33,7 @@ import { fetchSaveImage } from "@/api/service/invoiceManagement";
 
 const date = new Date();
 const previous = new Date(date.getTime());
-previous.setDate(date.getDate() - 7);
+previous.setDate(date.getDate() - 30);
 export const initialPosSearch = {
   fromCreatedDate: new Date(
     previous.getTime() - previous.getTimezoneOffset() * 60000
@@ -215,6 +215,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       .then((res) => {
         enqueueSnackbar("Khớp bill thành công", { variant: "success" });
         handleSearch();
+        setListOfSelection([]);
         handleCloseConfirmBillDialog();
       })
       .catch(function (error) {
@@ -472,6 +473,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
               isPage={true}
               getRowId={getRowId}
               checkboxSelection={true}
+              selectionModel={listOfSelection}
               handleGetListOfSelect={handleGetListOfSelect}
             />
           </Box>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { all, call, put, takeLatest } from "redux-saga/effects";
+import Cookies from "js-cookie";
 
 import {
   loginFailure,
@@ -39,6 +40,13 @@ function* loginSaga(action: any) {
       code: action.payload.values.email,
       password: action.payload.values.password,
     });
+    Cookies.set("token", response.token, { expires: 1 / 24 });
+    Cookies.set("userName", response.name);
+    Cookies.set("branchId", response.branches[0].id);
+    Cookies.set("employeeId", response.branches[0].name);
+    Cookies.set("roles", response.roles[0].title);
+    Cookies.set("branch", JSON.stringify(response.branches));
+    Cookies.set("branchName", response.branches[0].name);
     yield put(
       loginSuccess({
         token: response.token,

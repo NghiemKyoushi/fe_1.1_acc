@@ -74,7 +74,7 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
 };
 const date = new Date();
 const previous = new Date(date.getTime());
-previous.setDate(date.getDate() - 7);
+previous.setDate(date.getDate() - 30);
 const offsetInMinutes = previous.getTimezoneOffset();
 previous.setMinutes(previous.getMinutes() - offsetInMinutes);
 const dateNext = new Date();

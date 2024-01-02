@@ -70,7 +70,7 @@ import { RepayDialogComponent } from "./Drawer/RepayDialog";
 
 const date = new Date();
 const previous = new Date(date.getTime());
-previous.setDate(date.getDate() - 7);
+previous.setDate(date.getDate() - 30);
 const offsetInMinutes = previous.getTimezoneOffset();
 previous.setMinutes(previous.getMinutes() - offsetInMinutes);
 const dateNext = new Date();
@@ -291,9 +291,6 @@ export default function InvoiceManagementContent() {
 
     const offsetInMinutes2 = toDate.getTimezoneOffset();
     toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
-
-    // const formatDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
-
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
@@ -334,7 +331,6 @@ export default function InvoiceManagementContent() {
         enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
       });
   };
-
   const handleOpenApproveDialog = (id: string) => {
     setValue("formConfirm.receiptId", id);
     setOpenApprovingDialog(true);

@@ -27,8 +27,17 @@ export interface NewUserPrarams {
   email?: string;
   phoneNumber?: string;
   password?: string;
-  roleIds: Array<string>;
-  branchIds?: Array<string>;
+  roleIds: Array<any>;
+  branchIds?: Array<any>;
+}
+export interface EditUserPrarams {
+  name?: string;
+  code?: string;
+  email?: string;
+  phoneNumber?: string;
+  password?: string;
+  roles: Array<any>;
+  branches?: Array<any>;
 }
 export interface valueForm {
   name?: string;

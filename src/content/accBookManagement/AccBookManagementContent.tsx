@@ -43,10 +43,11 @@ import { DialogConfirmComponent } from "./Drawer/DialogConfirm";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import Cookies from "js-cookie";
 import { fetchBranch } from "@/actions/BranchManagementAction";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 const date = new Date();
 const previous = new Date(date.getTime());
-previous.setDate(date.getDate() - 7);
+previous.setDate(date.getDate() - 30);
 const offsetInMinutes = previous.getTimezoneOffset();
 previous.setMinutes(previous.getMinutes() - offsetInMinutes);
 const dateNext = new Date();
@@ -251,10 +252,9 @@ export const AccBookManagementContent = () => {
   }, [searchCondition]);
   const getDataCustomerFromApi = (value: string) => {};
   const handleChangeBranch = (value: string) => {
-    console.log("branch", branch)
-    const getBranch = branch?.find((item) => item.values
-    === value);
-    console.log("getBranch", getBranch)
+    console.log("branch", branch);
+    const getBranch = branch?.find((item) => item.values === value);
+    console.log("getBranch", getBranch);
     if (getBranch) {
       const paramSearch = {
         ...searchCondition,
@@ -285,6 +285,7 @@ export const AccBookManagementContent = () => {
               <Box width={198} sx={{ padding: "12px 0px" }}>
                 <DateRangePicker
                   setvalue={setValue}
+                  watch={watch}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
                 />
@@ -538,13 +539,19 @@ export const AccBookManagementContent = () => {
                     color="info"
                     onClick={() => handleOpenViewDrawer(row.id)}
                   >
-                    <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                    {row.entryCode === null ? (
+                      <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                    ) : (
+                      <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                    )}
                   </IconButton>
                   <IconButton
                     color="error"
                     onClick={() => handleOpenDeleteForm(row.id)}
                   >
-                    <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                    {row.entryCode === null && (
+                      <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                    )}
                   </IconButton>
                 </>
               )}
@@ -661,6 +668,7 @@ export const AccBookManagementContent = () => {
         handleCloseDrawer={handleCloseViewModal}
         isOpen={isOpenViewModal}
         rowInfo={rowInfo}
+        handleSearch={handleSearch}
       />
       <DialogDeleteComponent
         openDialog={isDeleteForm}

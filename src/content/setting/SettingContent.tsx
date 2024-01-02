@@ -204,12 +204,12 @@ export const SettingContent = () => {
         renderCell: ({ row }) => {
           return (
             <>
-              <IconButton
+              {/* <IconButton
                 color="info"
                 onClick={() => handleOpenEditEntryType(row, "UPDATE")}
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 color="error"
                 onClick={() => handleOpenDeleteForm(row.id)}

@@ -1,10 +1,13 @@
 import { PosSearchParams } from "@/models/PortManagementModel";
 import { authApi } from "../authApi";
 import { fetchPosParams } from "./type";
-import { EmpManageParamSearch, NewUserPrarams } from "@/models/EmpManagement";
+import { EditUserPrarams, EmpManageParamSearch, NewUserPrarams } from "@/models/EmpManagement";
 
 export const fetchCreateEmp = (praramsBody: NewUserPrarams) => {
   return authApi.post("/api/auth/signup", praramsBody);
+};
+export const fetchUpdateEmp = (id: string, praramsBody: EditUserPrarams) => {
+  return authApi.put(`/api/users/${id}`, praramsBody);
 };
 
 export const fetchEmp = (param: EmpManageParamSearch) => {

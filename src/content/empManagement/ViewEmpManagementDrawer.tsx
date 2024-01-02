@@ -1,12 +1,15 @@
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
-import { fetchCreateEmp } from "@/api/service/empManagementApis";
+import {
+  fetchCreateEmp,
+  fetchUpdateEmp,
+} from "@/api/service/empManagementApis";
 import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
+import { EditUserPrarams, NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { getDateOfPresent } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
@@ -47,23 +50,6 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
           password: "",
         };
       }, [rowInfo]),
-      //   defaultValues: {
-      //     name: "",
-      //     phoneNumber: "",
-      //     code: "",
-      //     branchIds: {
-      //       keys: "",
-      //       value: "",
-      //     },
-      //     roleIds: {
-      //       keys: "",
-      //       value: "",
-      //     },
-      //     startDate: new Date(),
-      //     email: "",
-      //     salary: "",
-      //     password: "",
-      //   },
     });
   useEffect(() => {
     if (rowInfo) {
@@ -96,23 +82,25 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       password,
       email,
     } = getValues();
-    const bodySend: NewUserPrarams = {
+    const bodySend: EditUserPrarams = {
       name: name,
       code: code,
       email: email,
       phoneNumber: phoneNumber,
       password: password,
-      roleIds: roleIds?.keys ? [roleIds?.keys] : [],
-      branchIds: branchIds?.keys ? [branchIds?.keys] : [],
+      roles: [{ id: roleIds?.keys, title: roleIds?.values }],
+      branches: [{ id: branchIds?.keys, name: branchIds?.values }],
     };
-    fetchCreateEmp(bodySend)
+    fetchUpdateEmp(rowInfo.id, bodySend)
       .then((res) => {
-        enqueueSnackbar("Tạo thẻ mới thành công!!", { variant: "success" });
+        enqueueSnackbar("Cập nhật nhân viên thành công!!", {
+          variant: "success",
+        });
         handleCloseDrawer();
         handleSearch();
       })
       .catch(function (error) {
-        enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
+        enqueueSnackbar("Cập nhật nhân viên thất bại", { variant: "error" });
       });
   };
   const getDataCustomerFromApi = (value: string) => {};
@@ -173,7 +161,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   props={{
                     name: "branchIds",
                     placeHoder: "",
-                    results: [],
+                    results: banchList,
                     label: "",
                     type: "text",
                     setValue: setValue,

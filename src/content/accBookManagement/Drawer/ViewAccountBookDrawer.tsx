@@ -41,7 +41,7 @@ export const listTranType = [
   { key: "REPAYMENT", values: "Thu nợ" },
 ];
 export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
-  const { isOpen, handleCloseDrawer,handleSearch, rowInfo } = props;
+  const { isOpen, handleCloseDrawer, handleSearch, rowInfo } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imagePath, setImagePath] = useState("");
@@ -205,7 +205,6 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
                     placeHoder: "",
                     results: accEntryType,
                     label: "",
-                    // getData:((value) => setValue("customerName", value)),
                     type: "text",
                     setValue: setValue,
                     labelWidth: "114",
@@ -230,14 +229,16 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           <div style={{ marginTop: 20 }}>
             <ImageUpload handleGetFile={handleGetFile} filePath={imagePath} />
           </div>
-          <Button
-            style={{ position: "fixed", bottom: 50, right: 32 }}
-            variant="contained"
-            size="medium"
-            onClick={() => handleUpdate()}
-          >
-            Cập nhật
-          </Button>
+          {rowInfo?.entryCode === null && (
+            <Button
+              style={{ position: "fixed", bottom: 50, right: 32 }}
+              variant="contained"
+              size="medium"
+              onClick={() => handleUpdate()}
+            >
+              Cập nhật
+            </Button>
+          )}
         </form>
       </PageContent>
     </DrawerCustom>

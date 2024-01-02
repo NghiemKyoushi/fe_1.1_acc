@@ -213,7 +213,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         values: "",
         nationalId: "",
       },
-      image_Id: "",
+      imageId: "",
       posSearch: "",
       percentageFee: "",
       shipmentFee: "",
@@ -354,7 +354,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       return;
     }
     watch("invoices").map((item, index) => {
-      if (item?.pos.key !== "TOTAL" && item.posId.key !== "") {
+      if (item?.check !== "TOTAL" && item.posId.key !== "") {
         receiptBills.push({
           billId: "",
           posId: item?.posId?.key,

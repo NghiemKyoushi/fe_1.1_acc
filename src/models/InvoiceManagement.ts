@@ -66,7 +66,7 @@ export interface ValueFormCreate {
   codeEmployee: string;
   customerInfo: string;
   customerName: Selection;
-  image_Id: string;
+  imageId: string;
   posSearch: string;
   percentageFee: string;
   shipmentFee: string;

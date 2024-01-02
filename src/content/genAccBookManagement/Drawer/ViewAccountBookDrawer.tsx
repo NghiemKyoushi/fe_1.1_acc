@@ -32,6 +32,7 @@ export interface ViewAccountBookProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
   rowInfo: any;
+  handleSearch: () => void;
 }
 export const listTranType = [
   { key: "INTAKE", values: "Thu" },
@@ -40,7 +41,7 @@ export const listTranType = [
   { key: "REPAYMENT", values: "Thu nợ" },
 ];
 export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
-  const { isOpen, handleCloseDrawer, rowInfo } = props;
+  const { isOpen, handleCloseDrawer, handleSearch, rowInfo } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imagePath, setImagePath] = useState("");
@@ -124,7 +125,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           variant: "success",
         });
         handleCloseDrawer();
-        // handleSearch();
+        handleSearch();
       })
       .catch(function (error) {
         enqueueSnackbar("Cập nhật bút toán thất bại", { variant: "error" });
@@ -159,7 +160,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
     <DrawerCustom
       widthDrawer={550}
       isOpen={isOpen}
-      title="Tạo bút toán"
+      title="Xem/Cập nhật bút toán"
       handleClose={handleCloseDrawer}
     >
       <PageContent>
@@ -202,7 +203,6 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
                     placeHoder: "",
                     results: accEntryType,
                     label: "",
-                    // getData:((value) => setValue("customerName", value)),
                     type: "text",
                     setValue: setValue,
                     labelWidth: "114",
@@ -227,14 +227,16 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           <div style={{ marginTop: 20 }}>
             <ImageUpload handleGetFile={handleGetFile} filePath={imagePath} />
           </div>
-          <Button
-            style={{ position: "fixed", bottom: 50, right: 32 }}
-            variant="contained"
-            size="medium"
-            onClick={() => handleUpdate()}
-          >
-            Cập nhật
-          </Button>
+          {rowInfo?.entryCode === null && (
+            <Button
+              style={{ position: "fixed", bottom: 50, right: 32 }}
+              variant="contained"
+              size="medium"
+              onClick={() => handleUpdate()}
+            >
+              Cập nhật
+            </Button>
+          )}
         </form>
       </PageContent>
     </DrawerCustom>

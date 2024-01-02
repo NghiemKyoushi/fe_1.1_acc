@@ -22,7 +22,11 @@ import { InputSearchPos } from "./InvoiceDrawer";
 import { InputNumber } from "@/components/common/InputCustom";
 import { cookieSetting, getValueWithComma } from "@/utils";
 import { enqueueSnackbar } from "notistack";
-import { fetchImagePath, updateInvoice } from "@/api/service/invoiceManagement";
+import {
+  fetchImagePath,
+  fetchSaveImage,
+  updateInvoice,
+} from "@/api/service/invoiceManagement";
 import ImageUpload from "@/components/common/ImageUpload";
 
 export interface ViewInvoiceDrawerProps {
@@ -82,7 +86,15 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     control,
     name: "invoicesCalculate",
   } as never);
-  const handleGetFile = (file: any) => {};
+  const handleGetFile = (file: any) => {
+    fetchSaveImage(file[0])
+      .then((res) => {
+        setImageId(res.data);
+      })
+      .catch(function (error) {
+        enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
+      });
+  };
   const getPathImage = async (id: string) => {
     const getFile = await fetchImagePath(id);
     return getFile;
@@ -143,6 +155,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         },
         invoices: dataTable,
         invoicesCalculate: invoicesCalculate,
+        imageId: rowInfo?.imageId,
       });
     }
   }, [rowInfo]);
@@ -383,7 +396,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         if (item.pos.key !== "") {
           receiptBills.push({
             billId: "",
-            posId: item?.posId?.key,
+            posId: item?.pos?.key,
             moneyAmount: +item?.money,
             fee: +item?.money * (+watch("percentageFee") / 100),
           });
@@ -393,7 +406,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     });
 
     const request: ReceiptCreationParams = {
-      imageId: "",
+      imageId: watch("imageId"),
       branchId: branchId,
       customerCardId: watch("cardCustomer").key,
       percentageFee: +watch("percentageFee"),
@@ -413,8 +426,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         // handleSearch();
       })
       .catch(function (error) {
-        // console.log("error", error);
-        enqueueSnackbar(error, { variant: "error" });
+        console.log("error", error.response.data.errors)
+        if(error.response.data.errors.length > 0){
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        }else{
+          enqueueSnackbar('Dữ liệu không hợp lệ', { variant: "error" });
+        }
       });
   };
   const getDataCustomerFromApi = (value: string) => {

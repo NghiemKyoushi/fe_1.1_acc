@@ -14,13 +14,15 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { fetchInvoice } from "@/actions/InvoiceManagementActions";
-import { listTranType } from "./NewAccountBookDrawer";
+import { fetchInvoice, fetchPos } from "@/actions/InvoiceManagementActions";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
+import { useEffect, useState } from "react";
+import { fetchBills, fetchSumBills } from "@/actions/BillManagementActions";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
+  searchCondition: any;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
@@ -83,12 +85,16 @@ const offsetInMinutes2 = nextDay.getTimezoneOffset();
 nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 const SearchDrawer = (props: SearchDrawerProps) => {
-  const { isOpen, handleCloseDrawer } = props;
+  const { isOpen, handleCloseDrawer, searchCondition } = props;
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
+  const listOfPos = useSelector(
+    (state: RootState) => state.invoiceManagement.posList
+  );
+  const [posList, setPosList] = useState<Array<any>>([]);
   const dispatch = useDispatch();
-
+console.log("searchCondition", searchCondition)
   const {
     register,
     handleSubmit,
@@ -100,60 +106,71 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     getValues,
   } = useForm({
     defaultValues: {
-      codeInvoice: "",
       fromCreatedDate: new Date(previous),
       toCreatedDate: new Date(),
-      fromTransactionTotal: "",
-      toTransactionTotal: "",
-      entryCode: "",
-      entryType: "",
-      transactionTypes: {
+      code: "",
+      posCode: {
         key: "",
         values: "",
       },
+      fromMoneyAmount: 0,
+      toMoneyAmount: 0,
+      fromFee: 0,
+      toFee: 0,
+      fromEstimatedProfit: 0,
+      toEstimatedProfit: 0,
     },
   });
-  console.log("watch", watch());
   const getDataCustomerFromApi = (value: string) => {
     if (value !== "") {
       // dispatch(fetchSearchCustomer({ customerName: value }));
     }
   };
+  const getPosFromApi = (value: string) => {
+    dispatch(fetchPos({ posName: value }));
+  };
+  useEffect(() => {
+    let result = [];
+    if (listOfPos.length > 0) {
+      result = listOfPos.map((item: any) => {
+        return {
+          values: item.code,
+          key: item.id,
+        };
+      });
+      setPosList(result);
+    }
+  }, [listOfPos]);
   const handleSearch = () => {
     const {
       fromCreatedDate,
       toCreatedDate,
-      entryCode,
-      entryType,
-      toTransactionTotal,
-      fromTransactionTotal,
-      transactionTypes,
+      code,
+      fromMoneyAmount,
+      toMoneyAmount,
+      fromEstimatedProfit,
+      toEstimatedProfit,
+      posCode,
     } = getValues();
-    let arr: any[] = [];
-    if (transactionTypes.key !== "") {
-      arr.push(transactionTypes.key);
-    }
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
     fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
 
     const gettoDate = new Date(toCreatedDate);
     const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
-
     const bodySend = {
-      page: 0,
-      pageSize: 10,
-      sorter: "createdDate",
-      sortDirection: "DESC",
-      entryCode: entryCode,
-      transactionTypes: arr,
-      fromTransactionTotal: fromTransactionTotal,
-      toTransactionTotal: toTransactionTotal,
+      ...searchCondition,
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
+      posCode: posCode?.values,
+      code: code,
+      fromMoneyAmount: fromMoneyAmount === 0 ? "" : fromMoneyAmount,
+      toMoneyAmount: toMoneyAmount === 0 ? "" : toMoneyAmount,
+      fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
+      toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
     };
-    dispatch(fetchAccBook(bodySend));
-    dispatch(fetchSumAccBook(bodySend));
+    dispatch(fetchBills(bodySend));
+    dispatch(fetchSumBills(bodySend));
   };
   return (
     <DrawerCustom
@@ -167,48 +184,57 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           <StyleInputContainer style={{ width: "100%" }}>
             <LabelComponent require={true}>Thời gian</LabelComponent>
             <DateRangePicker
-              setvalue={setValue}
               watch={watch}
+              setvalue={setValue}
               fromdatename={"fromCreatedDate"}
               todatename={"toCreatedDate"}
             />
           </StyleInputContainer>
           <StyleInputContainer style={{ maxWidth: 273 }}>
-            <LabelComponent require={true}>Mã bút toán</LabelComponent>
+            <LabelComponent require={true}>Mã bill</LabelComponent>
             <TextFieldCustom
               type={"text"}
-              {...register("entryCode")}
+              {...register("code")}
               style={{ width: 221 }}
             />
           </StyleInputContainer>
           <StyleInputContainer>
-            <LabelComponent require={true}>Loại giao dịch</LabelComponent>
+            <LabelComponent require={true}>Pos</LabelComponent>
             <SelectSearchComponent
               control={control}
               props={{
-                name: "transactionTypes",
+                name: "posCode",
                 placeHoder: "",
-                results: listTranType,
+                results: posList,
                 label: "",
                 // getData:((value) => setValue("customerId", value)),
                 type: "text",
                 setValue: setValue,
                 labelWidth: "59",
-                getData: getDataCustomerFromApi,
+                getData: getPosFromApi,
               }}
             />
           </StyleInputContainer>
           <StyleInputContainer>
-            <LabelComponent require={true}>Số tiền</LabelComponent>
+            <LabelComponent require={true}>Tổng giao dịch</LabelComponent>
             <RangeNumberFilter
               setvalue={setValue}
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromTransactionTotal"
-              toNumberName="toTransactionTotal"
+              fromNumberName="fromMoneyAmount"
+              toNumberName="toMoneyAmount"
             />
           </StyleInputContainer>
-
+          <StyleInputContainer>
+            <LabelComponent require={true}>Ước tính</LabelComponent>
+            <RangeNumberFilter
+              setvalue={setValue}
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromEstimatedProfit"
+              toNumberName="toEstimatedProfit"
+            />
+          </StyleInputContainer>
           <div>
             <Button
               style={{ marginTop: 20 }}

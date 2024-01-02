@@ -13,5 +13,5 @@ export const createNewBranch = async (body: BranchParamSend) => {
 };
 
 export const updateNewBranch = async (id: string, body: BranchParamSend) => {
-    return authApi.post(`/api/branches/${id}`, body);
+    return authApi.put(`/api/branches/${id}`, body);
   };

@@ -10,19 +10,10 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useSelector } from "react-redux";
 import { RootState } from "@/reducers/rootReducer";
-import {
-  EmpManageParamSearch,
-  EmpManageSearchResult,
-} from "@/models/EmpManagement";
 import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
-import { ColAccountBook } from "@/models/AccountingBookModel";
-import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import {
   formatDate,
   formatDateTime,
@@ -34,7 +25,6 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import { useForm } from "react-hook-form";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import SelectSearchComponent from "@/components/common/AutoComplete";
 import { fetchBills, fetchSumBills } from "@/actions/BillManagementActions";
 import { ColBillInfo } from "@/models/BillManagementModel";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
@@ -43,10 +33,11 @@ import { ConfirmBillsDialogComponent } from "./Drawer/ConfirmBills";
 import { enqueueSnackbar } from "notistack";
 import { fetchConfirmFilterBill } from "@/api/service/billManagement";
 import { fetchSaveImage } from "@/api/service/invoiceManagement";
+import SearchDrawer from "./Drawer/SearchDrawer";
 
 const date = new Date();
 const previous = new Date(date.getTime());
-previous.setDate(date.getDate() - 7);
+previous.setDate(date.getDate() - 30);
 const offsetInMinutes = previous.getTimezoneOffset();
 previous.setMinutes(previous.getMinutes() - offsetInMinutes);
 const dateNext = new Date();
@@ -66,6 +57,8 @@ export const initialPosSearch = {
 export const BillManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
+
   const [listOfSelection, setListOfSelection] = useState<
     Array<string | number>
   >([]);
@@ -84,7 +77,7 @@ export const BillManagementContent = () => {
     (state: RootState) => state.billManagement.isLoading
   );
   const [searchCondition, setSearchCondition] =
-    useState<EmpManageParamSearch>(initialPosSearch);
+    useState<any>(initialPosSearch);
 
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
@@ -99,6 +92,12 @@ export const BillManagementContent = () => {
       },
     });
   const dispatch = useDispatch();
+  const handleCloseSearchDrawer = () => {
+    setIsOpenSearchDrawer(false);
+  };
+  const handleOpenSearchDrawer = () => {
+    setIsOpenSearchDrawer(true);
+  };
   const handleOpenModal = () => {
     setIsOpenModal(true);
   };
@@ -223,6 +222,7 @@ export const BillManagementContent = () => {
               <Box width={198} sx={{ padding: "12px 0px" }}>
                 <DateRangePicker
                   setvalue={setValue}
+                  watch={watch}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
                 />
@@ -419,7 +419,7 @@ export const BillManagementContent = () => {
         <Button
           variant="contained"
           size="small"
-          // onClick={() => handleOpenSearchDrawer()}
+          onClick={() => handleOpenSearchDrawer()}
         >
           Tìm kiếm
         </Button>
@@ -478,6 +478,11 @@ export const BillManagementContent = () => {
         </Button>
       </Box>
       <FilterBill handleCloseDrawer={handleCloseModal} isOpen={isOpenModal} />
+      <SearchDrawer
+        handleCloseDrawer={handleCloseSearchDrawer}
+        isOpen={isOpenSearchDrawer}
+        searchCondition={searchCondition}
+      />
     </Dashboard>
   );
 };

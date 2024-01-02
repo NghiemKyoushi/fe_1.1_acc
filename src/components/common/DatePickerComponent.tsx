@@ -8,13 +8,14 @@ import dayjs from "dayjs";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import { TextFieldCustom } from "./Textfield";
 import { formatDate, getDateOfPresent } from "@/utils";
-import { UseFormSetValue } from "react-hook-form";
+import { UseFormSetValue, UseFormWatch } from "react-hook-form";
 import vi from "date-fns/locale/vi";
 export interface DateRangePickerProps {
   fromdatename: string;
   todatename: string;
   setvalue: UseFormSetValue<any>;
   // inputValue: string;
+  watch?: UseFormWatch<any>;
 }
 export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
   (props, ref) => {
@@ -22,7 +23,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     const dateFormat = "DD/MM/YYYY";
     const date = new Date();
     const previous = new Date(date.getTime());
-    previous.setDate(date.getDate() - 7);
+    previous.setDate(date.getDate() - 30);
     const [state, setState] = useState({
       displayCalendar: false,
       inputValue: `${formatDate(previous)}-${getDateOfPresent()}`,
