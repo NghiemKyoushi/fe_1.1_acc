@@ -117,7 +117,6 @@ export const BillManagementContent = () => {
     setOpenConfirmDialog(false);
   };
   const handleGetListOfSelect = (value: Array<string | number>) => {
-    console.log("value",value)
     setListOfSelection(value);
   };
   const handleConfirmInvoice = () => {

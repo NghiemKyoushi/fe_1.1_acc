@@ -98,6 +98,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
         imageId: rowInfo?.imageId,
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
   const dispatch = useDispatch();
   const handleGetFile = (file: any) => {
@@ -162,7 +163,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
     <DrawerCustom
       widthDrawer={550}
       isOpen={isOpen}
-      title="Tạo bút toán"
+      title="Xem/Cập nhật bút toán"
       handleClose={handleCloseDrawer}
     >
       <PageContent>

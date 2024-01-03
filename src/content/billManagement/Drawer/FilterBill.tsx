@@ -95,7 +95,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         explanation: "",
       },
     });
-  // console.log("watch", watch());
   const handleSearch = () => {
     const {
       fromCreatedDate,
@@ -105,9 +104,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       posId,
       moneyAmount,
     } = getValues();
-    // console.log("fromCreatedDate",fromCreatedDate );
-    // console.log("toCreatedDate",toCreatedDate );
-
     const fromDate = new Date(fromCreatedDate);
     const toDate = new Date(toCreatedDate);
     let arr: any[] = [];
@@ -121,7 +117,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       moneyAmount: +moneyAmount,
     };
     dispatch(fetchFilterBills(bodySend));
-    // dispatch(fetchSumBills(bodySend));
   };
   const handleGetFile = async (file: Array<any>) => {
     fetchSaveImage(file[0])

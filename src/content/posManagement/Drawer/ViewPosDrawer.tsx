@@ -71,7 +71,6 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
           });
         }
       );
-      // setValue("posFeeTable", getCard);
       reset({
         code: rowInfo.code,
         name: rowInfo.name,
@@ -87,7 +86,6 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
     control,
     name: "posFeeTable",
   });
-  console.log("ưatch", watch());
   const columnsOther: GridColDef[] = useMemo(
     () => [
       {
@@ -172,7 +170,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
       <DrawerCustom
         widthDrawer={540}
         isOpen={isOpen}
-        title="Tạo mã pos"
+        title="Xem/Cập nhật mã pos"
         handleClose={handleCloseDrawer}
       >
         <form style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>

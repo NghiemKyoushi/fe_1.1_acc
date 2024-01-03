@@ -94,7 +94,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   );
   const [posList, setPosList] = useState<Array<any>>([]);
   const dispatch = useDispatch();
-console.log("searchCondition", searchCondition)
   const {
     register,
     handleSubmit,

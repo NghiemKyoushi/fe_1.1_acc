@@ -1,6 +1,9 @@
 import { fetchAllCard } from "@/actions/CardCustomerActions";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
-import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
+import {
+  fetchCreateCardCustomer,
+  updateCardCustomer,
+} from "@/api/service/cardCustomerApis";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
@@ -30,17 +33,16 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       defaultValues: {
         customerId: {
           key: "",
-          value: "",
+          values: "",
         },
         cardTypeId: {
           key: "",
-          value: "",
+          values: "",
         },
         name: "",
         bank: "",
         accountNumber: "",
         paymentDueDate: new Date(),
-        nationalId: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -63,7 +65,6 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       customerId,
       cardTypeId,
       paymentDueDate,
-      nationalId,
     } = getValues();
 
     const getDate = new Date(paymentDueDate);
@@ -77,7 +78,7 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       paymentLimit: 0,
       nationalId: "1234567",
     };
-    fetchCreateCardCustomer(bodySend)
+    updateCardCustomer(rowInfo.id, bodySend)
       .then((res) => {
         enqueueSnackbar("Tạo thẻ khách thành công!!", { variant: "success" });
         handleCloseDrawer();
@@ -85,14 +86,31 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
         handleSearch();
       })
       .catch(function (error) {
-        // handle error
         enqueueSnackbar("Tạo thẻ khách thất bại !!", { variant: "error" });
       });
   };
   useEffect(() => {
     dispatch(fetchAllCard());
   }, []);
-
+  console.log("rowInfo", rowInfo);
+  console.log("watch444", watch());
+  useEffect(() => {
+    reset({
+      customerId: {
+        key: rowInfo.customer.id,
+        values: rowInfo.customer.name,
+      },
+      cardTypeId: {
+        key: rowInfo.cardType.id,
+        values: rowInfo.cardType.name,
+      },
+      name: rowInfo.name,
+      bank: rowInfo.bank,
+      accountNumber: rowInfo.accountNumber,
+      paymentDueDate: new Date(rowInfo.paymentDueDate),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowInfo]);
   return (
     <DrawerCustom
       widthDrawer={270}

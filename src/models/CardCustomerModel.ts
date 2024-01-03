@@ -84,7 +84,7 @@ export interface CardType {
 }
 export interface SearchForm {
   key: string;
-  value: string;
+  values: string;
 }
 export interface cardType {
   id: string;

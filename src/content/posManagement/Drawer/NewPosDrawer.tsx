@@ -76,7 +76,6 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     control,
     name: "posFeeTable",
   });
-   console.log('ưatch', watch())
   const columnsOther: GridColDef[] = useMemo(
     () => [
       {
