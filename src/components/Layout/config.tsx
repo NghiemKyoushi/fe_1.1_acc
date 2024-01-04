@@ -1,10 +1,7 @@
 "use client";
-
-import BarChartIcon from "@mui/icons-material/BarChart";
 import { SvgIcon } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
-import FaceIcon from "@mui/icons-material/Face";
 import LoginIcon from "@mui/icons-material/Login";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CallToActionOutlinedIcon from "@mui/icons-material/CallToActionOutlined";

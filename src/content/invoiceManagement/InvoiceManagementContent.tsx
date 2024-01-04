@@ -30,6 +30,7 @@ import InvoiceDrawer from "./Drawer/InvoiceDrawer";
 import { Box, Button, IconButton } from "@mui/material";
 import styled from "styled-components";
 import {
+  ROLE,
   cookieSetting,
   formatDate,
   formatDateTime,
@@ -62,7 +63,6 @@ import {
 } from "@/api/service/invoiceManagement";
 import { enqueueSnackbar } from "notistack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import clsx from "clsx";
 import ViewInvoiceDrawer from "./Drawer/ViewInvoiceDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
@@ -141,6 +141,9 @@ export default function InvoiceManagementContent() {
   const [receiptsId, setReceiptsId] = useState("");
   const [imageId, setImageId] = useState("");
   const branchCodes = cookieSetting.get("branchCode");
+  const role = cookieSetting.get("roles");
+  const employeeId = cookieSetting.get("employeeId");
+
   const listOfInvoice = useSelector(
     (state: RootState) => state.invoiceManagement.listOfInvoice
   );
@@ -155,7 +158,8 @@ export default function InvoiceManagementContent() {
   );
   const [searchCondition, setSearchCondition] = useState({
     ...initialInvoiceSearch,
-    branchCodes: branchCodes,
+    branchCodes: role !== ROLE.ADMIN ? branchCodes : "",
+    employeeId: role === ROLE.EMPLOYEE ? employeeId : "",
   });
   const [openApprovingDialog, setOpenApprovingDialog] = useState(false);
 
@@ -311,6 +315,7 @@ export default function InvoiceManagementContent() {
       toLoan: toLoan === 0 ? "" : toLoan,
       toPayout: toPayout === 0 ? "" : toPayout,
       toRepayment: toRepayment === 0 ? "" : toRepayment,
+      employeeId: role === ROLE.EMPLOYEE ? employeeId : "",
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };
@@ -638,7 +643,7 @@ export default function InvoiceManagementContent() {
                 color="success"
                 onClick={() => handleOpenApproveDialog(row.id)}
               >
-                {row.code === null ? (
+                {row.code === null && role !== ROLE.EMPLOYEE ? (
                   <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
                 ) : (
                   <div></div>
@@ -750,7 +755,11 @@ export default function InvoiceManagementContent() {
           >
             <TableDataComponent
               columns={columns}
-              dataInfo={[sumInvoiceRow, ...listOfInvoice]}
+              dataInfo={
+                listOfInvoice.length !== 0
+                  ? [sumInvoiceRow, ...listOfInvoice]
+                  : []
+              }
               onPageChange={onPageChange}
               onPageSizeChange={onPageSizeChange}
               page={pagination?.pageNumber}

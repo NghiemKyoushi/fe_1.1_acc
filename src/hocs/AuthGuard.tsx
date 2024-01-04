@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import PropTypes from "prop-types";
 import { cookieSetting } from "@/utils";
-// import { useStateContext } from "@/context";
-// import { useQuery } from "react-query";
-// import { getMeFn } from "@/api/authApi";
+import { usePathname } from "next/navigation";
 import FullScreenLoader from "@/components/common/FullScreenLoader";
 import { useSelector } from "react-redux";
 import { RootState } from "@/reducers/rootReducer";
+import { items } from "../components/Layout/config";
 interface AuthGuardProps {
   children: React.ReactNode;
 }
@@ -17,7 +15,8 @@ const AuthGuard = (props: AuthGuardProps) => {
   const router = useRouter();
   const isAuthenticated = cookieSetting.get("token");
   const isLoading = useSelector((state: RootState) => state.auth.isLoading);
-  // const [checked, setChecked] = useState(false)
+  const roles = cookieSetting.get("roles");
+  const pathname = usePathname();
 
   useEffect(() => {
     if (isAuthenticated === undefined || isAuthenticated === "") {
@@ -31,6 +30,15 @@ const AuthGuard = (props: AuthGuardProps) => {
     } else {
     }
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    const findItem = items.find((item) => item.path === pathname);
+    if (roles && findItem) {
+      if (!findItem.roles?.includes(roles)) {
+        router.push("/auth/login");
+      }
+    }
+  }, []);
   if (isLoading) {
     return <FullScreenLoader />;
   }
