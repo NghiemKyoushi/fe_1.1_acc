@@ -19,6 +19,8 @@ import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 export interface SearchDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
+  searchCondition: any;
+  handleChangeSearch: (value: any) => void;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
@@ -70,7 +72,8 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
   );
 };
 const SearchDrawer = (props: SearchDrawerProps) => {
-  const { isOpen, handleCloseDrawer } = props;
+  const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } =
+    props;
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -132,10 +135,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const fromDate = new Date(fromCreatedDate);
     const toDate = new Date(toCreatedDate);
     const bodySend = {
-      page: 0,
-      pageSize: 10,
-      sorter: "code",
-      sortDirection: "DESC",
+      ...searchCondition,
       receiptCode: receiptCode,
       fromTransactionTotal: fromTransactionTotal,
       toTransactionTotal: toTransactionTotal,
@@ -152,6 +152,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };
+    handleChangeSearch(bodySend);
     dispatch(fetchInvoice(bodySend));
   };
   return (

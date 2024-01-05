@@ -250,7 +250,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 size="small"
                 type="submit"
               >
-                Thêm mới Pos
+                Cập nhật
               </Button>
             </div>
           </PageContent>

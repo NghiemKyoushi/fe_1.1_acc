@@ -1,4 +1,4 @@
-import CardCustomerContent from "@/content/cardCustomer.tsx/CardCustomerContent";
+import CardCustomerContent from "@/content/cardCustomer/CardCustomerContent";
 
 export default function CardCustomer() {
   return (

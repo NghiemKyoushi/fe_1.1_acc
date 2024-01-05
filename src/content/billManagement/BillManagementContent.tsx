@@ -331,7 +331,7 @@ export const BillManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
-
+        filterable: false,
         valueGetter: (params: GridValueGetterParams) => {
           if (params.row.createdBy === "TOTAL") {
             return "";
@@ -346,6 +346,7 @@ export const BillManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         valueGetter: (params: GridValueGetterParams) => {
           return getValueWithComma(+params.value);
         },
@@ -355,15 +356,6 @@ export const BillManagementContent = () => {
           }
           return "super-app-theme--cell";
         },
-        // valueGetter: ({ row }) => {
-        //   //   if (row.transactionType === "LOAN") {
-        //   //     return row.moneyAmount;
-        //   //   }
-        //   //   if (row.entryCode === "TOTAL") {
-        //   return row.pos.code;
-        //   //   }
-        //   //   return "";
-        // },
       },
       {
         headerName: "Thời gian tiền về",
@@ -372,6 +364,7 @@ export const BillManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         valueGetter: (params: GridValueGetterParams) => {
           if (params.row.createdBy === "TOTAL") {
             return "";
@@ -389,7 +382,9 @@ export const BillManagementContent = () => {
     ],
     []
   );
-
+  const handleChangeSearch = (value: any) => {
+    setSearchCondition(value);
+  };
   const handleSortModelChange = (sortModel: GridSortModel) => {
     if (sortModel[0]) {
       const sortPage = {
@@ -429,7 +424,6 @@ export const BillManagementContent = () => {
           Tìm kiếm
         </Button>
       </Box>
-      {/* </Box> */}
       <form style={{ width: "100%" }}>
         <Box
           sx={{
@@ -487,6 +481,7 @@ export const BillManagementContent = () => {
         handleCloseDrawer={handleCloseSearchDrawer}
         isOpen={isOpenSearchDrawer}
         searchCondition={searchCondition}
+        handleChangeSearch={handleChangeSearch}
       />
     </Dashboard>
   );

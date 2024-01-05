@@ -50,7 +50,7 @@ import { randomId } from "@mui/x-data-grid-generator";
 import { InputNumber } from "@/components/common/InputCustom";
 import ImageUpload from "@/components/common/ImageUpload";
 import _ from "lodash";
-import NewCardCustomer from "@/content/cardCustomer.tsx/Drawer/NewCardCustomer";
+import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
 const initialRow = [
   {
     id: randomId(),
@@ -916,12 +916,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
               </Button>
             </Box>
           </PageContent>
-          <NewCardCustomer
-            isOpen={isOpenCard}
-            handleCloseDrawer={handleCloseAddCard}
-            handleSearch={handleSearchCheck}
-          />
         </form>
+        <NewCardCustomer
+          isOpen={isOpenCard}
+          handleCloseDrawer={handleCloseAddCard}
+          handleSearch={handleSearchCheck}
+        />
       </DrawerCustom>
     </>
   );

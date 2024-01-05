@@ -132,7 +132,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
     <DrawerCustom
       widthDrawer={550}
       isOpen={isOpen}
-      title="Tạo Nhân viên"
+      title="Xem/Sửa Nhân viên"
       handleClose={handleCloseDrawer}
     >
       <PageContent>
@@ -179,13 +179,6 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   control={control}
                 />
               </StyleInputContainer>
-              {/* <StyleInputContainer>
-                <LabelComponent require={true}>Mật khẩu </LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("password", { required: true })}
-                />
-              </StyleInputContainer> */}
             </StyleContainer>
             <StyleContainer>
               <StyleInputContainer>

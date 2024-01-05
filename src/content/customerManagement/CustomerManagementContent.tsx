@@ -35,6 +35,7 @@ import {
 import ViewCustomerDrawer from "./Drawer/ViewCustomerDrawer";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
+import { TextFieldCustom } from "@/components/common/Textfield";
 
 export default function CustomerManagementContent() {
   const dispatch = useDispatch();
@@ -86,18 +87,25 @@ export default function CustomerManagementContent() {
         enqueueSnackbar("Xóa thất bại", { variant: "error" });
       });
   };
+  const { register, handleSubmit, getValues, setValue, watch, reset, control } =
+    useForm({
+      defaultValues: {
+        name: "",
+        phoneNumber: "",
+      },
+    });
   const columns: GridColDef<ColCustomer>[] = useMemo(
     () => [
-      {
-        field: "id",
-        width: 40,
-        sortable: false,
-        headerName: "STT",
-        renderCell: (params: GridRenderCellParams<ColCustomer>) => {
-          const index = params.api.getRowIndex(params.row.id);
-          return +index + 1;
-        },
-      },
+      // {
+      //   field: "id",
+      //   width: 40,
+      //   sortable: false,
+      //   headerName: "STT",
+      //   renderCell: (params: GridRenderCellParams<ColCustomer>) => {
+      //     const index = params.api.getRowIndex(params.row.id);
+      //     return +index + 1;
+      //   },
+      // },
       {
         headerName: "Tên khách hàng",
         field: "name",
@@ -105,29 +113,42 @@ export default function CustomerManagementContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <>
-        //         <StyleFilterContainer>
-        //           <StyleTitleSearch>Giá trị</StyleTitleSearch>
-        //           <TextFieldCustom
-        //             type={"text"}
-        //             variantshow="standard"
-        //             textholder="Lọc giá trị"
-        //             focus={"true"}
-        //             {...register("receiptCode", { required: true })}
-        //           />
-        //         </StyleFilterContainer>
-        //         <div>
-        //           <Button size="small">xác nhận</Button>
-        //         </div>
-        //       </>
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("name")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Số điện thoại",
@@ -136,19 +157,42 @@ export default function CustomerManagementContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("name")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Địa chỉ",
@@ -157,19 +201,8 @@ export default function CustomerManagementContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Căn cước công dân",
@@ -178,19 +211,8 @@ export default function CustomerManagementContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",percentageFee
-        //   label: "input",
-        // }),
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "% Phí",
@@ -200,19 +222,7 @@ export default function CustomerManagementContent() {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",percentageFee
-        //   label: "input",
-        // }),
+        filterable: false,
       },
       {
         headerName: "Thao Tác",
@@ -221,6 +231,7 @@ export default function CustomerManagementContent() {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 300,
         renderCell: ({ row }) => {
           return (
@@ -242,6 +253,7 @@ export default function CustomerManagementContent() {
         },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfCustomer]
   );
 
@@ -255,10 +267,17 @@ export default function CustomerManagementContent() {
     useState<CustomerParams>(initialPosSearch);
   useEffect(() => {
     dispatch(fetchListCustomer(searchCondition));
-  }, [searchCondition]);
+  }, []);
 
   const handleSearch = () => {
-    dispatch(fetchListCustomer(searchCondition));
+    const { name, phoneNumber } = getValues();
+    const bodySend = {
+      ...searchCondition,
+      name: name,
+      phoneNumber: phoneNumber,
+    };
+    setSearchCondition(bodySend);
+    dispatch(fetchListCustomer(bodySend));
   };
   const onPageChange = (pageNumber: number) => {
     const searchPage = {
@@ -302,20 +321,18 @@ export default function CustomerManagementContent() {
           </Button>
         </Box>
         <form style={{ width: "100%" }}>
-          <StyleDataGrid>
-            <TableDataComponent
-              columns={columns}
-              dataInfo={listOfCustomer}
-              onPageChange={onPageChange}
-              onPageSizeChange={onPageSizeChange}
-              page={pagination?.pageNumber}
-              pageSize={pagination?.size}
-              rowCount={pagination?.totalElements}
-              handleSortModelChange={handleSortModelChange}
-              loading={isLoading}
-              getRowId={getRowId}
-            />
-          </StyleDataGrid>
+          <TableDataComponent
+            columns={columns}
+            dataInfo={listOfCustomer}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            page={pagination?.pageNumber}
+            pageSize={pagination?.size}
+            rowCount={pagination?.totalElements}
+            handleSortModelChange={handleSortModelChange}
+            loading={isLoading}
+            getRowId={getRowId}
+          />
         </form>
         <NewCustomerDrawer
           isOpen={isOpenModal}
@@ -334,12 +351,16 @@ export default function CustomerManagementContent() {
           handleClickConfirm={handleConfirmDeleteForm}
         />
       </>
-      {/* )} */}
     </Dashboard>
   );
 }
-
-const StyleDataGrid = styled.div`
-  width: "100%";
-  padding: 0px 16px;
+const StyleTitleSearch = styled.p`
+  font-size: 12px;
+  font-weight: 400px;
+  margin: 0.5px;
+`;
+const StyleFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 3px 3px;
 `;

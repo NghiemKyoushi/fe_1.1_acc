@@ -27,6 +27,7 @@ import {
 import NewCardCustomer from "./Drawer/NewCardCustomer";
 import { getDetailCardCustomer } from "@/api/service/cardCustomerApis";
 import ViewCardCustomer from "./Drawer/ViewCardCustomer";
+import { TextFieldCustom } from "@/components/common/Textfield";
 
 export default function CardCustomerContent() {
   const dispatch = useDispatch();
@@ -60,6 +61,13 @@ export default function CardCustomerContent() {
   const handleCloseAddCard = () => {
     setIsOpenCard(false);
   };
+  const { register, handleSubmit, getValues, setValue, watch, reset, control } =
+    useForm({
+      defaultValues: {
+        customerName: "",
+        name: "",
+      },
+    });
   useEffect(() => {
     if (listOfCardCustomer) {
       let arrList: ColCustomerCardDetail[] = [];
@@ -79,7 +87,6 @@ export default function CardCustomerContent() {
       setListCardCustomer(arrList);
     }
   }, [listOfCardCustomer]);
-  //   const { createdDate: "TOTAL", label: "Total", total: 686.4 }
   const columns: GridColDef<ColCustomerCardDetail>[] = useMemo(
     () => [
       {
@@ -89,29 +96,42 @@ export default function CardCustomerContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <>
-        //         <StyleFilterContainer>
-        //           <StyleTitleSearch>Giá trị</StyleTitleSearch>
-        //           <TextFieldCustom
-        //             type={"text"}
-        //             variantshow="standard"
-        //             textholder="Lọc giá trị"
-        //             focus={"true"}
-        //             {...register("receiptCode", { required: true })}
-        //           />
-        //         </StyleFilterContainer>
-        //         <div>
-        //           <Button size="small">xác nhận</Button>
-        //         </div>
-        //       </>
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("customerName")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Tên thẻ",
@@ -120,6 +140,42 @@ export default function CardCustomerContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("name")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Loại thẻ",
@@ -156,48 +212,6 @@ export default function CardCustomerContent() {
           return formatDateTime(row.paymentDueDate);
         },
       },
-      // {
-      //   headerName: "Địa chỉ Pos",
-      //   field: "address",
-      //   width: 320,
-      //   headerClassName: "super-app-theme--header",
-      //   headerAlign: "center",
-      //   align: "center",
-      //   // filterOperators: Operators({
-      //   //   inputComponent: () => {
-      //   //     return (
-      //   //       <RangeNumberFilter
-      //   //         register={register}
-      //   //         fromNumberName="fromTransactionTotal"
-      //   //         toNumberName="toTransactionTotal"
-      //   //       />
-      //   //     );
-      //   //   },
-      //   //   value: "input",
-      //   //   label: "input",
-      //   // }),
-      // },
-      // {
-      //   headerName: "Tài khoản Pos",
-      //   field: "accountNumber",
-      //   width: 320,
-      //   headerClassName: "super-app-theme--header",
-      //   headerAlign: "center",
-      //   align: "center",
-      //   // filterOperators: Operators({
-      //   //   inputComponent: () => {
-      //   //     return (
-      //   //       <RangeNumberFilter
-      //   //         register={register}
-      //   //         fromNumberName="fromTransactionTotal"
-      //   //         toNumberName="toTransactionTotal"
-      //   //       />
-      //   //     );
-      //   //   },
-      //   //   value: "input",
-      //   //   label: "input",
-      //   // }),
-      // },
       {
         headerName: "Thao Tác",
         field: "actions",
@@ -205,6 +219,7 @@ export default function CardCustomerContent() {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 200,
         renderCell: ({ row }) => {
           return (
@@ -223,6 +238,7 @@ export default function CardCustomerContent() {
         },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfCardCustomer]
   );
 
@@ -236,10 +252,18 @@ export default function CardCustomerContent() {
     useState<PosSearchParams>(initialPosSearch);
   useEffect(() => {
     dispatch(fetchListCardCustomer(searchCondition));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
 
   const handleSearch = () => {
-    dispatch(fetchListCardCustomer(searchCondition));
+    const { name, customerName } = getValues();
+    const bodySend = {
+      ...searchCondition,
+      name: name,
+      customerName: customerName,
+    };
+    setSearchCondition(bodySend);
+    dispatch(fetchListCardCustomer(bodySend));
   };
   const onPageChange = (pageNumber: number) => {
     const searchPage = {
@@ -247,6 +271,7 @@ export default function CardCustomerContent() {
       page: pageNumber,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchListCardCustomer(searchPage));
   };
   const onPageSizeChange = (pageSize: number) => {
     const searchPage = {
@@ -254,6 +279,7 @@ export default function CardCustomerContent() {
       pageSize: pageSize,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchListCardCustomer(searchPage));
   };
 
   const handleSortModelChange = (sortModel: GridSortModel) => {
@@ -264,6 +290,7 @@ export default function CardCustomerContent() {
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
       setSearchCondition(sortPage);
+      dispatch(fetchListCardCustomer(sortPage));
     }
   };
   const getRowId = (row: any) => {
@@ -313,7 +340,13 @@ export default function CardCustomerContent() {
   );
 }
 
-const StyleDataGrid = styled.div`
-  width: "100%";
-  padding: 0px 16px;
+const StyleTitleSearch = styled.p`
+  font-size: 12px;
+  font-weight: 400px;
+  margin: 0.5px;
+`;
+const StyleFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 3px 3px;
 `;

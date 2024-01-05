@@ -17,11 +17,16 @@ import { useDispatch } from "react-redux";
 import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 import { listTranType } from "./NewAccountBookDrawer";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
-import { fetchGenAccBook, fetchGenSumAccBook } from "@/actions/GenAccBookActions";
+import {
+  fetchGenAccBook,
+  fetchGenSumAccBook,
+} from "@/actions/GenAccBookActions";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
+  searchCondition: any;
+  handleChangeSearch: (value: any) => void;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
@@ -84,7 +89,7 @@ const offsetInMinutes2 = nextDay.getTimezoneOffset();
 nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 const SearchDrawer = (props: SearchDrawerProps) => {
-  const { isOpen, handleCloseDrawer } = props;
+  const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } = props;
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -114,7 +119,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       },
     },
   });
-  console.log("watch", watch());
   const getDataCustomerFromApi = (value: string) => {
     if (value !== "") {
       // dispatch(fetchSearchCustomer({ customerName: value }));
@@ -142,10 +146,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
 
     const bodySend = {
-      page: 0,
-      pageSize: 10,
-      sorter: "createdDate",
-      sortDirection: "DESC",
+      ...searchCondition,
       entryCode: entryCode,
       transactionTypes: transactionTypes.key,
       fromTransactionTotal: fromTransactionTotal,
@@ -153,6 +154,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };
+    handleChangeSearch(bodySend)
     dispatch(fetchGenAccBook(bodySend));
     dispatch(fetchGenSumAccBook(bodySend));
   };

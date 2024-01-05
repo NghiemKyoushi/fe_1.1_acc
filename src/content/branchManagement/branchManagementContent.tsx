@@ -59,20 +59,6 @@ export const BranchManagementContent = () => {
   const handleCloseModalEdit = () => {
     setIsOpenModalEdit(false);
   };
-  const onPageChange = (pageNumber: number) => {
-    const searchPage = {
-      ...searchCondition,
-      page: pageNumber,
-    };
-    setSearchCondition(searchPage);
-  };
-  const onPageSizeChange = (pageSize: number) => {
-    const searchPage = {
-      ...searchCondition,
-      pageSize: pageSize,
-    };
-    setSearchCondition(searchPage);
-  };
   const handleSearch = () => {
     dispatch(fetchBranch());
   };
@@ -88,6 +74,8 @@ export const BranchManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Mã chi nhánh",
@@ -96,19 +84,8 @@ export const BranchManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Số điện thoại",
@@ -117,6 +94,8 @@ export const BranchManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Số tài khoản",
@@ -125,6 +104,8 @@ export const BranchManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Ngân hàng",
@@ -133,6 +114,8 @@ export const BranchManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Thao Tác",
@@ -141,6 +124,7 @@ export const BranchManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 270,
         renderCell: ({ row }) => {
           return (
@@ -161,17 +145,6 @@ export const BranchManagementContent = () => {
     ],
     []
   );
-
-  const handleSortModelChange = (sortModel: GridSortModel) => {
-    if (sortModel[0]) {
-      const sortPage = {
-        ...searchCondition,
-        sorter: sortModel[0].field,
-        sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
-      };
-      setSearchCondition(sortPage);
-    }
-  };
   const getRowId = (row: any) => {
     return row.id;
   };

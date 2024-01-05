@@ -27,11 +27,11 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       defaultValues: {
         customerId: {
           key: "",
-          value: "",
+          values: "",
         },
         cardTypeId: {
           key: "",
-          value: "",
+          values: "",
         },
         name: "",
         bank: "",

@@ -23,6 +23,7 @@ export interface SearchDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
   searchCondition: any;
+  handleChangeSearch: (value: any) => void;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
@@ -85,7 +86,8 @@ const offsetInMinutes2 = nextDay.getTimezoneOffset();
 nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 const SearchDrawer = (props: SearchDrawerProps) => {
-  const { isOpen, handleCloseDrawer, searchCondition } = props;
+  const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } =
+    props;
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -168,6 +170,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
       toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
     };
+    handleChangeSearch(bodySend);
     dispatch(fetchBills(bodySend));
     dispatch(fetchSumBills(bodySend));
   };

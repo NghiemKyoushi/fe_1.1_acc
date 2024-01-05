@@ -8,11 +8,6 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useSelector } from "react-redux";
 import { RootState } from "@/reducers/rootReducer";
-import {
-  EmpManageParamSearch,
-  EmpManageSearchResult,
-} from "@/models/EmpManagement";
-import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
@@ -92,8 +87,7 @@ export const AccBookManagementContent = () => {
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
   );
-  const [searchCondition, setSearchCondition] =
-    useState<EmpManageParamSearch>(initialPosSearch);
+  const [searchCondition, setSearchCondition] = useState<any>(initialPosSearch);
   const [role, setRole] = useState<string | undefined>("");
   const [branchName, setBranchName] = useState<string | undefined>("");
   useEffect(() => {
@@ -175,6 +169,7 @@ export const AccBookManagementContent = () => {
       page: pageNumber,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchAccBook(searchPage));
   };
   const onPageSizeChange = (pageSize: number) => {
     const searchPage = {
@@ -182,6 +177,7 @@ export const AccBookManagementContent = () => {
       pageSize: pageSize,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchAccBook(searchPage));
   };
   const handleOpenViewDrawer = (id: string) => {
     fetchDetailAccountingBook(id).then((res) => {
@@ -215,7 +211,7 @@ export const AccBookManagementContent = () => {
       entryCode: entryCode,
       entryType: arr,
     };
-    console.log(bodySend);
+    setSearchCondition(bodySend);
     dispatch(fetchAccBook(bodySend));
     dispatch(fetchSumAccBook(bodySend));
   };
@@ -233,28 +229,19 @@ export const AccBookManagementContent = () => {
         key: listOfBranch[0].code,
         values: listOfBranch[0].name,
       });
-      // reset({
-      //   branch: {
-      //     key: listOfBranch[0].code,
-      //     values: listOfBranch[0].name,
-      //   },
-      // });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listOfBranch]);
-  console.log("wwatch111", watch());
   useEffect(() => {
     dispatch(fetchBranch());
     dispatch(fetchAccEntryType());
     dispatch(fetchAccBook(searchCondition));
     dispatch(fetchSumAccBook(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchCondition]);
+  }, []);
   const getDataCustomerFromApi = (value: string) => {};
   const handleChangeBranch = (value: string) => {
-    console.log("branch", branch);
     const getBranch = branch?.find((item) => item.values === value);
-    console.log("getBranch", getBranch);
     if (getBranch) {
       const paramSearch = {
         ...searchCondition,
@@ -430,6 +417,7 @@ export const AccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -453,6 +441,7 @@ export const AccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -476,6 +465,7 @@ export const AccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -499,6 +489,7 @@ export const AccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -522,6 +513,7 @@ export const AccBookManagementContent = () => {
         align: "center",
         sortable: false,
         width: 190,
+        filterable: false,
         renderCell: ({ row }) => {
           return (
             <>
@@ -563,7 +555,9 @@ export const AccBookManagementContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [accEntryType]
   );
-
+  const handleChangeSearch = (value: any) => {
+    setSearchCondition(value);
+  };
   const handleSortModelChange = (sortModel: GridSortModel) => {
     if (sortModel[0]) {
       const sortPage = {
@@ -572,6 +566,7 @@ export const AccBookManagementContent = () => {
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
       setSearchCondition(sortPage);
+      dispatch(fetchAccBook(sortPage));
     }
   };
   const getRowId = (row: any) => {
@@ -684,15 +679,14 @@ export const AccBookManagementContent = () => {
       <SearchDrawer
         handleCloseDrawer={handleCloseSearchDrawer}
         isOpen={isOpenSearchDrawer}
+        searchCondition={searchCondition}
+        handleChangeSearch={handleChangeSearch}
       />
     </Dashboard>
   );
 };
 export default AccBookManagementContent;
-const StyleDataGrid = styled.div`
-  width: "100%";
-  padding: 0px 16px;
-`;
+
 const StyleTitleSearch = styled.p`
   font-size: 12px;
   font-weight: 400px;
@@ -701,10 +695,5 @@ const StyleTitleSearch = styled.p`
 const StyleFilterContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 3px 3px;
-`;
-const StyleRangeFilter = styled.div`
-  display: flex;
-  flex-direction: row;
   padding: 3px 3px;
 `;

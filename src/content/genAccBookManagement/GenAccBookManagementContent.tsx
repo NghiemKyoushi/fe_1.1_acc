@@ -119,6 +119,7 @@ export const GenAccBookManagementContent = () => {
       page: pageNumber,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchGenAccBook(searchPage));
   };
   const onPageSizeChange = (pageSize: number) => {
     const searchPage = {
@@ -126,6 +127,7 @@ export const GenAccBookManagementContent = () => {
       pageSize: pageSize,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchGenAccBook(searchPage));
   };
   const handleSearch = () => {
     const { fromCreatedDate, toCreatedDate, entryCode, entryType } =
@@ -134,8 +136,6 @@ export const GenAccBookManagementContent = () => {
     if (entryType.key) {
       arr.push(entryType.key);
     }
-
-    // let fromDate, gettoDate;
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
     fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
@@ -161,7 +161,7 @@ export const GenAccBookManagementContent = () => {
     dispatch(fetchAccEntryType());
     dispatch(fetchGenAccBook(searchCondition));
     dispatch(fetchGenSumAccBook(searchCondition));
-  }, [searchCondition]);
+  }, []);
   const handleCloseSearchDrawer = () => {
     setIsOpenSearchDrawer(false);
   };
@@ -329,7 +329,6 @@ export const GenAccBookManagementContent = () => {
               <>
                 <StyleFilterContainer>
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
-                  {/* accEntryType */}
                   <SelectSearchComponent
                     control={control}
                     props={{
@@ -338,7 +337,6 @@ export const GenAccBookManagementContent = () => {
                       results: accEntryType,
                       label: "",
                       variantType: "standard",
-                      // getData:((value) => setValue("customerName", value)),
                       type: "text",
                       setValue: setValue,
                       labelWidth: "100",
@@ -376,6 +374,7 @@ export const GenAccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -399,6 +398,7 @@ export const GenAccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -422,6 +422,7 @@ export const GenAccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -445,6 +446,7 @@ export const GenAccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.entryCode !== "TOTAL") {
             return "";
@@ -467,6 +469,7 @@ export const GenAccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 190,
         renderCell: ({ row }) => {
           return (
@@ -509,6 +512,9 @@ export const GenAccBookManagementContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [accEntryType]
   );
+  const handleChangeSearch = (value: any) => {
+    setSearchCondition(value);
+  };
   const handleSortModelChange = (sortModel: GridSortModel) => {
     if (sortModel[0]) {
       const sortPage = {
@@ -517,6 +523,7 @@ export const GenAccBookManagementContent = () => {
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
       setSearchCondition(sortPage);
+      dispatch(fetchGenAccBook(sortPage));
     }
   };
   const getRowId = (row: any) => {
@@ -599,6 +606,8 @@ export const GenAccBookManagementContent = () => {
       <SearchDrawer
         handleCloseDrawer={handleCloseSearchDrawer}
         isOpen={isOpenSearchDrawer}
+        searchCondition={searchCondition}
+        handleChangeSearch={handleChangeSearch}
       />
     </Dashboard>
   );

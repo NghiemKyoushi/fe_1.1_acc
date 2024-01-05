@@ -22,6 +22,7 @@ import NewPosDrawer from "./Drawer/NewPosDrawer";
 import FullScreenLoader from "@/components/common/FullScreenLoader";
 import ViewPosDrawer from "./Drawer/ViewPosDrawer";
 import { fetchPosDetail } from "@/api/service/posManagerApis";
+import { TextFieldCustom } from "@/components/common/Textfield";
 
 export default function PosManagementContent() {
   const dispatch = useDispatch();
@@ -37,6 +38,14 @@ export default function PosManagementContent() {
   const isLoading = useSelector(
     (state: RootState) => state.posManagement.isLoading
   );
+  const { register, handleSubmit, getValues, setValue, watch, reset, control } =
+    useForm({
+      defaultValues: {
+        code: "",
+        accountNumber: "",
+        bank: "",
+      },
+    });
   const handleOpenModal = () => {
     setIsOpenModal(true);
   };
@@ -52,81 +61,150 @@ export default function PosManagementContent() {
   const handleCloseViewModal = () => {
     setIsOpenViewModal(false);
   };
-  //   const { createdDate: "TOTAL", label: "Total", total: 686.4 }
+
   const columns: GridColDef<ColPosManagement>[] = useMemo(
     () => [
       {
         headerName: "Mã Pos",
         field: "code",
-        width: 300,
+        width: 250,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <>
-        //         <StyleFilterContainer>
-        //           <StyleTitleSearch>Giá trị</StyleTitleSearch>
-        //           <TextFieldCustom
-        //             type={"text"}
-        //             variantshow="standard"
-        //             textholder="Lọc giá trị"
-        //             focus={"true"}
-        //             {...register("receiptCode", { required: true })}
-        //           />
-        //         </StyleFilterContainer>
-        //         <div>
-        //           <Button size="small">xác nhận</Button>
-        //         </div>
-        //       </>
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
-      },
-      {
-        headerName: "Địa chỉ Pos",
-        field: "address",
-        width: 320,
-        headerClassName: "super-app-theme--header",
-        headerAlign: "center",
-        align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("code")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Tài khoản Pos",
         field: "accountNumber",
-        width: 320,
+        width: 250,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("accountNumber")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
+      },
+      {
+        headerName: "Ngân hàng",
+        field: "bank",
+        width: 250,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("bank")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
+      },
+      {
+        headerName: "Địa chỉ Pos",
+        field: "address",
+        width: 250,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Thao Tác",
@@ -135,6 +213,7 @@ export default function PosManagementContent() {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 334,
         renderCell: ({ row }) => {
           return (
@@ -153,6 +232,7 @@ export default function PosManagementContent() {
         },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfPos]
   );
 
@@ -166,14 +246,27 @@ export default function PosManagementContent() {
     useState<PosSearchParams>(initialPosSearch);
   useEffect(() => {
     dispatch(fetchPosManagement(searchCondition));
-  }, [searchCondition]);
+  }, []);
 
+  const handleSearch = () => {
+    const { accountNumber, bank, code } = getValues();
+    const bodySend = {
+      ...searchCondition,
+      accountNumber: accountNumber,
+      bank: bank,
+      code: code,
+    };
+    setSearchCondition(bodySend);
+    dispatch(fetchPosManagement(bodySend));
+
+  };
   const onPageChange = (pageNumber: number) => {
     const searchPage = {
       ...searchCondition,
       page: pageNumber,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchPosManagement(searchPage));
   };
   const onPageSizeChange = (pageSize: number) => {
     const searchPage = {
@@ -181,6 +274,7 @@ export default function PosManagementContent() {
       pageSize: pageSize,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchPosManagement(searchPage));
   };
 
   const handleSortModelChange = (sortModel: GridSortModel) => {
@@ -191,6 +285,7 @@ export default function PosManagementContent() {
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
       setSearchCondition(sortPage);
+      dispatch(fetchPosManagement(sortPage));
     }
   };
   const getRowId = (row: any) => {
@@ -211,23 +306,18 @@ export default function PosManagementContent() {
         {/* <DateRangePicker/> */}
       </Box>
       <form style={{ width: "100%" }}>
-        <StyleDataGrid>
-          <TableDataComponent
-            columns={columns}
-            dataInfo={
-              // { createdDate: "TOTAL", label: "Total", total: 686.4 },
-              listOfPos
-            }
-            onPageChange={onPageChange}
-            onPageSizeChange={onPageSizeChange}
-            page={pagination?.pageNumber}
-            pageSize={pagination?.size}
-            rowCount={pagination?.totalElements}
-            handleSortModelChange={handleSortModelChange}
-            loading={isLoading}
-            getRowId={getRowId}
-          />
-        </StyleDataGrid>
+        <TableDataComponent
+          columns={columns}
+          dataInfo={listOfPos}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          page={pagination?.pageNumber}
+          pageSize={pagination?.size}
+          rowCount={pagination?.totalElements}
+          handleSortModelChange={handleSortModelChange}
+          loading={isLoading}
+          getRowId={getRowId}
+        />
       </form>
       <NewPosDrawer
         searchCondition={searchCondition}
@@ -244,7 +334,13 @@ export default function PosManagementContent() {
   );
 }
 
-const StyleDataGrid = styled.div`
-  width: "100%";
-  padding: 0px 16px;
+const StyleTitleSearch = styled.p`
+  font-size: 12px;
+  font-weight: 400px;
+  margin: 0.5px;
+`;
+const StyleFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 3px 3px;
 `;

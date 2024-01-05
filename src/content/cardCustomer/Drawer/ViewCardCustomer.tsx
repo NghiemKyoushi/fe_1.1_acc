@@ -1,6 +1,9 @@
 import { fetchAllCard } from "@/actions/CardCustomerActions";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
-import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
+import {
+  fetchCreateCardCustomer,
+  updateCardCustomer,
+} from "@/api/service/cardCustomerApis";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
@@ -20,26 +23,26 @@ export interface NewCardCustomerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
   handleSearch: () => void;
+  rowInfo: any;
 }
 
-const NewCardCustomer = (props: NewCardCustomerProps) => {
-  const { isOpen, handleCloseDrawer, handleSearch } = props;
+const ViewCardCustomer = (props: NewCardCustomerProps) => {
+  const { isOpen, handleCloseDrawer, handleSearch, rowInfo } = props;
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<NewCardTypeFrorm>({
       defaultValues: {
         customerId: {
           key: "",
-          value: "",
+          values: "",
         },
         cardTypeId: {
           key: "",
-          value: "",
+          values: "",
         },
         name: "",
         bank: "",
         accountNumber: "",
         paymentDueDate: new Date(),
-        nationalId: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -62,7 +65,6 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       customerId,
       cardTypeId,
       paymentDueDate,
-      nationalId,
     } = getValues();
 
     const getDate = new Date(paymentDueDate);
@@ -74,28 +76,46 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       name: name,
       paymentDueDate: getDate.toISOString(),
       paymentLimit: 0,
-      nationalId: "99",
+      nationalId: "1234567",
     };
-    fetchCreateCardCustomer(bodySend)
+    updateCardCustomer(rowInfo.id, bodySend)
       .then((res) => {
         enqueueSnackbar("Tạo thẻ khách thành công!!", { variant: "success" });
         handleCloseDrawer();
+
         handleSearch();
       })
       .catch(function (error) {
-        // handle error
         enqueueSnackbar("Tạo thẻ khách thất bại !!", { variant: "error" });
       });
   };
   useEffect(() => {
     dispatch(fetchAllCard());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    reset({
+      customerId: {
+        key: rowInfo?.customer.id,
+        values: rowInfo?.customer.name,
+      },
+      cardTypeId: {
+        key: rowInfo?.cardType.id,
+        values: rowInfo?.cardType.name,
+      },
+      name: rowInfo?.name,
+      bank: rowInfo?.bank,
+      accountNumber: rowInfo?.accountNumber,
+      paymentDueDate: new Date(rowInfo?.paymentDueDate),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowInfo]);
   return (
     <DrawerCustom
       widthDrawer={270}
       isOpen={isOpen}
-      title="Tạo thẻ"
+      title="Xem/Sửa thẻ"
       handleClose={handleCloseDrawer}
     >
       <PageContent>
@@ -170,7 +190,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
             }}
           >
             <Button size="small" variant="contained" type="submit">
-              Lưu Thẻ
+              Cập nhật
             </Button>
           </Box>
         </form>
@@ -178,7 +198,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
     </DrawerCustom>
   );
 };
-export default NewCardCustomer;
+export default ViewCardCustomer;
 
 const StyleInputContainer = styled.div`
   display: flex;

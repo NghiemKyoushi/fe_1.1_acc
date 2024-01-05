@@ -1,5 +1,5 @@
 import Dashboard from "@/components/Layout";
-import TableDataComponent from "@/components/common/DataGrid";
+import TableDataComponent, { Operators } from "@/components/common/DataGrid";
 import { Box, Button, IconButton } from "@mui/material";
 import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
@@ -16,9 +16,10 @@ import {
 import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import EmpManagementDrawer from "./EmpManagementDrawer";
-import { fetchDetailAccountingBook } from "@/api/service/accountingBook";
 import ViewEmpManagementDrawer from "./ViewEmpManagementDrawer";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
+import { TextFieldCustom } from "@/components/common/Textfield";
+import { useForm } from "react-hook-form";
 
 export const initialPosSearch = {
   page: 0,
@@ -43,6 +44,14 @@ export const EmpManagementContent = () => {
   const [searchCondition, setSearchCondition] =
     useState<EmpManageParamSearch>(initialPosSearch);
 
+  const { register, handleSubmit, getValues, setValue, watch, reset, control } =
+    useForm({
+      defaultValues: {
+        name: "",
+        phoneNumber: "",
+        code: "",
+      },
+    });
   const dispatch = useDispatch();
   const handleOpenModal = () => {
     setIsOpenModal(true);
@@ -65,6 +74,7 @@ export const EmpManagementContent = () => {
       page: pageNumber,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchEmp(searchPage));
   };
   const onPageSizeChange = (pageSize: number) => {
     const searchPage = {
@@ -72,13 +82,23 @@ export const EmpManagementContent = () => {
       pageSize: pageSize,
     };
     setSearchCondition(searchPage);
+    dispatch(fetchEmp(searchPage));
   };
   const handleSearch = () => {
-    dispatch(fetchEmp(searchCondition));
+    const { name, phoneNumber, code } = getValues();
+    const bodySend = {
+      ...searchCondition,
+      name: name,
+      phoneNumber: phoneNumber,
+      code: code,
+    };
+    setSearchCondition(bodySend);
+    dispatch(fetchEmp(bodySend));
   };
   useEffect(() => {
     dispatch(fetchEmp(searchCondition));
-  }, [searchCondition]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const columns: GridColDef<EmpManageSearchResult>[] = useMemo(
     () => [
       {
@@ -88,6 +108,42 @@ export const EmpManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("name")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Mã nhân viên",
@@ -96,19 +152,42 @@ export const EmpManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("code")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Email",
@@ -117,19 +196,8 @@ export const EmpManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
-        // filterOperators: Operators({
-        //   inputComponent: () => {
-        //     return (
-        //       <RangeNumberFilter
-        //         register={register}
-        //         fromNumberName="fromTransactionTotal"
-        //         toNumberName="toTransactionTotal"
-        //       />
-        //     );
-        //   },
-        //   value: "input",
-        //   label: "input",
-        // }),
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Số điện thoại",
@@ -138,6 +206,42 @@ export const EmpManagementContent = () => {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("phoneNumber")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Thao Tác",
@@ -146,6 +250,7 @@ export const EmpManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 263,
         renderCell: ({ row }) => {
           return (
@@ -178,6 +283,7 @@ export const EmpManagementContent = () => {
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
       setSearchCondition(sortPage);
+      dispatch(fetchEmp(sortPage));
     }
   };
   const getRowId = (row: any) => {
@@ -198,21 +304,18 @@ export const EmpManagementContent = () => {
         {/* <DateRangePicker/> */}
       </Box>
       <form style={{ width: "100%" }}>
-        <StyleDataGrid>
-          <TableDataComponent
-            columns={columns}
-            dataInfo={listOfEmp}
-            // itemFilter={itemFilter}
-            onPageChange={onPageChange}
-            onPageSizeChange={onPageSizeChange}
-            page={pagination?.pageNumber}
-            pageSize={pagination?.size}
-            rowCount={pagination?.totalElements}
-            handleSortModelChange={handleSortModelChange}
-            loading={isLoading}
-            getRowId={getRowId}
-          />
-        </StyleDataGrid>
+        <TableDataComponent
+          columns={columns}
+          dataInfo={listOfEmp}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          page={pagination?.pageNumber}
+          pageSize={pagination?.size}
+          rowCount={pagination?.totalElements}
+          handleSortModelChange={handleSortModelChange}
+          loading={isLoading}
+          getRowId={getRowId}
+        />
       </form>
       <EmpManagementDrawer
         handleCloseDrawer={handleCloseModal}
@@ -229,7 +332,14 @@ export const EmpManagementContent = () => {
   );
 };
 export default EmpManagementContent;
-const StyleDataGrid = styled.div`
-  width: "100%";
-  padding: 0px 16px;
+
+const StyleTitleSearch = styled.p`
+  font-size: 12px;
+  font-weight: 400px;
+  margin: 0.5px;
+`;
+const StyleFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 3px 3px;
 `;

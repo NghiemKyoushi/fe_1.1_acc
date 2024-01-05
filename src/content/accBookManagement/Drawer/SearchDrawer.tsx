@@ -21,6 +21,8 @@ import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 export interface SearchDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
+  searchCondition: any;
+  handleChangeSearch: (value: any) => void;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
@@ -83,7 +85,8 @@ const offsetInMinutes2 = nextDay.getTimezoneOffset();
 nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 const SearchDrawer = (props: SearchDrawerProps) => {
-  const { isOpen, handleCloseDrawer } = props;
+  const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } =
+    props;
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -113,7 +116,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       },
     },
   });
-  console.log("watch", watch());
   const getDataCustomerFromApi = (value: string) => {
     if (value !== "") {
       // dispatch(fetchSearchCustomer({ customerName: value }));
@@ -141,10 +143,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
 
     const bodySend = {
-      page: 0,
-      pageSize: 10,
-      sorter: "createdDate",
-      sortDirection: "DESC",
+      ...searchCondition,
       entryCode: entryCode,
       transactionTypes: arr,
       fromTransactionTotal: fromTransactionTotal,

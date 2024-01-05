@@ -86,7 +86,7 @@ const ViewBranchDrawer = (props: NewCardCustomerProps) => {
     <DrawerCustom
       widthDrawer={270}
       isOpen={isOpen}
-      title="Tạo thẻ"
+      title="Xem/Sửa chi nhánh"
       handleClose={handleCloseDrawer}
     >
       <PageContent>

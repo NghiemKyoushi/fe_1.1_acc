@@ -46,11 +46,8 @@ import {
   RepayConfirmParams,
 } from "@/models/InvoiceManagement";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import FullScreenLoader from "@/components/common/FullScreenLoader";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import { ApproveDialogComponent } from "./Drawer/ApproveDialog";
 import {
@@ -348,6 +345,9 @@ export default function InvoiceManagementContent() {
     setValue("formConfirm.explanation", "");
     setOpenApprovingDialog(false);
   };
+  const handleChangeSearch = (value: any) => {
+    setSearchCondition(value);
+  };
   const columns: GridColDef<ColReceiptList>[] = useMemo(
     () => [
       {
@@ -635,6 +635,7 @@ export default function InvoiceManagementContent() {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        filterable: false,
         width: 197,
         renderCell: ({ row }) => {
           return (
@@ -785,6 +786,8 @@ export default function InvoiceManagementContent() {
         <SearchDrawer
           handleCloseDrawer={handleCloseSearchDrawer}
           isOpen={isOpenSearchDrawer}
+          searchCondition={searchCondition}
+          handleChangeSearch={handleChangeSearch}
         />
         <ViewInvoiceDrawer
           handleCloseDrawer={handleCloseViewDrawer}
