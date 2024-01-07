@@ -2,7 +2,11 @@ import { createNewAccountingBook } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
 import { createNewGenAccountingBook } from "@/api/service/genAccountingBook";
-import { fetchBranch, fetchRoles, fetchSaveImage } from "@/api/service/invoiceManagement";
+import {
+  fetchBranch,
+  fetchRoles,
+  fetchSaveImage,
+} from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
@@ -50,15 +54,16 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
         phoneNumber: "",
         code: "",
         explanation: "",
-        entryType: {
-          key: "",
-          values: "",
-        },
+        // entryType: {
+        //   key: "",
+        //   values: "",
+        // },
         transactionType: {
           key: "",
           values: "",
         },
         imageId: "",
+        entryType: "",
       },
     });
   const dispatch = useDispatch();
@@ -80,7 +85,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       return;
     }
     const bodySend = {
-      entryType: entryType?.key,
+      entryType: entryType,
       transactionType: transactionType?.key,
       moneyAmount: 1000,
       explanation: explanation,
@@ -162,7 +167,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
             <StyleContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Định khoản</LabelComponent>
-                <SelectSearchComponent
+                {/* <SelectSearchComponent
                   control={control}
                   props={{
                     name: "entryType",
@@ -175,6 +180,10 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                     labelWidth: "114",
                     getData: getDataCustomerFromApi,
                   }}
+                /> */}
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("entryType", { required: true })}
                 />
               </StyleInputContainer>
             </StyleContainer>
