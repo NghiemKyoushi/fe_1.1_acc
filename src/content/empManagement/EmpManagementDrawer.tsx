@@ -7,7 +7,7 @@ import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
-import { getDateOfPresent } from "@/utils";
+import { getDateOfPresent, handleKeyPress } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -74,7 +74,12 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         handleSearch();
       })
       .catch(function (error) {
-        enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
+        // enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
+        }
       });
   };
   const getDataCustomerFromApi = (value: string) => {};
@@ -110,7 +115,11 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form style={{ padding: 16 }} onSubmit={handleCreateUser}>
+        <form
+          onKeyPress={handleKeyPress}
+          style={{ padding: 16 }}
+          onSubmit={handleCreateUser}
+        >
           <SearchContainer>
             <StyleContainer>
               <StyleInputContainer>

@@ -32,7 +32,7 @@ export interface NewCardTypeFrorm {
   accountNumber: string;
   bank: string;
   paymentLimit: string;
-  paymentDueDate: Date;
+  paymentDueDate: string;
   customerId: SearchForm;
   nationalId: string;
 }

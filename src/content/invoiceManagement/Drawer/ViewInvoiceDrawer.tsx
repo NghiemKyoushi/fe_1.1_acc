@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import {
   GridCellParams,
   GridColDef,
@@ -28,17 +28,22 @@ import {
   updateInvoice,
 } from "@/api/service/invoiceManagement";
 import ImageUpload from "@/components/common/ImageUpload";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
 
 export interface ViewInvoiceDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
   rowInfo: any;
+  handleSearch: () => void;
 }
 export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
-  const { isOpen, handleCloseDrawer, rowInfo } = props;
+  const { isOpen, handleCloseDrawer, rowInfo, handleSearch } = props;
   const branchId = cookieSetting.get("branchId");
   const [imageId, setImageId] = useState("");
   const [imagePath, setImagePath] = useState("");
+  const [isOpenCard, setIsOpenCard] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -52,6 +57,14 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       return {
         codeEmployee: rowInfo?.percentageFee,
         check: "",
+        invoicesCalculate: [
+          {
+            intake: 0, //thu
+            payout: 0, // chi
+            loan: 0, // công nợ
+            repayment: 0,
+          },
+        ],
       };
     }, [rowInfo]),
     // defaultValues: {
@@ -74,14 +87,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     //   invoices: [],
     // },
   });
-  const {
-    fields: invoicesField,
-    append,
-    remove,
-  } = useFieldArray({
-    control,
-    name: "invoices",
-  });
+  const role = cookieSetting.get("roles");
+
   const { fields: invoicesCalculateField } = useFieldArray({
     control,
     name: "invoicesCalculate",
@@ -98,6 +105,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const getPathImage = async (id: string) => {
     const getFile = await fetchImagePath(id);
     return getFile;
+  };
+  const handleOpenAddCard = () => {
+    setIsOpenCard(true);
+  };
+  const handleCloseAddCard = () => {
+    setIsOpenCard(false);
   };
   useEffect(() => {
     if (rowInfo) {
@@ -158,7 +171,37 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         imageId: rowInfo?.imageId,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
+  const {
+    fields: invoicesField,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "invoices",
+  });
+
+  const onAdd = () => {
+    const item = {
+      id: "",
+      pos: {
+        key: "",
+        values: "",
+      },
+      posId: {
+        key: "",
+        values: "",
+      },
+      money: "",
+      typeOfCard: "",
+      fee: "",
+      feeafterpay: 0,
+      billcode: "",
+      check: "",
+    };
+    append(item);
+  };
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -174,12 +217,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           return +index;
         },
       },
-      // {
-      //   headerName: "Mã Bill",
-      //   field: "receiptCode",
-      //   width: 100,
-      //   sortable: false,
-      // },
       {
         headerName: "Mã Pos",
         field: "pos",
@@ -205,7 +242,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
               />
             );
           }
-          return <p>TỔNG</p>;
+          return <p></p>;
         },
       },
       {
@@ -242,7 +279,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             (total, { money }) => (total += +money),
             0
           );
-          return money;
+          if (isNaN(money)) {
+            return 0;
+          }
+          return getValueWithComma(money);
         },
       },
       {
@@ -308,49 +348,25 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           return "super-app-theme--cell";
         },
       },
-      // {
-      //   headerName: "Lợi Nhuận",
-      //   field: "profit",
-      //   width: 100,
-      //   sortable: false,
-      // },
-      // {
-      //   headerName: "Lợi nhuận gộp",
-      //   field: "calculatedProfit",
-      //   headerAlign: "center",
-      //   align: "center",
-      //   width: 140,
-      //   valueGetter: (params: GridValueGetterParams) => {
-      //     const index = params.api.getRowIndex(params.row.id);
-
-      //     return params.row.calculatedProfit;
-      //   },
-      //   cellClassName: (params: GridCellParams) => {
-      //     if (params.row.check !== "TOTAL") {
-      //       return "";
-      //     }
-      //     return "super-app-theme--cell";
-      //   },
-      // },
       {
         headerName: "Thao Tác",
         field: "actions",
         width: 120,
         sortable: false,
         align: "center",
-        // renderCell: (params: GridRenderCellParams) => {
-        //   const index = params.api.getRowIndex(params.row.id);
-        //   if (params.row.pos !== "TOTAL") {
-        //     return (
-        //       <>
-        //         <IconButton color="error" onClick={() => remove(index)}>
-        //           <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-        //         </IconButton>
-        //       </>
-        //     );
-        //   }
-        //   return <></>;
-        // },
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          if (params.row.check !== "TOTAL" && params.row?.code === null) {
+            return (
+              <>
+                <IconButton color="error" onClick={() => remove(index)}>
+                  <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              </>
+            );
+          }
+          return <></>;
+        },
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -361,30 +377,78 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       {
         headerName: "Thu",
         field: "intake",
-        width: 100,
+        width: 162,
         sortable: false,
-        editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          return (
+            <>
+              <InputNumber
+                InputWidth="100%"
+                key={index}
+                name={`invoicesCalculate.${index}.intake`}
+                control={control}
+              />
+            </>
+          );
+        },
       },
       {
         headerName: "Chi",
         field: "payout",
-        width: 100,
+        width: 162,
         sortable: false,
-        editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          return (
+            <>
+              <InputNumber
+                InputWidth="100%"
+                key={index}
+                name={`invoicesCalculate.${index}.payout`}
+                control={control}
+              />
+            </>
+          );
+        },
       },
       {
         headerName: "Công nợ",
         field: "loan",
-        width: 100,
+        width: 162,
         sortable: false,
-        editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          return (
+            <>
+              <InputNumber
+                InputWidth="100%"
+                key={index}
+                name={`invoicesCalculate.${index}.loan`}
+                control={control}
+              />
+            </>
+          );
+        },
       },
       {
         headerName: "Thu nợ",
         field: "repayment",
-        width: 100,
+        width: 162,
         sortable: false,
-        editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          return (
+            <>
+              <InputNumber
+                InputWidth="100%"
+                key={index}
+                name={`invoicesCalculate.${index}.repayment`}
+                control={control}
+              />
+            </>
+          );
+        },
       },
     ],
     []
@@ -420,17 +484,18 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     };
     updateInvoice(rowInfo.id, request)
       .then((res) => {
-        enqueueSnackbar("Cập nhật đơn thành công!!", { variant: "success" });
+        enqueueSnackbar("Cập nhật hóa đơn thành công!!", {
+          variant: "success",
+        });
         reset();
         handleCloseDrawer();
-        // handleSearch();
+        handleSearch();
       })
       .catch(function (error) {
-        console.log("error", error.response.data.errors)
-        if(error.response.data.errors.length > 0){
+        if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
-        }else{
-          enqueueSnackbar('Dữ liệu không hợp lệ', { variant: "error" });
+        } else {
+          enqueueSnackbar("Dữ liệu không hợp lệ", { variant: "error" });
         }
       });
   };
@@ -451,6 +516,13 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     );
   }
   const handleGetCard = () => {};
+  const handleSearchCheck = () => {};
+
+  const handleKeyPress = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+    }
+  };
   return (
     <DrawerCustom
       widthDrawer={750}
@@ -461,6 +533,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       {rowInfo && (
         <form
           style={{ padding: 16 }}
+          onKeyPress={handleKeyPress}
           onSubmit={handleSubmit(handleSubmitInvoice)}
         >
           <PageContent>
@@ -470,20 +543,23 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   <LabelComponent require={true}>Mã Nhân Viên</LabelComponent>
                   <TextFieldCustom
                     type={"text"}
-                    // value={watch("codeEmployee")}
                     {...register("codeEmployee")}
-                    // disable={"true"}
+                    disable={"true"}
                   />
                 </StyleInputContainer>
                 <StyleInputContainer>
                   <LabelComponent require={true}>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
-                    type={"number"}
                     iconend={<p style={{ width: 24 }}>%</p>}
-                    // value={watch("percentageFee") && watch("percentageFee")}
                     {...register("percentageFee", {
                       required: "Phần trăm phí bắt buộc",
                     })}
+                    onChange={(e: any) => {
+                      setValue(
+                        "percentageFee",
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      );
+                    }}
                   />
                   <TextHelper>
                     {errors.percentageFee && errors.percentageFee.message}
@@ -493,12 +569,16 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 <StyleInputContainer>
                   <LabelComponent require={true}>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
-                    type={"number"}
                     iconend={<p style={{ width: 24 }}>VND</p>}
-                    // value={watch("shipmentFee") && watch("shipmentFee")}
                     {...register("shipmentFee", {
                       required: "Phí vận chuyển bắt buộc",
                     })}
+                    onChange={(e: any) => {
+                      setValue(
+                        "shipmentFee",
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      );
+                    }}
                   />
                   <TextHelper>
                     {errors.shipmentFee && errors.shipmentFee.message}
@@ -515,7 +595,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       placeHoder: "",
                       results: [],
                       label: "",
-                      // getData:((value) => setValue("customerName", value)),
                       type: "text",
                       setValue: setValue,
                       labelWidth: "100",
@@ -540,13 +619,15 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                     }}
                   />
                   <StyleButtonSpan>
-                    {/* <Button
-                      variant="contained"
-                      size="small"
-                      onClick={handleOpenAddCard}
-                    >
-                      Thêm Thẻ
-                    </Button> */}
+                    {rowInfo?.code === null && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleOpenAddCard}
+                      >
+                        Thêm Thẻ
+                      </Button>
+                    )}
                   </StyleButtonSpan>
                 </StyleInputContainer>
                 <InfoBankCard>
@@ -557,9 +638,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             </SearchContainer>
 
             <StyleDataGrid>
-              {/* <Button variant="contained" size="small" onClick={onAdd}>
-                Thêm bill
-              </Button> */}
+              {rowInfo?.code === null && (
+                <Button variant="contained" size="small" onClick={onAdd}>
+                  Thêm bill
+                </Button>
+              )}
+
               <br />
               <Box
                 sx={{
@@ -584,6 +668,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
               </Box>
             </StyleDataGrid>
             <StyleDataGrid2>
+              <label style={{ fontSize: 16, fontWeight: "bold" }}>
+                Cân đối kế toán
+              </label>
               <TableDataComponent
                 columns={columnsOther}
                 dataInfo={invoicesCalculateField}
@@ -596,11 +683,19 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>
-                <LabelComponent>Tổng tiền chi</LabelComponent>
+                <label style={{ fontSize: 17, fontWeight: "bold" }}>
+                  TỔNG TIỀN SAU PHÍ
+                </label>
                 <TextFieldCustom
                   type={"text"}
                   disable="true"
-                  value={(totalfee + +watch("shipmentFee")).toString()}
+                  value={
+                    !isNaN(+totalfee)
+                      ? getValueWithComma(
+                          totalfee - +watch("shipmentFee")
+                        ).toString()
+                      : "0"
+                  }
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -608,12 +703,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   handleGetFile={handleGetFile}
                   filePath={imagePath}
                 />
-
-                {/* <TextFieldCustom
-                  type={"text"}
-                  
-                  value={(totalfee + +watch("shipmentFee")).toString()}
-                /> */}
               </StyleInputContainer>
             </ContainerSum>
             <Box
@@ -624,20 +713,18 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              <Button
-                size="small"
-                variant="contained"
-                type="submit"
-                // onClick={handleSubmitInvoice}
-              >
-                Cập nhật
-              </Button>
+              {rowInfo?.code === null && (
+                <Button size="small" variant="contained" type="submit">
+                  Cập nhật
+                </Button>
+              )}
             </Box>
           </PageContent>
-          {/* <NewCardCustomer
+          <NewCardCustomer
             isOpen={isOpenCard}
             handleCloseDrawer={handleCloseAddCard}
-          /> */}
+            handleSearch={handleSearchCheck}
+          />
         </form>
       )}
     </DrawerCustom>
@@ -685,7 +772,7 @@ const StyleDataGrid = styled.div`
 `;
 const StyleDataGrid2 = styled.div`
   margin-top: -15px;
-  width: 432px;
+  width: 683px;
   padding: 0px 16px;
 `;
 const PageContent = styled.div`

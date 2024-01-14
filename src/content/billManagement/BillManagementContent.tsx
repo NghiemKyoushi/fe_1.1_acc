@@ -432,6 +432,7 @@ export const BillManagementContent = () => {
               backgroundColor: "#EAEAEA",
               color: "#1a3e72",
               fontWeight: "600",
+              justifyContent:'flex-end !important', 
             },
           }}
         >

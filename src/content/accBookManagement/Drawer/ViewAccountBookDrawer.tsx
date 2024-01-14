@@ -19,7 +19,7 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
-import { cookieSetting, getDateOfPresent } from "@/utils";
+import { cookieSetting, getDateOfPresent, getValueWithComma, handleKeyPress } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -98,7 +98,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
         imageId: rowInfo?.imageId,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
   const dispatch = useDispatch();
   const handleGetFile = (file: any) => {
@@ -167,7 +167,11 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form style={{ padding: 16 }} onSubmit={handleUpdate}>
+        <form
+          onKeyPress={handleKeyPress}
+          style={{ padding: 16 }}
+          onSubmit={handleUpdate}
+        >
           <SearchContainer>
             <StyleContainer>
               <StyleInputContainer>
@@ -193,6 +197,14 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("moneyAmount", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "moneyAmount",
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      )
+                    );
+                  }}
                 />
               </StyleInputContainer>
             </StyleContainer>

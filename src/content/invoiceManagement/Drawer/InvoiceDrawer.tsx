@@ -394,7 +394,11 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         handleCloseDrawer();
       })
       .catch(function (error) {
-        enqueueSnackbar(error, { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo hóa đơn thất bại", { variant: "error" });
+        }
       });
   };
   const handleOpenAddCard = () => {
@@ -413,7 +417,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       });
   };
   const totalfee = watch("invoices").reduce(
-    (total, { money }) => (total += +money),
+    (total, { money }) =>
+      (total += +money - +money * (+watch("percentageFee") / 100)),
     0
   );
   const columns: GridColDef<InvoiceCreate>[] = useMemo(
@@ -500,10 +505,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           if (isNaN(money)) {
             return 0;
           }
-          return money;
-        },
-        Footer: () => {
-          return <h1>Check</h1>;
+          return getValueWithComma(money);
         },
       },
       {
@@ -745,6 +747,11 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     [rows2]
   );
   const handleSearchCheck = () => {};
+  const handleKeyPress = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+    }
+  };
   return (
     <>
       <DrawerCustom
@@ -755,6 +762,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       >
         <form
           style={{ padding: 16 }}
+          onKeyPress={handleKeyPress}
           onSubmit={handleSubmit(handleSubmitInvoice)}
         >
           <PageContent>
@@ -771,11 +779,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 <StyleInputContainer>
                   <LabelComponent require={true}>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
-                    type={"number"}
                     iconend={<p style={{ width: 24 }}>%</p>}
                     {...register("percentageFee", {
                       required: "Phần trăm phí bắt buộc",
                     })}
+                    onChange={(e: any) => {
+                      setValue(
+                        "percentageFee",
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      );
+                    }}
                   />
                   <TextHelper>
                     {errors.percentageFee && errors.percentageFee.message}
@@ -785,11 +798,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 <StyleInputContainer>
                   <LabelComponent require={true}>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
-                    type={"number"}
                     iconend={<p style={{ width: 24 }}>VND</p>}
                     {...register("shipmentFee", {
                       required: "Phí vận chuyển bắt buộc",
                     })}
+                    onChange={(e: any) => {
+                      setValue(
+                        "shipmentFee",
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      );
+                    }}
                   />
                   <TextHelper>
                     {errors.shipmentFee && errors.shipmentFee.message}
@@ -806,7 +824,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                       placeHoder: "",
                       results: listOfCustomer,
                       label: "",
-                      // getData:((value) => setValue("customerName", value)),
                       type: "text",
                       setValue: setValue,
                       labelWidth: "100",
@@ -855,12 +872,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
               <br />
               <Box
                 sx={{
-                  // height: 300,
                   width: "100%",
                   "& .super-app-theme--cell": {
                     backgroundColor: "#EAEAEA",
                     color: "#1a3e72",
                     fontWeight: "600",
+                    justifyContent: "flex-end !important",
                   },
                 }}
               >
@@ -875,6 +892,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
               </Box>
             </StyleDataGrid>
             <StyleDataGrid2>
+              <label style={{ fontSize: 16, fontWeight: "bold" }}>
+                Cân đối kế toán
+              </label>
               <TableDataComponent
                 columns={columnsOther}
                 dataInfo={invoicesCalculateField}
@@ -886,12 +906,19 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>
-                <LabelComponent>Tổng giao dịch</LabelComponent>
+                <label style={{ fontSize: 17, fontWeight: "bold" }}>
+                  TỔNG TIỀN SAU PHÍ
+                </label>
                 <TextFieldCustom
                   type={"text"}
                   disable="true"
-                  value={(totalfee + +watch("shipmentFee")).toString()}
-                  // {...register("totalBill")}
+                  value={
+                    !isNaN(+totalfee)
+                      ? getValueWithComma(
+                          totalfee - +watch("shipmentFee")
+                        ).toString()
+                      : "0"
+                  }
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -906,12 +933,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              <Button
-                size="small"
-                variant="contained"
-                type="submit"
-                // onClick={handleSubmitInvoice}
-              >
+              <Button size="small" variant="contained" type="submit">
                 Lưu Hóa Đơn
               </Button>
             </Box>

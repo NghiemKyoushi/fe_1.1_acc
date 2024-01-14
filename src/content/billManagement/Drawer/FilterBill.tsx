@@ -8,7 +8,7 @@ import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { ColBillInfo, ColFilterBill } from "@/models/BillManagementModel";
 import { RootState } from "@/reducers/rootReducer";
-import { formatDateTime, getValueWithComma } from "@/utils";
+import { formatDateTime, getValueWithComma, handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import {
   GridCellParams,
@@ -91,7 +91,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           key: "",
           values: "",
         },
-        moneyAmount: 0,
+        moneyAmount: "",
         explanation: "",
       },
     });
@@ -135,6 +135,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         sorter: sortModel[0].field,
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
+      dispatch(fetchFilterBills(sortPage));
       //   setSearchCondition(sortPage);
     }
   };
@@ -144,7 +145,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   useEffect(() => {
     dispatch(fetchFilterBills(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchCondition]);
+  }, []);
 
   useEffect(() => {
     if (listOfFilterBills.length > 0) {
@@ -383,6 +384,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         // checkboxSelection: true,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfBills]
   );
   return (
@@ -392,7 +394,11 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       title="Tạo bút toán"
       handleClose={handleCloseDrawer}
     >
-      <form style={{ width: "100%" }} onSubmit={handleSubmit(handleSearch)}>
+      <form
+        onKeyPress={handleKeyPress}
+        style={{ width: "100%" }}
+        onSubmit={handleSubmit(handleSearch)}
+      >
         <PageContent>
           <SearchContainer>
             <StyleContainer>
@@ -414,7 +420,9 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
                   onChange={(e: any) => {
                     setValue(
                       "moneyAmount",
-                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      )
                     );
                   }}
                 />
@@ -456,6 +464,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
                 backgroundColor: "#EAEAEA",
                 color: "#1a3e72",
                 fontWeight: "600",
+                justifyContent: "flex-end !important",
               },
             }}
           >

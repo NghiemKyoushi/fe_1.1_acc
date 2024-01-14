@@ -31,7 +31,7 @@ export const AddCardTypeDialogComponent = (props: InsertBookDialogProps) => {
       handleClickConfirm={handleClickConfirm}
     >
       <div className="app">
-        <LabelComponent require={true}>Định khoản</LabelComponent>
+        <LabelComponent require={true}>Loại thẻ</LabelComponent>
         <TextareaComponent
           control={control}
           valueInput={""}

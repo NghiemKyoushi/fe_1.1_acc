@@ -300,9 +300,18 @@ export const AccBookManagementContent = () => {
         }),
       },
       {
+        headerName: "Cập nhật bởi",
+        field: "lastModifiedBy",
+        width: 100,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+      },
+      {
         headerName: "Mã bút toán",
         field: "entryCode",
-        width: 165,
+        width: 160,
         headerAlign: "center",
         align: "center",
         valueGetter: ({ row }) => {
@@ -413,7 +422,7 @@ export const AccBookManagementContent = () => {
       {
         headerName: "Thu",
         field: "intake",
-        width: 150,
+        width: 149,
         headerAlign: "center",
         align: "center",
         sortable: false,
@@ -437,7 +446,7 @@ export const AccBookManagementContent = () => {
       {
         headerName: "Chi",
         field: "payout",
-        width: 150,
+        width: 149,
         headerAlign: "center",
         align: "center",
         sortable: false,
@@ -461,7 +470,7 @@ export const AccBookManagementContent = () => {
       {
         headerName: "Công nợ",
         field: "loan",
-        width: 150,
+        width: 149,
         headerAlign: "center",
         align: "center",
         sortable: false,
@@ -485,7 +494,7 @@ export const AccBookManagementContent = () => {
       {
         headerName: "Thu nợ",
         field: "repayment",
-        width: 150,
+        width: 149,
         headerAlign: "center",
         align: "center",
         sortable: false,
@@ -512,7 +521,7 @@ export const AccBookManagementContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        width: 190,
+        width: 134,
         filterable: false,
         renderCell: ({ row }) => {
           return (
@@ -637,6 +646,7 @@ export const AccBookManagementContent = () => {
               backgroundColor: "#EAEAEA",
               color: "#1a3e72",
               fontWeight: "600",
+              justifyContent: "flex-end !important",
             },
           }}
         >

@@ -81,7 +81,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form key={"newCustomerCard"}>
+        <form key={"newCustomerCard"} >
           <StyleInputContainer>
             <LabelComponent require={true}>Tên khách hàng</LabelComponent>
             <SelectSearchComponent

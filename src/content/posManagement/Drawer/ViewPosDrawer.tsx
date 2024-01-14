@@ -114,22 +114,23 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
           );
         },
       },
-      {
-        headerName: "Thao Tác",
-        field: "",
-        width: 105,
-        sortable: false,
-        renderCell: ({ row }) => {
-          return (
-            <>
-              <IconButton color="error">
-                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-            </>
-          );
-        },
-      },
+      // {
+      //   headerName: "Thao Tác",
+      //   field: "",
+      //   width: 105,
+      //   sortable: false,
+      //   renderCell: ({ row }) => {
+      //     return (
+      //       <>
+      //         <IconButton color="error">
+      //           <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+      //         </IconButton>
+      //       </>
+      //     );
+      //   },
+      // },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfCard]
   );
   const handleCreate = () => {
@@ -165,6 +166,11 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
   const getRowId = (row: any) => {
     return row.id;
   };
+  const handleKeyPress = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+    }
+  };
   return (
     <>
       <DrawerCustom
@@ -173,7 +179,11 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
         title="Xem/Cập nhật mã pos"
         handleClose={handleCloseDrawer}
       >
-        <form style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>
+        <form
+          style={{ padding: 16 }}
+          onKeyPress={handleKeyPress}
+          onSubmit={handleSubmit(handleCreate)}
+        >
           <PageContent>
             <SearchContainer>
               <StyleContainer>
@@ -200,10 +210,15 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 <StyleInputContainer>
                   <LabelComponent require={true}>Định mức</LabelComponent>
                   <TextFieldCustom
-                    type={"number"}
                     {...register("maxBillAmount", {
                       required: "Định mức tài khoản là bắt buộc",
                     })}
+                    onChange={(e: any) => {
+                      setValue(
+                        "maxBillAmount",
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      );
+                    }}
                   />
                   <TextHelper>
                     {errors?.accountNumber && errors.accountNumber.message}
@@ -267,7 +282,7 @@ const PageContent = styled.div`
 `;
 
 const StyleDataGrid = styled.div`
-  width: 360px;
+  width: 260px;
   padding: 0px 0px;
 `;
 const StyleInputContainer = styled.div`

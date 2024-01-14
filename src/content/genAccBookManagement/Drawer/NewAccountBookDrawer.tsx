@@ -16,7 +16,7 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
-import { cookieSetting, getDateOfPresent } from "@/utils";
+import { cookieSetting, getDateOfPresent, getValueWithComma } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -51,7 +51,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
     useForm({
       defaultValues: {
         name: "",
-        phoneNumber: "",
+        moneyAmount: "",
         code: "",
         explanation: "",
         // entryType: {
@@ -78,7 +78,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       });
   };
   const handleCreateUser = async () => {
-    const { name, code, phoneNumber, entryType, explanation, transactionType } =
+    const { name, code, moneyAmount, entryType, explanation, transactionType } =
       getValues();
     if (imageId === "") {
       enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
@@ -87,7 +87,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
     const bodySend = {
       entryType: entryType,
       transactionType: transactionType?.key,
-      moneyAmount: 1000,
+      moneyAmount: +moneyAmount,
       explanation: explanation,
       branchId: branchId,
       imageId: imageId,
@@ -97,6 +97,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
         enqueueSnackbar("Tạo bút toán thành công!!", { variant: "success" });
         handleCloseDrawer();
         handleSearch();
+        reset();
       })
       .catch(function (error) {
         enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
@@ -160,27 +161,22 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                 <LabelComponent require={true}>Số tiền</LabelComponent>
                 <TextFieldCustom
                   type={"text"}
-                  {...register("phoneNumber", { required: true })}
+                  {...register("moneyAmount", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "moneyAmount",
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      )
+                    );
+                  }}
                 />
               </StyleInputContainer>
             </StyleContainer>
             <StyleContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Định khoản</LabelComponent>
-                {/* <SelectSearchComponent
-                  control={control}
-                  props={{
-                    name: "entryType",
-                    placeHoder: "",
-                    results: accEntryType,
-                    label: "",
-                    // getData:((value) => setValue("customerName", value)),
-                    type: "text",
-                    setValue: setValue,
-                    labelWidth: "114",
-                    getData: getDataCustomerFromApi,
-                  }}
-                /> */}
+
                 <TextFieldCustom
                   type={"text"}
                   {...register("entryType", { required: true })}

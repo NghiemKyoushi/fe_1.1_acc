@@ -11,6 +11,7 @@ import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
+import { handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect } from "react";
@@ -42,7 +43,7 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
         name: "",
         bank: "",
         accountNumber: "",
-        paymentDueDate: new Date(),
+        paymentDueDate: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -91,7 +92,7 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
   };
   useEffect(() => {
     dispatch(fetchAllCard());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -107,7 +108,7 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       name: rowInfo?.name,
       bank: rowInfo?.bank,
       accountNumber: rowInfo?.accountNumber,
-      paymentDueDate: new Date(rowInfo?.paymentDueDate),
+      paymentDueDate: rowInfo?.paymentDueDate,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
@@ -119,7 +120,11 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form key={"newCustomerCard"} onSubmit={handleSubmit(handleCreateCard)}>
+        <form
+          onKeyPress={handleKeyPress}
+          key={"newCustomerCard"}
+          onSubmit={handleSubmit(handleCreateCard)}
+        >
           <StyleInputContainer>
             <LabelComponent require={true}>Tên khách hàng</LabelComponent>
             <SelectSearchComponent
@@ -176,9 +181,18 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
           </StyleInputContainer>
           <StyleInputContainer>
             <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
-            <DateSiglePicker
-              props={{ name: "paymentDueDate", setValue: setValue }}
-              control={control}
+            <TextFieldCustom
+              type="text"
+              {...register("paymentDueDate", {
+                required: true,
+                min: 1,
+                max: 31,
+              })}
+              onChange={(e: any) => {
+                const inputValue = e.target.value.trim();
+                const isValid = /^(0?[1-9]|[12][0-9]|3[0-1])$/.test(inputValue);
+                setValue("paymentDueDate", isValid ? inputValue : "");
+              }}
             />
           </StyleInputContainer>
           <Box

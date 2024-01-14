@@ -16,7 +16,24 @@ export const getDateOfPresent = () => {
   return years + "/" + months + "/" + days;
 };
 export const getValueWithComma = (res: any) => {
-  return res.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  // return res.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  let parts = res.toString().split(".");
+  let integerPart = parts[0];
+  let decimalPart = parts.length > 1 ? "." + parts[1] : "";
+
+  // Thêm dấu phẩy phân cách hàng nghìn vào phần nguyên
+  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Kết hợp phần nguyên và phần thập phân
+  let formattedNumber = integerPart + decimalPart;
+
+  return formattedNumber;
+};
+
+export const handleKeyPress = (event: any) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+  }
 };
 export const formatDateTime = (currentDate: string | number | Date) => {
   const date = dayjs(currentDate);

@@ -745,12 +745,13 @@ export default function InvoiceManagementContent() {
         <form style={{ width: "100%" }}>
           <Box
             sx={{
-              // height: 300,
               width: "100%",
               "& .super-app-theme--cell": {
                 backgroundColor: "#EAEAEA",
                 color: "#1a3e72",
                 fontWeight: "600",
+                display: "flex",
+                justifyContent: "flex-end !important",
               },
             }}
           >
@@ -793,6 +794,7 @@ export default function InvoiceManagementContent() {
           handleCloseDrawer={handleCloseViewDrawer}
           isOpen={isOpenViewDrawer}
           rowInfo={rowInfo}
+          handleSearch={handleSearch} 
         />
         <DialogDeleteComponent
           openDialog={isDeleteForm}

@@ -123,8 +123,8 @@ export const SettingContent = () => {
     setValue("cardType", "");
   };
   const handleOpenCardType = (type: string) => {
-    setTypeEntryModal(type);
-    setOpenDialogEntry(true);
+    setCardTypeModal(type);
+    setOpenDialogCardType(true);
   };
   const handleConfirmCardType = () => {
     const { cardType } = getValues();
@@ -204,12 +204,6 @@ export const SettingContent = () => {
         renderCell: ({ row }) => {
           return (
             <>
-              {/* <IconButton
-                color="info"
-                onClick={() => handleOpenEditEntryType(row, "UPDATE")}
-              >
-                <EditOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton> */}
               <IconButton
                 color="error"
                 onClick={() => handleOpenDeleteForm(row.id)}

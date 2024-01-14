@@ -21,6 +21,7 @@ import {
   fetchGenAccBook,
   fetchGenSumAccBook,
 } from "@/actions/GenAccBookActions";
+import { handleKeyPress } from "@/utils";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -165,7 +166,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       title="Tìm kiếm nâng cao"
       handleClose={handleCloseDrawer}
     >
-      <form onSubmit={handleSubmit(handleSearch)}>
+      <form onKeyPress={handleKeyPress} onSubmit={handleSubmit(handleSearch)}>
         <PageContent>
           <StyleInputContainer style={{ width: "100%" }}>
             <LabelComponent require={true}>Thời gian</LabelComponent>

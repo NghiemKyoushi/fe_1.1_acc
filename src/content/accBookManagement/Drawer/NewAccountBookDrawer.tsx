@@ -15,7 +15,7 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
-import { cookieSetting, getDateOfPresent } from "@/utils";
+import { cookieSetting, getDateOfPresent, getValueWithComma } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -162,7 +162,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                   onChange={(e: any) => {
                     setValue(
                       "moneyAmount",
-                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                      getValueWithComma(e.target.value.trim().replaceAll(/[^0-9.]/g, ""))
                     );
                   }}
                 />

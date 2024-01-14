@@ -14,6 +14,7 @@ import { TextFieldCustom } from "@/components/common/Textfield";
 import { BranchParamSend } from "@/models/BranchManagementModel";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
+import { handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect } from "react";
@@ -90,7 +91,7 @@ const ViewBranchDrawer = (props: NewCardCustomerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form key={"newCustomerCard"} onSubmit={handleSubmit(handleCreateCard)}>
+        <form onKeyPress={handleKeyPress} key={"newCustomerCard"} onSubmit={handleSubmit(handleCreateCard)}>
           <StyleInputContainer>
             <LabelComponent require={true}>Tên chi nhánh</LabelComponent>
             <TextFieldCustom

@@ -8,6 +8,7 @@ import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
+import { handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect } from "react";
@@ -38,7 +39,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
         name: "",
         bank: "",
         accountNumber: "",
-        paymentDueDate: new Date(),
+        paymentDueDate: "",
         nationalId: "",
       },
     });
@@ -65,14 +66,14 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       nationalId,
     } = getValues();
 
-    const getDate = new Date(paymentDueDate);
+    // const getDate = new Date(paymentDueDate);
     const bodySend = {
       accountNumber: accountNumber,
       bank: bank,
       cardTypeId: cardTypeId.key,
       customerId: customerId.key,
       name: name,
-      paymentDueDate: getDate.toISOString(),
+      paymentDueDate: paymentDueDate,
       paymentLimit: 0,
       nationalId: "99",
     };
@@ -90,7 +91,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
   useEffect(() => {
     dispatch(fetchAllCard());
   }, []);
-
+  console.log("watch", watch());
   return (
     <DrawerCustom
       widthDrawer={270}
@@ -99,7 +100,11 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form key={"newCustomerCard"} onSubmit={handleSubmit(handleCreateCard)}>
+        <form
+          onKeyPress={handleKeyPress}
+          key={"newCustomerCard"}
+          onSubmit={handleSubmit(handleCreateCard)}
+        >
           <StyleInputContainer>
             <LabelComponent require={true}>Tên khách hàng</LabelComponent>
             <SelectSearchComponent
@@ -156,9 +161,22 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
           </StyleInputContainer>
           <StyleInputContainer>
             <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
-            <DateSiglePicker
+            {/* <DateSiglePicker
               props={{ name: "paymentDueDate", setValue: setValue }}
               control={control}
+            /> */}
+            <TextFieldCustom
+              type="text"
+              {...register("paymentDueDate", {
+                required: true,
+                min: 1,
+                max: 31,
+              })}
+              onChange={(e: any) => {
+                const inputValue = e.target.value.trim();
+                const isValid = /^(0?[1-9]|[12][0-9]|3[0-1])$/.test(inputValue);
+                setValue("paymentDueDate", isValid ? inputValue : "");
+              }}
             />
           </StyleInputContainer>
           <Box
