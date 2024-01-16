@@ -24,11 +24,11 @@ interface InputProps {
   results?: Array<resultProps>;
   labelWidth?: string;
   placeHoder?: string;
-  // control: Control<T>;
   setValue: UseFormSetValue<any>;
   getData: (value: string) => void;
   border?: string;
   variantType?: string;
+  disable?: boolean;
 }
 
 function SelectSearchComponent({
@@ -48,7 +48,8 @@ function SelectSearchComponent({
     setValue,
     getData,
     border,
-    variantType
+    variantType,
+    disable,
   } = props;
 
   return (
@@ -61,6 +62,7 @@ function SelectSearchComponent({
           return (
             <Autocomplete
               size="small"
+              disabled={disable ? true : false}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               options={results || []}
               getOptionLabel={(option) => {
@@ -88,7 +90,7 @@ function SelectSearchComponent({
                   {...params}
                   border={border}
                   type={"text"}
-                  variantshow={variantType ? 'standard' : "outlined"}
+                  variantshow={variantType ? "standard" : "outlined"}
                   iconend={<SearchIcon />}
                 />
               )}

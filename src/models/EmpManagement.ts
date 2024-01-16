@@ -49,6 +49,7 @@ export interface valueForm {
   email?: string;
   salary?: string;
   password?: string;
+  restOfMoney?: string;
 }
 export interface SearchForm {
   keys: string;

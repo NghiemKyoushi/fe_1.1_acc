@@ -23,6 +23,7 @@ import {
   createNewCustomer,
   updateCustomer,
 } from "@/api/service/customerManagerApis";
+import { handleKeyPress } from "@/utils";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -98,7 +99,7 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
         title="Tạo khách hàng"
         handleClose={handleCloseDrawer}
       >
-        <form style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>
+        <form onKeyPress={handleKeyPress} style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>
           <PageContent>
             <SearchContainer>
               <StyleContainer>

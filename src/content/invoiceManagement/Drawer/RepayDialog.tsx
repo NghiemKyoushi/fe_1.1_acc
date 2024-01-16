@@ -40,7 +40,7 @@ export const RepayDialogComponent = (props: InsertBookDialogProps) => {
           <TextareaComponent
             control={control}
             valueInput={""}
-            name={"formConfirm.explanation"}
+            name={"formRepay.explanation"}
             label={"Diễn Giải"}
             width={""}
             type={""}
@@ -52,7 +52,7 @@ export const RepayDialogComponent = (props: InsertBookDialogProps) => {
           <LabelComponent require={true}>Số tiền</LabelComponent>
           <InputNumber
             InputWidth="100%"
-            name={`formConfirm.repaidAmount`}
+            name={`formRepay.repaidAmount`}
             control={control}
             type={true}
           />

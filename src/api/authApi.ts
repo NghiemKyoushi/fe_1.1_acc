@@ -5,7 +5,7 @@ import { cookieSetting } from "../utils";
 export const authApi = axios.create({
   baseURL: process.env.BASE_URL,
   headers: {
-    "Accept-Language": "vi-VN",
+    "Accept-Language": "vn",
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",

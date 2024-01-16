@@ -181,6 +181,12 @@ export default function InvoiceManagementContent() {
         formConfirm: {
           receiptId: "",
           explanation: "",
+          imageId: "",
+          repaidAmount: 0,
+        },
+        formRepay: {
+          receiptId: "",
+          explanation: "",
           repaidAmount: 0,
         },
       },
@@ -242,8 +248,8 @@ export default function InvoiceManagementContent() {
   const handleClickConfirmRepay = () => {
     const bodySend: RepayConfirmParams = {
       receiptId: receiptsId,
-      explanation: watch("formConfirm.explanation"),
-      repaidAmount: watch("formConfirm.repaidAmount"),
+      explanation: watch("formRepay.explanation"),
+      repaidAmount: watch("formRepay.repaidAmount"),
       imageId: imageId,
     };
     conrimRepayInvoice(bodySend)
@@ -255,7 +261,11 @@ export default function InvoiceManagementContent() {
       });
   };
   const handleGetFile = (file: any) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -322,9 +332,11 @@ export default function InvoiceManagementContent() {
   };
 
   const handleConfirmInvoice = () => {
+    const { formConfirm } = getValues();
     const bodySend: InvoiceConfirmParams = {
-      receiptId: watch().formConfirm.receiptId,
-      explanation: watch().formConfirm.explanation,
+      receiptId: formConfirm.receiptId,
+      explanation: formConfirm.explanation,
+      imageId: formConfirm.imageId,
     };
     conrimInvoice(bodySend)
       .then((res) => {
@@ -332,6 +344,7 @@ export default function InvoiceManagementContent() {
         handleCloseApproveDialog();
         handleSearch();
         setValue("formConfirm.explanation", "");
+        setValue("formConfirm.imageId", "");
       })
       .catch(function (error: any) {
         enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
@@ -774,6 +787,7 @@ export default function InvoiceManagementContent() {
           </Box>
           <ApproveDialogComponent
             control={control}
+            setValue={setValue}
             handleClickClose={handleCloseApproveDialog}
             handleClickConfirm={handleConfirmInvoice}
             openDialog={openApprovingDialog}
@@ -794,7 +808,7 @@ export default function InvoiceManagementContent() {
           handleCloseDrawer={handleCloseViewDrawer}
           isOpen={isOpenViewDrawer}
           rowInfo={rowInfo}
-          handleSearch={handleSearch} 
+          handleSearch={handleSearch}
         />
         <DialogDeleteComponent
           openDialog={isDeleteForm}

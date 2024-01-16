@@ -26,14 +26,13 @@ export interface ColBillInfo {
   fee: number;
   pos: posInfo;
   moneyAmount: number;
-  estimatedProfit: number;
-  returnedProfit: number;
+  returnedFromBank: number;
   recordStatusEnum: string;
   returnedTime: string;
   createdBy: string;
   createdDate: string;
   timeStampOrder: number;
-  posCardFee: number;
+  posFeeStamp: number;
 }
 export interface receiptInfo {
   id: string;
@@ -68,7 +67,6 @@ export interface ColFilterBill {
   timeStampSeq: number;
   moneyAmount: number;
   fee: number;
-  estimatedProfit: number;
   returnedProfit: number;
   returnedTime: string;
   pos?: PosType;

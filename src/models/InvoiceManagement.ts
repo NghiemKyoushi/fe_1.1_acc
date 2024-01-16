@@ -166,6 +166,7 @@ export interface RangeNumberFilterProps<
 export interface InvoiceConfirmParams {
   receiptId: string;
   explanation: string;
+  imageId: string;
 }
 export interface ConfirmRepayParams {
   receiptId: string;

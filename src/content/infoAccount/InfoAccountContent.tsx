@@ -1,156 +1,84 @@
-import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
-import {
-  fetchCreateEmp,
-  fetchUpdateEmp,
-} from "@/api/service/empManagementApis";
-import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
+"use client";
+import { fetchDetailEmp } from "@/api/service/empManagementApis";
+import Dashboard from "@/components/Layout";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
-import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import {
-  EditUserPrarams,
-  NewUserPrarams,
-  valueForm,
-} from "@/models/EmpManagement";
-import { getDateOfPresent, handleKeyPress } from "@/utils";
+import { valueForm } from "@/models/EmpManagement";
+import { cookieSetting } from "@/utils";
 import { Button } from "@mui/material";
-import { enqueueSnackbar } from "notistack";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-export interface NEmpManagementDrawerProps {
-  isOpen: boolean;
-  handleCloseDrawer: () => void;
-  handleSearch: () => void;
-  rowInfo: any;
-}
-export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
-  const { isOpen, handleCloseDrawer, handleSearch, rowInfo } = props;
+function InfoAccountContent() {
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
-
+  const employeeId = cookieSetting.get("employeeId");
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<valueForm>({
-      defaultValues: useMemo(() => {
-        return {
-          name: "",
-          phoneNumber: "",
-          code: "",
-          branchIds: {
-            keys: "",
-            values: "",
-          },
-          roleIds: {
-            keys: "",
-            values: "",
-          },
-          startDate: new Date(),
-          email: "",
-          salary: "",
-          password: "",
-        };
-      }, [rowInfo]),
+      defaultValues: {
+        name: "",
+        phoneNumber: "",
+        code: "",
+        branchIds: {
+          keys: "",
+          values: "",
+        },
+        roleIds: {
+          keys: "",
+          values: "",
+        },
+        startDate: new Date(),
+        email: "",
+        salary: "",
+        password: "",
+        restOfMoney: "",
+      },
     });
   useEffect(() => {
-    if (rowInfo) {
-      reset({
-        name: rowInfo?.name,
-        code: rowInfo?.code,
-        email: rowInfo?.email,
-        phoneNumber: rowInfo?.phoneNumber,
-        roleIds: {
-          keys: rowInfo?.roles[0].id,
-          values: rowInfo?.roles[0].title,
-        },
-        branchIds: {
-          keys: rowInfo?.branches[0].id,
-          values: rowInfo?.branches[0].name,
-        },
+    if (employeeId) {
+      fetchDetailEmp(employeeId).then((res) => {
+        const rowInfo = res.data;
+        reset({
+          name: rowInfo?.name,
+          code: rowInfo?.code,
+          email: rowInfo?.email,
+          phoneNumber: rowInfo?.phoneNumber,
+          roleIds: {
+            keys: rowInfo?.roles[0].id,
+            values: rowInfo?.roles[0].title,
+          },
+          branchIds: {
+            keys: rowInfo?.branches[0].id,
+            values: rowInfo?.branches[0].name,
+          },
+        });
       });
     }
-  }, [rowInfo]);
-  const dispatch = useDispatch();
-
-  const handleCreateUser = () => {
-    const {
-      name,
-      branchIds,
-      code,
-      phoneNumber,
-      roleIds,
-      startDate,
-      password,
-      email,
-    } = getValues();
-    const bodySend: EditUserPrarams = {
-      name: name,
-      code: code,
-      email: email,
-      phoneNumber: phoneNumber,
-      password: password,
-      roles: [{ id: roleIds?.keys, title: roleIds?.values }],
-      branches: [{ id: branchIds?.keys, name: branchIds?.values }],
-    };
-    fetchUpdateEmp(rowInfo.id, bodySend)
-      .then((res) => {
-        enqueueSnackbar("Cập nhật nhân viên thành công!!", {
-          variant: "success",
-        });
-        handleCloseDrawer();
-        handleSearch();
-      })
-      .catch(function (error) {
-        enqueueSnackbar("Cập nhật nhân viên thất bại", { variant: "error" });
-      });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [employeeId]);
   const getDataCustomerFromApi = (value: string) => {};
-  useEffect(() => {
-    fetchBranch().then((res) => {
-      if (res.data) {
-        const branch = res.data.map((item: any) => {
-          return {
-            values: item?.name,
-            keys: item?.id,
-          };
-        });
-        setBranchList(branch);
-      }
-    });
-    fetchRoles().then((res) => {
-      if (res.data) {
-        const roles = res.data.map((item: any) => {
-          return {
-            values: item.title,
-            keys: item.id,
-          };
-        });
-        setRoles(roles);
-      }
-    });
-  }, []);
+
   return (
-    <DrawerCustom
-      widthDrawer={550}
-      isOpen={isOpen}
-      title="Xem/Sửa Nhân viên"
-      handleClose={handleCloseDrawer}
-    >
-      <PageContent>
-        <form
-          onKeyPress={handleKeyPress}
-          style={{ padding: 16 }}
-          onSubmit={handleCreateUser}
-        >
-          <SearchContainer>
+    <Dashboard>
+      <h3 style={{ textAlign: "left" }}>THÔNG TIN TÀI KHOẢN</h3>
+        <form style={{ padding: 16, width: "100%" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 50,
+              width: "100%",
+            }}
+          >
             <StyleContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Họ và tên </LabelComponent>
                 <TextFieldCustom
                   type={"text"}
+                  disable={"true"}
                   {...register("name", { required: true })}
                 />
               </StyleInputContainer>
@@ -159,6 +87,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <LabelComponent require={true}>Số điện thoại </LabelComponent>
                 <TextFieldCustom
                   type={"text"}
+                  disable={"true"}
                   {...register("phoneNumber", { required: true })}
                 />
               </StyleInputContainer>
@@ -173,8 +102,9 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                     label: "",
                     type: "text",
                     setValue: setValue,
-                    labelWidth: "114",
+                    labelWidth: "105",
                     getData: getDataCustomerFromApi,
+                    disable: true,
                   }}
                 />
               </StyleInputContainer>
@@ -187,12 +117,22 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   control={control}
                 />
               </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Số dư còn lại</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  // style={{ color: 'red'}}
+                  disable={"true"}
+                  {...register("restOfMoney", { required: true })}
+                />
+              </StyleInputContainer>
             </StyleContainer>
             <StyleContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Mã nhân viên</LabelComponent>
                 <TextFieldCustom
                   type={"text"}
+                  disable={"true"}
                   {...register("code", { required: true })}
                 />
               </StyleInputContainer>
@@ -200,6 +140,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <LabelComponent require={true}>Email </LabelComponent>
                 <TextFieldCustom
                   type={"text"}
+                  disable={"true"}
                   {...register("email", { required: true })}
                 />
               </StyleInputContainer>
@@ -215,8 +156,9 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                     label: "",
                     type: "text",
                     setValue: setValue,
-                    labelWidth: "114",
+                    labelWidth: "105",
                     getData: getDataCustomerFromApi,
+                    disable: true,
                   }}
                 />
               </StyleInputContainer>
@@ -224,25 +166,16 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <LabelComponent require={true}>Lương tháng </LabelComponent>
                 <TextFieldCustom
                   type={"text"}
+                  disable={"true"}
                   {...register("salary", { required: true })}
                 />
               </StyleInputContainer>
             </StyleContainer>
-          </SearchContainer>
-          <Button
-            style={{ position: "fixed", bottom: 50, right: 32 }}
-            variant="contained"
-            size="medium"
-            onClick={() => handleCreateUser()}
-          >
-            Xác nhận
-          </Button>
+          </div>
         </form>
-      </PageContent>
-    </DrawerCustom>
+    </Dashboard>
   );
-};
-export default ViewEmpManagementDrawer;
+}
 const StyleInputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -250,20 +183,14 @@ const StyleInputContainer = styled.div`
   align-items: flex-start;
   gap: 4px;
 `;
-
 const StyleContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 4px;
 `;
-const SearchContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 64px;
-`;
-
 const PageContent = styled.div`
   display: flex;
   flex-direction: column;
 `;
+export default InfoAccountContent;

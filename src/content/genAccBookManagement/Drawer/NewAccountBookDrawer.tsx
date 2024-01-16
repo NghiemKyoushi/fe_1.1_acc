@@ -8,15 +8,13 @@ import {
   fetchSaveImage,
 } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
-import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
 import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
-import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
-import { cookieSetting, getDateOfPresent, getValueWithComma } from "@/utils";
+import { cookieSetting, getValueWithComma, handleKeyPress } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -54,22 +52,25 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
         moneyAmount: "",
         code: "",
         explanation: "",
-        // entryType: {
-        //   key: "",
-        //   values: "",
-        // },
+        entryType: {
+          key: "",
+          values: "",
+        },
         transactionType: {
           key: "",
           values: "",
         },
         imageId: "",
-        entryType: "",
       },
     });
   const dispatch = useDispatch();
 
   const handleGetFile = (file: any) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -80,12 +81,12 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const handleCreateUser = async () => {
     const { name, code, moneyAmount, entryType, explanation, transactionType } =
       getValues();
-    if (imageId === "") {
-      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
-      return;
-    }
+    // if (imageId === "") {
+    //   enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
+    //   return;
+    // }
     const bodySend = {
-      entryType: entryType,
+      entryType: entryType?.key,
       transactionType: transactionType?.key,
       moneyAmount: +moneyAmount,
       explanation: explanation,
@@ -136,7 +137,11 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form style={{ padding: 16 }} onSubmit={handleCreateUser}>
+        <form
+          onKeyPress={handleKeyPress}
+          style={{ padding: 16 }}
+          onSubmit={handleCreateUser}
+        >
           <SearchContainer>
             <StyleContainer>
               <StyleInputContainer>
@@ -176,10 +181,20 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
             <StyleContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Định khoản</LabelComponent>
-
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("entryType", { required: true })}
+                <SelectSearchComponent
+                  control={control}
+                  props={{
+                    name: "entryType",
+                    placeHoder: "",
+                    results: accEntryType,
+                    label: "",
+                    disable: watch("transactionType").key === "" ? true : false,
+                    // getData:((value) => setValue("customerName", value)),
+                    type: "text",
+                    setValue: setValue,
+                    labelWidth: "114",
+                    getData: getDataCustomerFromApi,
+                  }}
                 />
               </StyleInputContainer>
             </StyleContainer>

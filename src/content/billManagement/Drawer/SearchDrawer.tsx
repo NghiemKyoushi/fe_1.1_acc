@@ -18,6 +18,7 @@ import { fetchInvoice, fetchPos } from "@/actions/InvoiceManagementActions";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import { useEffect, useState } from "react";
 import { fetchBills, fetchSumBills } from "@/actions/BillManagementActions";
+import { handleKeyPress } from "@/utils";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -181,7 +182,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       title="Tìm kiếm nâng cao"
       handleClose={handleCloseDrawer}
     >
-      <form onSubmit={handleSubmit(handleSearch)}>
+      <form onKeyPress={handleKeyPress} onSubmit={handleSubmit(handleSearch)}>
         <PageContent>
           <StyleInputContainer style={{ width: "100%" }}>
             <LabelComponent require={true}>Thời gian</LabelComponent>

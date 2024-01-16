@@ -19,7 +19,12 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
-import { cookieSetting, getDateOfPresent, getValueWithComma, handleKeyPress } from "@/utils";
+import {
+  cookieSetting,
+  getDateOfPresent,
+  getValueWithComma,
+  handleKeyPress,
+} from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -76,10 +81,13 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   };
   useEffect(() => {
     if (rowInfo) {
-      getPathImage(rowInfo.imageId).then((res) => {
-        URL.createObjectURL(res.data);
-        setImagePath(URL.createObjectURL(res.data));
-      });
+      if (rowInfo?.imageId !== "") {
+        getPathImage(rowInfo.imageId).then((res) => {
+          URL.createObjectURL(res.data);
+          setImagePath(URL.createObjectURL(res.data));
+        });
+      }
+
       reset({
         name: rowInfo?.name,
         code: rowInfo?.code,
@@ -102,7 +110,11 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   }, [rowInfo]);
   const dispatch = useDispatch();
   const handleGetFile = (file: any) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })

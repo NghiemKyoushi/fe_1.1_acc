@@ -50,6 +50,10 @@ export const SettingContent = () => {
     useForm({
       defaultValues: {
         accEntryType: "",
+        transactionType: {
+          key: "",
+          values: "",
+        },
         cardType: "",
       },
     });
@@ -62,9 +66,14 @@ export const SettingContent = () => {
     setOpenDialogEntry(true);
   };
   const handleConfirmCreateEntry = () => {
-    const { accEntryType } = getValues();
+    const { accEntryType, transactionType } = getValues();
+
     if (typeEntryModal === "CREATE" && accEntryType !== "") {
-      createAccEntryList(accEntryType)
+      const bodySend = {
+        title: accEntryType,
+        transactionType: transactionType.key,
+      };
+      createAccEntryList(bodySend)
         .then((res) => {
           enqueueSnackbar("Tạo định khoản thành công", { variant: "success" });
           handleCloseEntryType();
@@ -301,6 +310,7 @@ export const SettingContent = () => {
         </div>
         <AddEntryTypeDialogComponent
           control={control}
+          setValue={setValue}
           handleClickClose={handleCloseEntryType}
           openDialog={openDialogEntry}
           handleClickConfirm={handleConfirmCreateEntry}

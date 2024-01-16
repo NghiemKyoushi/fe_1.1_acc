@@ -355,23 +355,32 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     }
     watch("invoices").map((item, index) => {
       if (item?.check !== "TOTAL" && item.posId.key !== "") {
+        let restOfFee = 0;
+        if (+item?.money) {
+          const checkValue2 = +item?.money * (+watch("percentageFee") / 100);
+          if (checkValue2 < 1000) {
+            restOfFee = Math.ceil(checkValue2 / 1000) * 1000;
+          } else {
+            restOfFee = +item?.money * (+watch("percentageFee") / 100);
+          }
+        }
         receiptBills.push({
           billId: "",
           posId: item?.posId?.key,
           moneyAmount: +item?.money,
-          fee: +item?.money * (+watch("percentageFee") / 100),
+          fee: restOfFee,
         });
       }
       return item;
     });
     if (receiptBills.length === 0) {
-      enqueueSnackbar("Vui lòng nhập hóa đơn", { variant: "warning" });
+      enqueueSnackbar("Vui lòng nhập đầy đủ hóa đơn", { variant: "warning" });
       return;
     }
-    if (imageId === "") {
-      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
-      return;
-    }
+    // if (imageId === "") {
+    //   enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
+    //   return;
+    // }
 
     const request: ReceiptCreationParams = {
       imageId: imageId,
@@ -408,7 +417,11 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     setIsOpenCard(false);
   };
   const handleGetFile = (file: Array<any>) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -416,11 +429,13 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
-  const totalfee = watch("invoices").reduce(
-    (total, { money }) =>
-      (total += +money - +money * (+watch("percentageFee") / 100)),
-    0
-  );
+  const totalfee = watch("invoices").reduce((total, { money }) => {
+    const calFee = +money * (+watch("percentageFee") / 100);
+    if (calFee < 1000) {
+      return (total += +money - Math.ceil(calFee / 1000) * 1000);
+    }
+    return (total += +money - +money * (+watch("percentageFee") / 100));
+  }, 0);
   const columns: GridColDef<InvoiceCreate>[] = useMemo(
     () => [
       {
@@ -520,11 +535,13 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           const index = params.api.getRowIndex(params.row.id);
           if (params.row.check === "TOTAL") {
             let fee = 0;
-            fee = watch("invoices").reduce(
-              (total, { money }) =>
-                (total += +money * (+watch("percentageFee") / 100)),
-              0
-            );
+            fee = watch("invoices").reduce((total, { money }) => {
+              const calFee = +money * (+watch("percentageFee") / 100);
+              if (calFee < 1000) {
+                return (total += Math.ceil(calFee / 1000) * 1000);
+              }
+              return (total += +money * (+watch("percentageFee") / 100));
+            }, 0);
             if (isNaN(fee)) {
               return 0;
             }
@@ -532,9 +549,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           }
           let restOfFee = 0;
           if (watch(`invoices.${index}.money`)) {
-            restOfFee =
+            const checkValue2 =
               +watch(`invoices.${index}.money`) *
               (+watch("percentageFee") / 100);
+            if (checkValue2 < 1000) {
+              restOfFee = Math.ceil(checkValue2 / 1000) * 1000;
+            } else {
+              restOfFee =
+                +watch(`invoices.${index}.money`) *
+                (+watch("percentageFee") / 100);
+            }
           }
           return getValueWithComma(restOfFee);
         },
@@ -558,11 +582,20 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           const index = params.api.getRowIndex(params.row.id);
           if (params.row.check === "TOTAL") {
             let fee = 0;
-            fee = watch("invoices").reduce(
-              (total, { money }) =>
-                (total += +money - +money * (+watch("percentageFee") / 100)),
-              0
-            );
+            fee = watch("invoices").reduce((total, { money }) => {
+              const calFee = +money * (+watch("percentageFee") / 100);
+              if (calFee < 1000) {
+                return (total += +money - Math.ceil(calFee / 1000) * 1000);
+              }
+              return (total +=
+                +money - +money * (+watch("percentageFee") / 100));
+            }, 0);
+            // .reduce(
+            //   (total, { money }) =>
+            //     (total += +money - +money * (+watch("percentageFee") / 100)),
+            //   0
+            // );
+
             if (isNaN(fee)) {
               return 0;
             }
@@ -570,10 +603,19 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           }
           let feeafterpay = 0;
           if (watch(`invoices.${index}.money`) !== undefined) {
-            feeafterpay =
-              +watch(`invoices.${index}.money`) -
+            const checkValue2 =
               +watch(`invoices.${index}.money`) *
-                (+watch("percentageFee") / 100);
+              (+watch("percentageFee") / 100);
+            if (checkValue2 < 1000) {
+              feeafterpay =
+                +watch(`invoices.${index}.money`) -
+                Math.ceil(checkValue2 / 1000) * 1000;
+            } else {
+              feeafterpay =
+                +watch(`invoices.${index}.money`) -
+                +watch(`invoices.${index}.money`) *
+                  (+watch("percentageFee") / 100);
+            }
           }
           return feeafterpay;
         },
@@ -584,12 +626,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           return "super-app-theme--cell";
         },
       },
-      // {
-      //   headerName: "Lợi Nhuận",
-      //   field: "profit",
-      //   width: 100,
-      //   sortable: false,
-      // },
       {
         headerName: "Thao Tác",
         field: "actions",

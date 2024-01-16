@@ -119,7 +119,11 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     dispatch(fetchFilterBills(bodySend));
   };
   const handleGetFile = async (file: Array<any>) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -151,10 +155,10 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     if (listOfFilterBills.length > 0) {
       let countSum = 0;
       let estimateBill = 0;
-      listOfFilterBills.map((item: ColFilterBill) => {
-        (countSum = countSum + item.moneyAmount),
-          (estimateBill = estimateBill + item.estimatedProfit);
-      });
+      // listOfFilterBills.map((item: ColFilterBill) => {
+      //   (countSum = countSum + item.moneyAmount),
+      //     (estimateBill = estimateBill + item.estimatedProfit);
+      // });
       const sumBill: ColFilterBill = {
         createdBy: "",
         createdDate: "",
@@ -166,7 +170,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         timeStampSeq: 0,
         moneyAmount: countSum,
         fee: 0,
-        estimatedProfit: estimateBill,
+        // estimatedProfit: estimateBill,
         returnedProfit: 0,
         returnedTime: "0",
       };
@@ -359,23 +363,23 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           return params.row.fee;
         },
       },
-      {
-        headerName: "Ước tính",
-        field: "estimatedProfit",
-        width: 145,
-        headerAlign: "center",
-        align: "center",
-        sortable: false,
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        cellClassName: (params: GridCellParams) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-      },
+      // {
+      //   headerName: "Ước tính",
+      //   field: "estimatedProfit",
+      //   width: 145,
+      //   headerAlign: "center",
+      //   align: "center",
+      //   sortable: false,
+      //   valueGetter: (params: GridValueGetterParams) => {
+      //     return getValueWithComma(params.value);
+      //   },
+      //   cellClassName: (params: GridCellParams) => {
+      //     if (params.row.code !== "TOTAL") {
+      //       return "";
+      //     }
+      //     return "super-app-theme--cell";
+      //   },
+      // },
 
       {
         ...GRID_CHECKBOX_SELECTION_COL_DEF,

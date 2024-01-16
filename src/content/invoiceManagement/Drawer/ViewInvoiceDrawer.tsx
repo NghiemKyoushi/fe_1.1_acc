@@ -94,7 +94,11 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     name: "invoicesCalculate",
   } as never);
   const handleGetFile = (file: any) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -114,10 +118,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   };
   useEffect(() => {
     if (rowInfo) {
-      getPathImage(rowInfo.imageId).then((res) => {
-        URL.createObjectURL(res.data);
-        setImagePath(URL.createObjectURL(res.data));
-      });
+      if (rowInfo?.imageId !== "") {
+        getPathImage(rowInfo.imageId).then((res) => {
+          URL.createObjectURL(res.data);
+          setImagePath(URL.createObjectURL(res.data));
+        });
+      }
 
       let dataTable: any[] = [];
       let invoicesCalculate = [
@@ -468,7 +474,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       }
       return item;
     });
-
+    if (receiptBills.length === 0) {
+      enqueueSnackbar("Vui lòng nhập hóa đơn", { variant: "warning" });
+      return;
+    }
     const request: ReceiptCreationParams = {
       imageId: watch("imageId"),
       branchId: branchId,

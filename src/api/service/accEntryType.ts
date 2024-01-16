@@ -4,8 +4,17 @@ export const fetchAccEntryList = (param: any) => {
   return authApi.get("/api/entryTypes");
 };
 
-export const createAccEntryList = (title: string) => {
-  return authApi.post(`/api/entryTypes?title=${title}`);
+export const createAccEntryList = (body: {
+  title: string;
+  transactionType: string;
+}) => {
+  return authApi.post(`/api/entryTypes`, body);
+};
+
+export const getAccEntry = (title: string, transactionType: string) => {
+  return authApi.get(
+    `/api/entryTypes/findByTitle/${title}?transactionType=${transactionType}`
+  );
 };
 
 export const updateAccEntryList = (body: { id: string; title: string }) => {

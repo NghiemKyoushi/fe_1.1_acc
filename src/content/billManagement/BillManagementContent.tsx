@@ -150,7 +150,11 @@ export const BillManagementContent = () => {
       });
   };
   const handleGetFile = async (file: Array<any>) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -326,7 +330,7 @@ export const BillManagementContent = () => {
       },
       {
         headerName: "%Phí",
-        field: "posCardFee",
+        field: "posFeeStamp",
         width: 160,
         headerAlign: "center",
         align: "center",
@@ -336,12 +340,12 @@ export const BillManagementContent = () => {
           if (params.row.createdBy === "TOTAL") {
             return "";
           }
-          return params.row.posCardFee;
+          return params.row.posFeeStamp;
         },
       },
       {
-        headerName: "Ước tính",
-        field: "estimatedProfit",
+        headerName: "Tiền từ ngân hàng",
+        field: "returnFromBank",
         width: 160,
         headerAlign: "center",
         align: "center",
@@ -432,7 +436,7 @@ export const BillManagementContent = () => {
               backgroundColor: "#EAEAEA",
               color: "#1a3e72",
               fontWeight: "600",
-              justifyContent:'flex-end !important', 
+              justifyContent: "flex-end !important",
             },
           }}
         >

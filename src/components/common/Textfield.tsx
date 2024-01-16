@@ -35,7 +35,6 @@ export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
           backgroundColor: "transparent",
           ...props.style,
         }}
-        // style={props.style}
         value={props.value}
         sx={{
           "& fieldset": { border: props.border === "true" ? "none" : "" },
@@ -55,7 +54,7 @@ export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
         ref={ref as ForwardedRef<HTMLDivElement>}
         InputProps={{
           endAdornment: (
-            <InputAdornment position="start">{props.iconend}</InputAdornment>
+            <InputAdornment position="start">{props?.iconend && props?.iconend }</InputAdornment>
           ),
         }}
         {...props}

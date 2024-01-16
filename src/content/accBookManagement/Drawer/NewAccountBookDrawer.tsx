@@ -15,7 +15,12 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
-import { cookieSetting, getDateOfPresent, getValueWithComma } from "@/utils";
+import {
+  cookieSetting,
+  getDateOfPresent,
+  getValueWithComma,
+  handleKeyPress,
+} from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -66,7 +71,11 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
     });
   const dispatch = useDispatch();
   const handleGetFile = (file: any) => {
-    fetchSaveImage(file[0])
+    if (!file || file[0].size > 5 * 1024 * 1024) {
+      enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
+      return;
+    }
+    fetchSaveImage(imageId, file[0])
       .then((res) => {
         setImageId(res.data);
       })
@@ -78,10 +87,10 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const handleCreateUser = async () => {
     const { name, code, moneyAmount, entryType, explanation, transactionType } =
       getValues();
-    if (imageId === "") {
-      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
-      return;
-    }
+    // if (imageId === "") {
+    //   enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
+    //   return;
+    // }
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
@@ -133,7 +142,11 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form style={{ padding: 16 }} onSubmit={handleSubmit(handleCreateUser)}>
+        <form
+          onKeyPress={handleKeyPress}
+          style={{ padding: 16 }}
+          onSubmit={handleSubmit(handleCreateUser)}
+        >
           <SearchContainer>
             <StyleContainer>
               <StyleInputContainer>
@@ -162,7 +175,9 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                   onChange={(e: any) => {
                     setValue(
                       "moneyAmount",
-                      getValueWithComma(e.target.value.trim().replaceAll(/[^0-9.]/g, ""))
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                      )
                     );
                   }}
                 />
@@ -178,6 +193,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                     placeHoder: "",
                     results: accEntryType,
                     label: "",
+                    disable: watch("transactionType").key === "" ? true : false,
                     // getData:((value) => setValue("customerName", value)),
                     type: "text",
                     setValue: setValue,

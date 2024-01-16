@@ -20,6 +20,7 @@ import { enqueueSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
 import { NewCustomer } from "@/models/CustomerManager";
 import { createNewCustomer } from "@/api/service/customerManagerApis";
+import { handleKeyPress } from "@/utils";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -81,7 +82,7 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
         title="Tạo khách hàng"
         handleClose={handleCloseDrawer}
       >
-        <form style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>
+        <form onKeyPress={handleKeyPress} style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>
           <PageContent>
             <SearchContainer>
               <StyleContainer>
