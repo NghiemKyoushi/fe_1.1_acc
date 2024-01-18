@@ -13,7 +13,7 @@ import {
 import { TextFieldCustom } from "./Textfield";
 interface resultProps {
   key: string;
-  values: string;
+  value: string;
 }
 
 interface InputProps {
@@ -32,7 +32,7 @@ interface InputProps {
   fontSize?: number;
 }
 
-function SelectSearchComponent({
+function AutoCompleteMultiple({
   control,
   props,
 }: {
@@ -64,12 +64,14 @@ function SelectSearchComponent({
           return (
             <Autocomplete
               size="small"
-              disabled={disable ? true : false}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              options={results || []}
-              getOptionLabel={(option) => {
-                return option?.values ? option?.values : "";
-              }}
+              multiple
+              // disabled={disable ? true : false}
+              isOptionEqualToValue={(option, value) => option.key === value.key}
+              options={results ? results : []}
+              // getOptionLabel={(option) => {
+              //   return option?.value ? option?.value : "";
+              // }}
+              getOptionLabel={(option) => option.value}
               value={value ?? ""}
               onChange={(event, selectedOptions, reason) => {
                 if (reason === "clear") {
@@ -79,6 +81,7 @@ function SelectSearchComponent({
                 onChange(selectedOptions);
               }}
               onInputChange={(event, newInputValue) => {
+                console.log("check", newInputValue);
                 getData(newInputValue);
               }}
               sx={{
@@ -104,4 +107,4 @@ function SelectSearchComponent({
   );
 }
 
-export default SelectSearchComponent;
+export default AutoCompleteMultiple;

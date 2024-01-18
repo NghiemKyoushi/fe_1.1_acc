@@ -1,3 +1,4 @@
+import { getAccEntryApis } from "@/api/service/accEntryType";
 import { createNewAccountingBook } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
@@ -22,8 +23,9 @@ import {
   handleKeyPress,
 } from "@/utils";
 import { Button } from "@mui/material";
+import _ from "lodash";
 import { enqueueSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -40,16 +42,25 @@ export const listTranType = [
   { key: "LOAN", values: "Công nợ" },
   { key: "REPAYMENT", values: "Thu nợ" },
 ];
+export interface AccEntryDetail {
+  key: string;
+  values: string;
+}
 export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState("");
-
+  const [accEntryList, setAccEntryList] = useState<Array<AccEntryDetail>>([]);
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
-  const branchId = cookieSetting.get("branchId");
+  const [branch, setBranch] = useState<Array<any> | undefined>([]);
+
+  const listOfBranch = useSelector(
+    (state: RootState) => state.branchManaement.branchList
+  );
+  // const branchId = cookieSetting.get("branchId");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm({
@@ -57,6 +68,10 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
         name: "",
         moneyAmount: "",
         code: "",
+        branch: {
+          key: "",
+          values: "",
+        },
         explanation: "",
         entryType: {
           key: "",
@@ -83,9 +98,8 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
-
   const handleCreateUser = async () => {
-    const { name, code, moneyAmount, entryType, explanation, transactionType } =
+    const { name, branch, moneyAmount, entryType, explanation, transactionType } =
       getValues();
     // if (imageId === "") {
     //   enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
@@ -94,9 +108,9 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
-      moneyAmount: +moneyAmount,
+      moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
       explanation: explanation,
-      branchId: branchId,
+      branchId: branch.key,
       imageId: imageId,
     };
     createNewAccountingBook(bodySend)
@@ -109,7 +123,46 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
         enqueueSnackbar("Tạo bút toán thất bại", { variant: "error" });
       });
   };
+  useMemo(() => {
+    setAccEntryList([]);
+    setValue("entryType", { key: "", values: "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("transactionType")]);
+
+  useEffect(() => {
+    if (listOfBranch.length > 0) {
+      let arr: any[] = [];
+      listOfBranch.map((item: any) => {
+        arr.push({
+          key: item?.code,
+          values: item?.name,
+        });
+      });
+      setBranch([...arr]);
+      setValue("branch", {
+        key: listOfBranch[0].code,
+        values: listOfBranch[0].name,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listOfBranch]);
   const getDataCustomerFromApi = (value: string) => {};
+  const getDataEntryType = (value: string) => {
+    getAccEntryApis(value, watch("transactionType.key"))
+      .then((res) => {
+        if (res.data) {
+          let arr: AccEntryDetail[] = [];
+          res.data.map((item: string) => {
+            arr.push({
+              key: item,
+              values: item,
+            });
+          });
+          setAccEntryList([...arr]);
+        }
+      })
+      .catch(function (error) {});
+  };
   useEffect(() => {
     fetchBranch().then((res) => {
       if (res.data) {
@@ -191,14 +244,14 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                   props={{
                     name: "entryType",
                     placeHoder: "",
-                    results: accEntryType,
+                    results: accEntryList,
                     label: "",
                     disable: watch("transactionType").key === "" ? true : false,
                     // getData:((value) => setValue("customerName", value)),
                     type: "text",
                     setValue: setValue,
                     labelWidth: "114",
-                    getData: getDataCustomerFromApi,
+                    getData: getDataEntryType,
                   }}
                 />
               </StyleInputContainer>

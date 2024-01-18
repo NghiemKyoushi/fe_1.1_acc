@@ -22,6 +22,9 @@ export const updateCardCustomer = (id: string, props: NewCardType) => {
 export const getDetailCardCustomer = (id: string) => {
   return authApi.get(`/api/customerCards/${id}`);
 };
+export const deleteCardCustomerApi = (id: string) => {
+  return authApi.delete(`/api/customerCards/${id}`);
+};
 export const fetchCardCustomer = (param: CustomerCardSearch) => {
   return authApi.get(`/api/customerCards`, {
     params: param,

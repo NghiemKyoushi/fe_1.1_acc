@@ -157,7 +157,11 @@ export const AccBookManagementContent = () => {
         handleCloseConfirmForm();
       })
       .catch(function (error: any) {
-        enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        }
       });
   };
   const handleCloseViewModal = () => {
@@ -583,38 +587,40 @@ export const AccBookManagementContent = () => {
   };
   return (
     <Dashboard>
-      {role === ROLE.ADMIN ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+      {/* {role === ROLE.ADMIN ? ( */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 10
+        }}
+      >
+        <h3>SỔ KẾ TOÁN CHI NHÁNH</h3>
+        <SelectSearchComponent
+          control={control}
+          props={{
+            name: "branch",
+            placeHoder: "",
+            results: branch,
+            label: "",
+            variantType: "standard",
+            type: "text",
+            setValue: setValue,
+            labelWidth: "17",
+            fontSize: 18,
+            getData: handleChangeBranch,
           }}
-        >
-          <h3>SỔ KẾ TOÁN CHI NHÁNH</h3>
-          <SelectSearchComponent
-            control={control}
-            props={{
-              name: "branch",
-              placeHoder: "",
-              results: branch,
-              label: "",
-              variantType: "standard",
-              type: "text",
-              setValue: setValue,
-              labelWidth: "17",
-              getData: handleChangeBranch,
-            }}
-          />
-        </div>
-      ) : role === ROLE.SUBMANAGER ? (
-        <h3 style={{ textAlign: "left" }}>
-          SỔ KẾ TOÁN CHI NHÁNH {branchName?.toUpperCase()}
-        </h3>
-      ) : (
-        ""
-      )}
+        />
+      </div>
+      {/* // ) : role === ROLE.SUBMANAGER ? (
+      //   <h3 style={{ textAlign: "left" }}>
+      //     SỔ KẾ TOÁN CHI NHÁNH {branchName?.toUpperCase()}
+      //   </h3>
+      // ) : (
+      //   ""
+      // )} */}
 
       <Box
         sx={{
@@ -677,7 +683,6 @@ export const AccBookManagementContent = () => {
       />
       <DialogDeleteComponent
         openDialog={isDeleteForm}
-        control={control}
         handleClickClose={handleCloseDeleteForm}
         handleClickConfirm={handleConfirmDeleteForm}
       />

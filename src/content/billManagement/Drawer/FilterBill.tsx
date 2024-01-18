@@ -114,7 +114,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       posId: posId.key,
-      moneyAmount: +moneyAmount,
+      moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
     };
     dispatch(fetchFilterBills(bodySend));
   };
@@ -147,7 +147,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     return row.id;
   };
   useEffect(() => {
-    dispatch(fetchFilterBills(searchCondition));
+    // dispatch(fetchFilterBills(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -155,10 +155,10 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     if (listOfFilterBills.length > 0) {
       let countSum = 0;
       let estimateBill = 0;
-      // listOfFilterBills.map((item: ColFilterBill) => {
-      //   (countSum = countSum + item.moneyAmount),
-      //     (estimateBill = estimateBill + item.estimatedProfit);
-      // });
+      listOfFilterBills.map((item: ColFilterBill) => {
+        (countSum = countSum + item.moneyAmount)
+          // (estimateBill = estimateBill + item.estimatedProfit);
+      });
       const sumBill: ColFilterBill = {
         createdBy: "",
         createdDate: "",
@@ -175,6 +175,8 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         returnedTime: "0",
       };
       setListOfBills([sumBill, ...listOfFilterBills]);
+    }else{
+      setListOfBills([])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listOfFilterBills]);

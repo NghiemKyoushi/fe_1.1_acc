@@ -11,6 +11,6 @@ export interface BranchParamSend {
   name: string;
   code: string;
   phoneNumber: string;
-  accountNumber: string;
-  bank: string;
+  // accountNumber: string;
+  // bank: string;
 }

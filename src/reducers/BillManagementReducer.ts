@@ -27,6 +27,7 @@ const initialState = {
     returnedTime: null,
     posCode: "",
     receiptCode: "",
+    returnFromBank: "",
   },
   pagination: {
     totalPages: 0,
@@ -85,10 +86,11 @@ const BillManagementReducers = (
           timeStampSeq: "",
           moneyAmount: action.payload.totalMoneyAmount,
           fee: 0,
-          returnedProfit: action.payload.totalReturnedProfit,
+          returnedProfit: 0,
           returnedTime: null,
           posCode: "",
           receiptCode: "",
+          returnFromBank: action.payload.totalReturnFromBank,
         },
       };
     case FETCH_SUM_BILL_FAILURE:

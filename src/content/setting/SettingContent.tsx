@@ -196,7 +196,16 @@ export const SettingContent = () => {
       {
         headerName: "Định khoản",
         field: "values",
-        width: 250,
+        width: 190,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+      },
+      {
+        headerName: "Phân loại",
+        field: "transactionType",
+        width: 186,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -209,7 +218,7 @@ export const SettingContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        width: 250,
+        width: 200,
         renderCell: ({ row }) => {
           return (
             <>
@@ -244,7 +253,7 @@ export const SettingContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        width: 250,
+        width: 230,
         renderCell: ({ row }) => {
           return (
             <>
@@ -274,7 +283,7 @@ export const SettingContent = () => {
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>CÀI ĐẶT CHUNG</h3>
       <form style={{ display: "flex", flexDirection: "row", gap: 50 }}>
-        <div style={{ width: 500 }}>
+        <div style={{ width: 600 }}>
           <Box sx={{ margin: "7px 16px" }}>
             <Button
               variant="contained"

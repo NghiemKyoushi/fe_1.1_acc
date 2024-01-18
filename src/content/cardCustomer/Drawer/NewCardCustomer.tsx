@@ -8,7 +8,7 @@ import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
-import { handleKeyPress } from "@/utils";
+import { getValueWithComma, handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect } from "react";
@@ -40,7 +40,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
         bank: "",
         accountNumber: "",
         paymentDueDate: "",
-        nationalId: "",
+        paymentLimit: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -63,7 +63,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       customerId,
       cardTypeId,
       paymentDueDate,
-      nationalId,
+      paymentLimit,
     } = getValues();
 
     // const getDate = new Date(paymentDueDate);
@@ -74,8 +74,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       customerId: customerId.key,
       name: name,
       paymentDueDate: paymentDueDate,
-      paymentLimit: 0,
-      nationalId: "99",
+      paymentLimit: parseFloat(paymentLimit.replace(/,/g, "")),
     };
     fetchCreateCardCustomer(bodySend)
       .then((res) => {
@@ -85,7 +84,11 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       })
       .catch(function (error) {
         // handle error
-        enqueueSnackbar("Tạo thẻ khách thất bại !!", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo thẻ khách thất bại !", { variant: "error" });
+        }
       });
   };
   useEffect(() => {
@@ -157,14 +160,33 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
             <TextFieldCustom
               type={"text"}
               {...register("accountNumber", { required: true })}
+              onChange={(e: any) => {
+                setValue(
+                  "accountNumber",
+                  e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                );
+              }}
+            />
+          </StyleInputContainer>
+          <StyleInputContainer>
+            <LabelComponent require={true}>
+              Mức chi trả tối thiểu
+            </LabelComponent>
+            <TextFieldCustom
+              type={"text"}
+              {...register("paymentLimit", { required: true })}
+              onChange={(e: any) => {
+                setValue(
+                  "paymentLimit",
+                  getValueWithComma(
+                    e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                  )
+                );
+              }}
             />
           </StyleInputContainer>
           <StyleInputContainer>
             <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
-            {/* <DateSiglePicker
-              props={{ name: "paymentDueDate", setValue: setValue }}
-              control={control}
-            /> */}
             <TextFieldCustom
               type="text"
               {...register("paymentDueDate", {

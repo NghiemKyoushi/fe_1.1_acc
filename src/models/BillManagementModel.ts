@@ -33,6 +33,7 @@ export interface ColBillInfo {
   createdDate: string;
   timeStampOrder: number;
   posFeeStamp: number;
+  estimateReturnFromBank: number;
 }
 export interface receiptInfo {
   id: string;

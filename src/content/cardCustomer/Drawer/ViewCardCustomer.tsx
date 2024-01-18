@@ -11,7 +11,7 @@ import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
-import { handleKeyPress } from "@/utils";
+import { getValueWithComma, handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect } from "react";
@@ -44,6 +44,7 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
         bank: "",
         accountNumber: "",
         paymentDueDate: "",
+        paymentLimit: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -66,18 +67,18 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       customerId,
       cardTypeId,
       paymentDueDate,
+      paymentLimit,
     } = getValues();
 
-    const getDate = new Date(paymentDueDate);
+    // const getDate = new Date(paymentDueDate);
     const bodySend = {
       accountNumber: accountNumber,
       bank: bank,
       cardTypeId: cardTypeId.key,
       customerId: customerId.key,
       name: name,
-      paymentDueDate: getDate.toISOString(),
-      paymentLimit: 0,
-      nationalId: "1234567",
+      paymentDueDate: paymentDueDate,
+      paymentLimit: parseFloat(paymentLimit.replace(/,/g, "")),
     };
     updateCardCustomer(rowInfo.id, bodySend)
       .then((res) => {
@@ -96,20 +97,24 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
   }, []);
 
   useEffect(() => {
-    reset({
-      customerId: {
-        key: rowInfo?.customer.id,
-        values: rowInfo?.customer.name,
-      },
-      cardTypeId: {
-        key: rowInfo?.cardType.id,
-        values: rowInfo?.cardType.name,
-      },
-      name: rowInfo?.name,
-      bank: rowInfo?.bank,
-      accountNumber: rowInfo?.accountNumber,
-      paymentDueDate: rowInfo?.paymentDueDate,
-    });
+    if (rowInfo) {
+      reset({
+        customerId: {
+          key: rowInfo?.customer.id,
+          values: rowInfo?.customer.name,
+        },
+        cardTypeId: {
+          key: rowInfo?.cardType.id,
+          values: rowInfo?.cardType.name,
+        },
+        name: rowInfo?.name,
+        bank: rowInfo?.bank,
+        accountNumber: rowInfo?.accountNumber,
+        paymentDueDate: rowInfo?.paymentDueDate,
+        paymentLimit: getValueWithComma(rowInfo?.paymentLimit),
+      });
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
   return (
@@ -177,6 +182,29 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
             <TextFieldCustom
               type={"text"}
               {...register("accountNumber", { required: true })}
+              onChange={(e: any) => {
+                setValue(
+                  "accountNumber",
+                  e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                );
+              }}
+            />
+          </StyleInputContainer>
+          <StyleInputContainer>
+            <LabelComponent require={true}>
+              Mức chi trả tối thiểu
+            </LabelComponent>
+            <TextFieldCustom
+              type={"text"}
+              {...register("paymentLimit", { required: true })}
+              onChange={(e: any) => {
+                setValue(
+                  "paymentLimit",
+                  getValueWithComma(
+                    e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                  )
+                );
+              }}
             />
           </StyleInputContainer>
           <StyleInputContainer>

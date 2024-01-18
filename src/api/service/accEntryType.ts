@@ -11,7 +11,7 @@ export const createAccEntryList = (body: {
   return authApi.post(`/api/entryTypes`, body);
 };
 
-export const getAccEntry = (title: string, transactionType: string) => {
+export const getAccEntryApis = (title: string, transactionType: string) => {
   return authApi.get(
     `/api/entryTypes/findByTitle/${title}?transactionType=${transactionType}`
   );

@@ -28,7 +28,14 @@ export const updateInvoice = (id: string, body: ReceiptCreationParams) => {
 export const fetchSaveImage = async (oldId: string, file: any) => {
   const formDatas = new FormData();
   formDatas.append("file", file);
-  return await authApi.post(`/api/files/${oldId}`, formDatas, {
+  if (oldId === "") {
+    return await authApi.post(`/api/files`, formDatas, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+  return await authApi.post(`/api/files?imageId=${oldId}`, formDatas, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

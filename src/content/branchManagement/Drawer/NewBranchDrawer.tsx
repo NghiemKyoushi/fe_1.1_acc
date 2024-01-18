@@ -34,8 +34,6 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
         name: "",
         code: "",
         phoneNumber: "",
-        accountNumber: "",
-        bank: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -51,11 +49,11 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
     }
   };
   const handleCreateCard = () => {
-    const { bank, name, accountNumber, code, phoneNumber } = getValues();
+    const {  name, code, phoneNumber } = getValues();
 
     const bodySend = {
-      accountNumber: accountNumber,
-      bank: bank,
+      // accountNumber: accountNumber,
+      // bank: bank,
       name: name,
       code: code,
       phoneNumber: phoneNumber,
@@ -67,7 +65,11 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
         dispatch(fetchBranch());
       })
       .catch(function (error) {
-        enqueueSnackbar("Tạo chi nhánh thất bại !!", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo chi nhánh thất bại !!", { variant: "error" });
+        }
       });
   };
   useEffect(() => {
@@ -108,7 +110,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
               {...register("phoneNumber", { required: true })}
             />
           </StyleInputContainer>
-          <StyleInputContainer>
+          {/* <StyleInputContainer>
             <LabelComponent require={true}>Số tài khoản</LabelComponent>
             <TextFieldCustom
               type={"text"}
@@ -121,7 +123,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
               type={"text"}
               {...register("bank", { required: true })}
             />
-          </StyleInputContainer>
+          </StyleInputContainer> */}
           <Box
             sx={{
               justifyContent: "flex-end",

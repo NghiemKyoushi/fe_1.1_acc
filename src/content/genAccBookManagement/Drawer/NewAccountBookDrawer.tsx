@@ -1,3 +1,4 @@
+import { getAccEntryApis } from "@/api/service/accEntryType";
 import { createNewAccountingBook } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
@@ -13,11 +14,12 @@ import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
+import { AccEntryDetail } from "@/content/accBookManagement/Drawer/NewAccountBookDrawer";
 import { RootState } from "@/reducers/rootReducer";
 import { cookieSetting, getValueWithComma, handleKeyPress } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -39,6 +41,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState("");
+  const [accEntryList, setAccEntryList] = useState<Array<AccEntryDetail>>([]);
 
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
@@ -88,7 +91,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
-      moneyAmount: +moneyAmount,
+      moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
       explanation: explanation,
       branchId: branchId,
       imageId: imageId,
@@ -129,6 +132,26 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       }
     });
   }, []);
+  const getDataEntryType = (value: string) => {
+    getAccEntryApis(value, watch("transactionType.key"))
+      .then((res) => {
+        if (res.data) {
+          let arr: AccEntryDetail[] = [];
+          res.data.map((item: string) => {
+            arr.push({
+              key: item,
+              values: item,
+            });
+          });
+          setAccEntryList([...arr]);
+        }
+      })
+      .catch(function (error) {});
+  };
+  useMemo(() => {
+    setAccEntryList([]);
+    setValue("entryType", { key: "", values: "" });
+  }, [watch("transactionType")]);
   return (
     <DrawerCustom
       widthDrawer={550}
@@ -186,14 +209,14 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
                   props={{
                     name: "entryType",
                     placeHoder: "",
-                    results: accEntryType,
+                    results: accEntryList,
                     label: "",
                     disable: watch("transactionType").key === "" ? true : false,
                     // getData:((value) => setValue("customerName", value)),
                     type: "text",
                     setValue: setValue,
                     labelWidth: "114",
-                    getData: getDataCustomerFromApi,
+                    getData: getDataEntryType,
                   }}
                 />
               </StyleInputContainer>

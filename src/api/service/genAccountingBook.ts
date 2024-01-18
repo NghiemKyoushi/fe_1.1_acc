@@ -27,7 +27,7 @@ export const updateDetailGenAccountingBook = (
   id: string,
   body: CreateEntryParams
 ) => {
-  return authApi.put(`/api/branchAccountEntries/${id}`, body);
+  return authApi.put(`/api/generalAccountEntries/${id}`, body);
 };
 // export const createNewEntry = (body: CreateEntryParams) => {
 //   return authApi.post("/api/branch-account-entry", body);

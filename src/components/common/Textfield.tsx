@@ -23,6 +23,7 @@ export interface CustomTextFieldProps {
   focus?: string;
   value?: string;
   disable?: string;
+  fontSize?: number;
 }
 export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
   (props, ref) => {
@@ -33,6 +34,7 @@ export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
           padding: "0px 1px",
           margin: "0px 0px",
           backgroundColor: "transparent",
+
           ...props.style,
         }}
         value={props.value}
@@ -42,7 +44,7 @@ export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
             WebkitTextFillColor: "#000000",
           },
           "& .MuiInputBase-input": {
-            fontSize: 14,   
+            fontSize: props.fontSize ? props.fontSize : 14,
           },
         }}
         placeholder={props.textholder}
@@ -54,7 +56,9 @@ export const TextFieldCustom = forwardRef<HTMLDivElement, CustomTextFieldProps>(
         ref={ref as ForwardedRef<HTMLDivElement>}
         InputProps={{
           endAdornment: (
-            <InputAdornment position="start">{props?.iconend && props?.iconend }</InputAdornment>
+            <InputAdornment position="start">
+              {props?.iconend && props?.iconend}
+            </InputAdornment>
           ),
         }}
         {...props}

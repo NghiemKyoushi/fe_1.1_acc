@@ -25,9 +25,14 @@ import {
   ColCustomerCardDetail,
 } from "@/models/CardCustomerModel";
 import NewCardCustomer from "./Drawer/NewCardCustomer";
-import { getDetailCardCustomer } from "@/api/service/cardCustomerApis";
+import {
+  deleteCardCustomerApi,
+  getDetailCardCustomer,
+} from "@/api/service/cardCustomerApis";
 import ViewCardCustomer from "./Drawer/ViewCardCustomer";
 import { TextFieldCustom } from "@/components/common/Textfield";
+import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+import { enqueueSnackbar } from "notistack";
 
 export default function CardCustomerContent() {
   const dispatch = useDispatch();
@@ -37,6 +42,9 @@ export default function CardCustomerContent() {
   const [isOpenCard, setIsOpenCard] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [rowInfo, setRowInfo] = useState();
+  const [isDeleteForm, setIsDeleteForm] = useState(false);
+  const [cardCustomerId, setCardCustomerId] = useState("");
+
   const listOfCardCustomer = useSelector(
     (state: RootState) => state.cardCustomer.cardCustomerList
   );
@@ -60,6 +68,24 @@ export default function CardCustomerContent() {
   };
   const handleCloseAddCard = () => {
     setIsOpenCard(false);
+  };
+  const handleCloseDeleteForm = () => {
+    setIsDeleteForm(false);
+  };
+  const handleOpenDeleteForm = (id: string) => {
+    setCardCustomerId(id);
+    setIsDeleteForm(true);
+  };
+  const handleConfirmDeleteForm = () => {
+    deleteCardCustomerApi(cardCustomerId)
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
   };
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
@@ -230,7 +256,10 @@ export default function CardCustomerContent() {
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton color="error">
+              <IconButton
+                onClick={() => handleOpenDeleteForm(row.id)}
+                color="error"
+              >
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
             </>
@@ -252,7 +281,7 @@ export default function CardCustomerContent() {
     useState<PosSearchParams>(initialPosSearch);
   useEffect(() => {
     dispatch(fetchListCardCustomer(searchCondition));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
 
   const handleSearch = () => {
@@ -333,6 +362,11 @@ export default function CardCustomerContent() {
             handleCloseDrawer={handleCloseModalEdit}
             handleSearch={handleSearch}
             rowInfo={rowInfo}
+          />
+          <DialogDeleteComponent
+            openDialog={isDeleteForm}
+            handleClickClose={handleCloseDeleteForm}
+            handleClickConfirm={handleConfirmDeleteForm}
           />
         </form>
       </>

@@ -24,3 +24,6 @@ export const fetchUpdatePos = (id: string, params: PosParamBodySend) => {
 export const fetchPosDetail = (id: string) => {
   return authApi.get(`/api/poses/${id}`);
 };
+export const deletePosDetailApi = (id: string) => {
+  return authApi.delete(`/api/poses/${id}`);
+};

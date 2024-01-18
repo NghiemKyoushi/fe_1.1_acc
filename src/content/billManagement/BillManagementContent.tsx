@@ -362,6 +362,21 @@ export const BillManagementContent = () => {
         },
       },
       {
+        headerName: "Dự tính tiền ngân hàng",
+        field: "estimateReturnFromBank",
+        width: 160,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          if (params.row.createdBy === "TOTAL") {
+            return "";
+          }
+          return getValueWithComma(+params.value);
+        },
+      },
+      {
         headerName: "Thời gian tiền về",
         field: "repayment",
         width: 150,

@@ -34,7 +34,7 @@ export interface NewCardTypeFrorm {
   paymentLimit: string;
   paymentDueDate: string;
   customerId: SearchForm;
-  nationalId: string;
+  // nationalId: string;
 }
 export interface CustomerCardSearch {
   page: number;

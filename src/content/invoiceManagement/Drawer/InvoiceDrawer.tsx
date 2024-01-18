@@ -358,7 +358,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         let restOfFee = 0;
         if (+item?.money) {
           const checkValue2 = +item?.money * (+watch("percentageFee") / 100);
-          if (checkValue2 < 1000) {
+          if (checkValue2 % 1000 !== 0) {
             restOfFee = Math.ceil(checkValue2 / 1000) * 1000;
           } else {
             restOfFee = +item?.money * (+watch("percentageFee") / 100);
@@ -377,11 +377,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       enqueueSnackbar("Vui lòng nhập đầy đủ hóa đơn", { variant: "warning" });
       return;
     }
-    // if (imageId === "") {
-    //   enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
-    //   return;
-    // }
-
     const request: ReceiptCreationParams = {
       imageId: imageId,
       branchId: branchId,
@@ -537,7 +532,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             let fee = 0;
             fee = watch("invoices").reduce((total, { money }) => {
               const calFee = +money * (+watch("percentageFee") / 100);
-              if (calFee < 1000) {
+              if (calFee % 1000 !== 0) {
                 return (total += Math.ceil(calFee / 1000) * 1000);
               }
               return (total += +money * (+watch("percentageFee") / 100));
@@ -552,7 +547,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             const checkValue2 =
               +watch(`invoices.${index}.money`) *
               (+watch("percentageFee") / 100);
-            if (checkValue2 < 1000) {
+            if (checkValue2 % 1000 !== 0) {
               restOfFee = Math.ceil(checkValue2 / 1000) * 1000;
             } else {
               restOfFee =
@@ -584,17 +579,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             let fee = 0;
             fee = watch("invoices").reduce((total, { money }) => {
               const calFee = +money * (+watch("percentageFee") / 100);
-              if (calFee < 1000) {
+              if (calFee % 1000 !== 0) {
                 return (total += +money - Math.ceil(calFee / 1000) * 1000);
               }
               return (total +=
                 +money - +money * (+watch("percentageFee") / 100));
             }, 0);
-            // .reduce(
-            //   (total, { money }) =>
-            //     (total += +money - +money * (+watch("percentageFee") / 100)),
-            //   0
-            // );
 
             if (isNaN(fee)) {
               return 0;
@@ -606,7 +596,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             const checkValue2 =
               +watch(`invoices.${index}.money`) *
               (+watch("percentageFee") / 100);
-            if (checkValue2 < 1000) {
+            if (checkValue2 % 1000 !== 0) {
               feeafterpay =
                 +watch(`invoices.${index}.money`) -
                 Math.ceil(checkValue2 / 1000) * 1000;
@@ -782,7 +772,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     },
     [rows2]
   );
-  const handleSearchCheck = () => {};
+  const handleSearchCheck = () => {
+    console.log("check44444444")
+    if (watch("customerName")?.key) {
+      dispatch(fetchCardCustomer({ customerId: watch("customerName")?.key }));
+    }
+  };
   const handleKeyPress = (event: any) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -841,7 +836,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                     onChange={(e: any) => {
                       setValue(
                         "shipmentFee",
-                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        getValueWithComma(
+                          e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        )
                       );
                     }}
                   />

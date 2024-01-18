@@ -17,7 +17,12 @@ import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
-import { formatDate, formatDateTime, getDateOfPresent } from "@/utils";
+import {
+  formatDate,
+  formatDateTime,
+  getDateOfPresent,
+  getValueWithComma,
+} from "@/utils";
 import {
   fetchGenAccBook,
   fetchGenSumAccBook,
@@ -205,7 +210,12 @@ export const GenAccBookManagementContent = () => {
         handleCloseConfirmForm();
       })
       .catch(function (error: any) {
-        enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        // enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        }
       });
   };
   const getDataCustomerFromApi = (value: string) => {};
@@ -322,7 +332,7 @@ export const GenAccBookManagementContent = () => {
         align: "center",
         valueGetter: ({ row }) => {
           if (row.entryCode === "TOTAL") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           return row.entryType;
         },
@@ -392,10 +402,10 @@ export const GenAccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "INTAKE") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.intake;
+            return getValueWithComma(row.intake);
           }
           return "";
         },
@@ -416,10 +426,10 @@ export const GenAccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "PAYOUT") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.payout;
+            return getValueWithComma(row.payout);
           }
           return "";
         },

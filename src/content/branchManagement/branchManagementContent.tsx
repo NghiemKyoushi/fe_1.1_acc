@@ -20,8 +20,13 @@ import { fetchDetailEmp } from "@/api/service/empManagementApis";
 import { fetchBranch } from "@/actions/BranchManagementAction";
 import { colBranch } from "@/models/BranchManagementModel";
 import NewCardCustomer from "./Drawer/NewBranchDrawer";
-import { getDetailBranch } from "@/api/service/branchManagement";
+import {
+  deleteBranchApis,
+  getDetailBranch,
+} from "@/api/service/branchManagement";
 import ViewBranchDrawer from "./Drawer/ViewBranchDrawer";
+import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+import { enqueueSnackbar } from "notistack";
 
 export const initialPosSearch = {
   page: 0,
@@ -33,6 +38,8 @@ export const BranchManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [rowInfo, setRowInfo] = useState();
+  const [isDeleteForm, setIsDeleteForm] = useState(false);
+  const [branchId, setBranchId] = useState("");
 
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
@@ -59,6 +66,24 @@ export const BranchManagementContent = () => {
   const handleCloseModalEdit = () => {
     setIsOpenModalEdit(false);
   };
+  const handleCloseDeleteForm = () => {
+    setIsDeleteForm(false);
+  };
+  const handleOpenDeleteForm = (id: string) => {
+    setBranchId(id);
+    setIsDeleteForm(true);
+  };
+  const handleConfirmDeleteForm = () => {
+    deleteBranchApis(branchId)
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
+  };
   const handleSearch = () => {
     dispatch(fetchBranch());
   };
@@ -70,7 +95,7 @@ export const BranchManagementContent = () => {
       {
         headerName: "Tên chi nhánh",
         field: "name",
-        width: 200,
+        width: 250,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -80,7 +105,7 @@ export const BranchManagementContent = () => {
       {
         headerName: "Mã chi nhánh",
         field: "code",
-        width: 200,
+        width: 250,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -90,33 +115,33 @@ export const BranchManagementContent = () => {
       {
         headerName: "Số điện thoại",
         field: "phoneNumber",
-        width: 200,
+        width: 250,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
         sortable: false,
         filterable: false,
       },
-      {
-        headerName: "Số tài khoản",
-        field: "accountNumber",
-        width: 200,
-        headerClassName: "super-app-theme--header",
-        headerAlign: "center",
-        align: "center",
-        sortable: false,
-        filterable: false,
-      },
-      {
-        headerName: "Ngân hàng",
-        field: "bank",
-        width: 200,
-        headerClassName: "super-app-theme--header",
-        headerAlign: "center",
-        align: "center",
-        sortable: false,
-        filterable: false,
-      },
+      // {
+      //   headerName: "Số tài khoản",
+      //   field: "accountNumber",
+      //   width: 200,
+      //   headerClassName: "super-app-theme--header",
+      //   headerAlign: "center",
+      //   align: "center",
+      //   sortable: false,
+      //   filterable: false,
+      // },
+      // {
+      //   headerName: "Ngân hàng",
+      //   field: "bank",
+      //   width: 200,
+      //   headerClassName: "super-app-theme--header",
+      //   headerAlign: "center",
+      //   align: "center",
+      //   sortable: false,
+      //   filterable: false,
+      // },
       {
         headerName: "Thao Tác",
         field: "actions",
@@ -125,7 +150,7 @@ export const BranchManagementContent = () => {
         align: "center",
         sortable: false,
         filterable: false,
-        width: 270,
+        width: 300,
         renderCell: ({ row }) => {
           return (
             <>
@@ -135,9 +160,12 @@ export const BranchManagementContent = () => {
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton color="error">
+              {/* <IconButton
+                onClick={() => handleOpenDeleteForm(row.id)}
+                color="error"
+              >
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+              </IconButton> */}
             </>
           );
         },
@@ -181,6 +209,11 @@ export const BranchManagementContent = () => {
         handleCloseDrawer={handleCloseModalEdit}
         isOpen={isOpenModalEdit}
         rowInfo={rowInfo}
+      />
+      <DialogDeleteComponent
+        openDialog={isDeleteForm}
+        handleClickClose={handleCloseDeleteForm}
+        handleClickConfirm={handleConfirmDeleteForm}
       />
     </Dashboard>
   );

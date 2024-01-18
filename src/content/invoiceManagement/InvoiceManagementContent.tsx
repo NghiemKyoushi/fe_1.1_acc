@@ -332,7 +332,14 @@ export default function InvoiceManagementContent() {
   };
 
   const handleConfirmInvoice = () => {
+    console.log("check2222222")
     const { formConfirm } = getValues();
+    if (formConfirm.explanation === "") {
+      enqueueSnackbar("Vui lòng điền thông tin diễn giải", {
+        variant: "error",
+      });
+      return
+    }
     const bodySend: InvoiceConfirmParams = {
       receiptId: formConfirm.receiptId,
       explanation: formConfirm.explanation,
@@ -347,7 +354,11 @@ export default function InvoiceManagementContent() {
         setValue("formConfirm.imageId", "");
       })
       .catch(function (error: any) {
-        enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Dữ liệu không hợp lệ", { variant: "error" });
+        }
       });
   };
   const handleOpenApproveDialog = (id: string) => {
@@ -812,7 +823,6 @@ export default function InvoiceManagementContent() {
         />
         <DialogDeleteComponent
           openDialog={isDeleteForm}
-          control={control}
           handleClickClose={handleCloseDeleteForm}
           handleClickConfirm={handleConfirmDeleteForm}
         />

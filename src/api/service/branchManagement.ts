@@ -7,7 +7,9 @@ export const getAllBranch = async () => {
 export const getDetailBranch = async (id: string) => {
   return authApi.get(`/api/branches/${id}`);
 };
-
+export const deleteBranchApis = async (id: string) => {
+  return authApi.delete(`/api/branches/${id}`);
+};
 export const createNewBranch = async (body: BranchParamSend) => {
   return authApi.post(`/api/branches`, body);
 };

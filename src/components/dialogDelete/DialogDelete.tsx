@@ -8,11 +8,10 @@ interface InsertBookDialogProps {
   openDialog: boolean;
   handleClickClose: () => void;
   handleClickConfirm: () => void;
-  control?: Control<any>;
   // register: UseFormRegister<FieldValues>
 }
 export const DialogDeleteComponent = (props: InsertBookDialogProps) => {
-  const { openDialog, handleClickClose, handleClickConfirm, control } = props;
+  const { openDialog, handleClickClose, handleClickConfirm } = props;
 
   return (
     <CustomizedDialogs

@@ -29,6 +29,9 @@ export interface NewUserPrarams {
   password?: string;
   roleIds: Array<any>;
   branchIds?: Array<any>;
+  salary?: string;
+  bank: string;
+  accountNumber: string;
 }
 export interface EditUserPrarams {
   name?: string;
@@ -36,20 +39,26 @@ export interface EditUserPrarams {
   email?: string;
   phoneNumber?: string;
   password?: string;
-  roles: Array<any>;
-  branches?: Array<any>;
+  roleIds: Array<any>;
+  branchIds?: Array<any>;
+  salary?: string;
+  bank: string;
+  accountNumber: string;
 }
 export interface valueForm {
   name?: string;
   phoneNumber?: string;
   code?: string;
-  branchIds?: SearchForm;
+  branchIds?: Array<any>;
   roleIds?: SearchForm;
   startDate?: Date;
   email?: string;
   salary?: string;
   password?: string;
   restOfMoney?: string;
+  accountBalance?: string;
+  bank: string;
+  accountNumber: string;
 }
 export interface SearchForm {
   keys: string;

@@ -91,9 +91,9 @@ nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 const SearchDrawer = (props: SearchDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } = props;
-  const listOfCustomer = useSelector(
-    (state: RootState) => state.customerManagament.customerList
-  );
+  // const listOfCustomer = useSelector(
+  //   (state: RootState) => state.customerManagament.customerList
+  // );
   const dispatch = useDispatch();
 
   const {

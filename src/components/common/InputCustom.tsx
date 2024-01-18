@@ -79,6 +79,9 @@ export const InputNumber = <T extends FieldValues>({
             opacity: 1,
             fontWeight: 400,
           },
+          "& .MuiInputBase-root.MuiOutlinedInput-root": {
+            padding: 0,
+          },
         }}
         // size="small"
         {...textFieldProps}

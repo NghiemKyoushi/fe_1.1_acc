@@ -22,6 +22,7 @@ function* fetchAccountEntryListSaga(action: any) {
           id: item.id,
           key: item.title,
           values: item.title,
+          transactionType: item.transactionType
         });
       });
     }

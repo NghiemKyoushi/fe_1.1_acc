@@ -21,14 +21,19 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import NewPosDrawer from "./Drawer/NewPosDrawer";
 import FullScreenLoader from "@/components/common/FullScreenLoader";
 import ViewPosDrawer from "./Drawer/ViewPosDrawer";
-import { fetchPosDetail } from "@/api/service/posManagerApis";
+import { deletePosDetailApi, fetchPosDetail } from "@/api/service/posManagerApis";
 import { TextFieldCustom } from "@/components/common/Textfield";
+import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+import { enqueueSnackbar } from "notistack";
 
 export default function PosManagementContent() {
   const dispatch = useDispatch();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenViewModal, setIsOpenViewModal] = useState(false);
   const [rowInfo, setRowInfo] = useState();
+  const [isDeleteForm, setIsDeleteForm] = useState(false);
+  const [posIds, setPosIds] = useState("");
+
   const listOfPos = useSelector(
     (state: RootState) => state.posManagement.posList
   );
@@ -61,7 +66,24 @@ export default function PosManagementContent() {
   const handleCloseViewModal = () => {
     setIsOpenViewModal(false);
   };
-
+  const handleCloseDeleteForm = () => {
+    setIsDeleteForm(false);
+  };
+  const handleOpenDeleteForm = (id: string) => {
+    setPosIds(id);
+    setIsDeleteForm(true);
+  };
+  const handleConfirmDeleteForm = () => {
+    deletePosDetailApi(posIds)
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
+  };
   const columns: GridColDef<ColPosManagement>[] = useMemo(
     () => [
       {
@@ -219,12 +241,15 @@ export default function PosManagementContent() {
           return (
             <>
               <IconButton
-                color="info"
                 onClick={() => handleOpenViewModal(row.id)}
+                color="info"
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton color="error">
+              <IconButton
+                onClick={() => handleOpenDeleteForm(row.id)}
+                color="error"
+              >
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
             </>
@@ -258,7 +283,6 @@ export default function PosManagementContent() {
     };
     setSearchCondition(bodySend);
     dispatch(fetchPosManagement(bodySend));
-
   };
   const onPageChange = (pageNumber: number) => {
     const searchPage = {
@@ -329,6 +353,11 @@ export default function PosManagementContent() {
         isOpen={isOpenViewModal}
         handleCloseDrawer={handleCloseViewModal}
         rowInfo={rowInfo}
+      />
+      <DialogDeleteComponent
+        openDialog={isDeleteForm}
+        handleClickClose={handleCloseDeleteForm}
+        handleClickConfirm={handleConfirmDeleteForm}
       />
     </Dashboard>
   );

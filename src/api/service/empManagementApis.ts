@@ -18,3 +18,7 @@ export const fetchEmp = (param: EmpManageParamSearch) => {
 export const fetchDetailEmp = (id: string) => {
   return authApi.get(`/api/users/${id}`);
 };
+
+export const deleteDetailEmp = (id: string) => {
+  return authApi.delete(`/api/users/${id}`);
+};

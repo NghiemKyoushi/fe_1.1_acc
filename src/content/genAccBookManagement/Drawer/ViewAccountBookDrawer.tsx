@@ -1,9 +1,11 @@
+import { getAccEntryApis } from "@/api/service/accEntryType";
 import {
   createNewAccountingBook,
   updateDetailAccountingBook,
 } from "@/api/service/accountingBook";
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
+import { updateDetailGenAccountingBook } from "@/api/service/genAccountingBook";
 import {
   fetchBranch,
   fetchImagePath,
@@ -17,6 +19,7 @@ import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
+import { AccEntryDetail } from "@/content/accBookManagement/Drawer/NewAccountBookDrawer";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
 import {
@@ -27,7 +30,7 @@ import {
 } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -50,6 +53,8 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imagePath, setImagePath] = useState("");
+  const [accEntryList, setAccEntryList] = useState<Array<AccEntryDetail>>([]);
+
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
@@ -86,11 +91,12 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           setImagePath(URL.createObjectURL(res.data));
         });
       }
+      setImageId(rowInfo?.imageId);
       reset({
         name: rowInfo?.name,
         code: rowInfo?.code,
         explanation: rowInfo?.explanation,
-        moneyAmount: rowInfo?.moneyAmount,
+        moneyAmount: getValueWithComma(rowInfo?.moneyAmount),
         entryType: {
           key: rowInfo?.entryType,
           values: rowInfo?.entryType,
@@ -121,17 +127,17 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
       });
   };
   const handleUpdate = async () => {
-    const { imageId, entryType, moneyAmount, explanation, transactionType } =
+    const { entryType, moneyAmount, explanation, transactionType } =
       getValues();
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
-      moneyAmount: +moneyAmount,
+      moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
       explanation: explanation,
       branchId: branchId,
       imageId: imageId,
     };
-    updateDetailAccountingBook(rowInfo.id, bodySend)
+    updateDetailGenAccountingBook(rowInfo.id, bodySend)
       .then((res) => {
         enqueueSnackbar("Cập nhật bút toán thành công!!", {
           variant: "success",
@@ -144,6 +150,29 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
       });
   };
   const getDataCustomerFromApi = (value: string) => {};
+  const getDataEntryType = (value: string) => {
+    getAccEntryApis(value, watch("transactionType.key"))
+      .then((res) => {
+        if (res.data) {
+          let arr: AccEntryDetail[] = [];
+          res.data.map((item: string) => {
+            arr.push({
+              key: item,
+              values: item,
+            });
+          });
+          setAccEntryList([...arr]);
+        }
+      })
+      .catch(function (error) {});
+  };
+  useMemo(() => {
+    if (watch("transactionType.key") === "") {
+      setAccEntryList([]);
+      setValue("entryType", { key: "", values: "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("transactionType")]);
   useEffect(() => {
     fetchBranch().then((res) => {
       if (res.data) {
@@ -224,12 +253,13 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
                   props={{
                     name: "entryType",
                     placeHoder: "",
-                    results: accEntryType,
+                    results: accEntryList,
+                    disable: watch("transactionType").key === "" ? true : false,
                     label: "",
                     type: "text",
                     setValue: setValue,
                     labelWidth: "114",
-                    getData: getDataCustomerFromApi,
+                    getData: getDataEntryType,
                   }}
                 />
               </StyleInputContainer>

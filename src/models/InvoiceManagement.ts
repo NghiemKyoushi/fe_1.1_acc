@@ -74,6 +74,7 @@ export interface ValueFormCreate {
   totalBill: string;
   invoices: Array<InvoiceCreate>;
   invoicesCalculate: Array<InvoicesCalculateType>;
+  check: string;
 }
 export interface InvoicesCalculateType {
   intake: number; //thu

@@ -53,39 +53,40 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     reset,
     control,
   } = useForm<ValueFormCreate>({
-    defaultValues: useMemo(() => {
-      return {
-        codeEmployee: rowInfo?.percentageFee,
-        check: "",
-        invoicesCalculate: [
-          {
-            intake: 0, //thu
-            payout: 0, // chi
-            loan: 0, // công nợ
-            repayment: 0,
-          },
-        ],
-      };
-    }, [rowInfo]),
-    // defaultValues: {
-    //   codeEmployee: "",
-    //   customerInfo: "",
-    //   customerName: {
-    //     key: "",
-    //     values: "",
-    //     nationalId: "",
-    //   },
-    //   image_Id: "",
-    //   posSearch: "",
-    //   percentageFee: rowInfo?.percentageFee,
-    //   shipmentFee: rowInfo?.shipmentFee,
-    //   cardCustomer: {
-    //     key: "",
-    //     values: "",
-    //   },
-    //   totalBill: "",
-    //   invoices: [],
-    // },
+    // defaultValues: useMemo(() => {
+    //   return {
+    //     codeEmployee: rowInfo?.percentageFee,
+
+    //   };
+    // }, [rowInfo]),
+    defaultValues: {
+      check: "",
+      invoicesCalculate: [
+        {
+          intake: 0, //thu
+          payout: 0, // chi
+          loan: 0, // công nợ
+          repayment: 0,
+        },
+      ],
+      invoices: [],
+      codeEmployee: "",
+      customerInfo: "",
+      customerName: {
+        key: "",
+        values: "",
+        nationalId: "",
+      },
+      // image_Id: "",
+      posSearch: "",
+      percentageFee: "",
+      shipmentFee: "",
+      cardCustomer: {
+        key: "",
+        values: "",
+      },
+      totalBill: "",
+    },
   });
   const role = cookieSetting.get("roles");
 
@@ -140,7 +141,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             ...item,
             money: item.moneyAmount,
             calculatedProfit: item.calculatedProfit,
-            pos: {
+            posId: {
               values: item.pos.code,
               key: item.pos.id,
             },
@@ -148,7 +149,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           });
         });
         dataTable.unshift({
-          pos: {
+          posId: {
             values: "",
             key: "",
           },
@@ -162,7 +163,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       reset({
         codeEmployee: rowInfo?.employee.name,
         percentageFee: rowInfo?.percentageFee,
-        shipmentFee: rowInfo?.percentageFee,
+        shipmentFee: rowInfo?.shipmentFee,
         customerName: {
           key: rowInfo?.customerCard.id,
           values: rowInfo?.customerCard.name,
@@ -187,7 +188,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     control,
     name: "invoices",
   });
-
   const onAdd = () => {
     const item = {
       id: "",
@@ -242,7 +242,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             return (
               <InputSearchPos
                 control={control}
-                name={`invoices.${index}.pos`}
+                name={`invoices.${index}.posId`}
                 watch={watch}
                 setValue={setValue}
               />
@@ -302,18 +302,34 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         type: "number",
         valueGetter: (params: GridValueGetterParams) => {
           const index = params.api.getRowIndex(params.row.id);
-          const restOfFee =
-            +watch(`invoices.${index}.money`) * (+watch("percentageFee") / 100);
           if (params.row.check === "TOTAL") {
             let fee = 0;
-            fee = watch("invoices").reduce(
-              (total, { money }) =>
-                (total += +money * (+watch("percentageFee") / 100)),
-              0
-            );
+            fee = watch("invoices").reduce((total, { money }) => {
+              const calFee = +money * (+watch("percentageFee") / 100);
+              if (calFee % 1000 !== 0) {
+                return (total += Math.ceil(calFee / 1000) * 1000);
+              }
+              return (total += +money * (+watch("percentageFee") / 100));
+            }, 0);
+            if (isNaN(fee)) {
+              return 0;
+            }
             return fee;
           }
-          return restOfFee;
+          let restOfFee = 0;
+          if (watch(`invoices.${index}.money`)) {
+            const checkValue2 =
+              +watch(`invoices.${index}.money`) *
+              (+watch("percentageFee") / 100);
+            if (checkValue2 % 1000 !== 0) {
+              restOfFee = Math.ceil(checkValue2 / 1000) * 1000;
+            } else {
+              restOfFee =
+                +watch(`invoices.${index}.money`) *
+                (+watch("percentageFee") / 100);
+            }
+          }
+          return getValueWithComma(restOfFee);
         },
         cellClassName: (params: GridCellParams) => {
           if (params.row.check !== "TOTAL") {
@@ -335,16 +351,36 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           const index = params.api.getRowIndex(params.row.id);
           if (params.row.check === "TOTAL") {
             let fee = 0;
-            fee = watch("invoices").reduce(
-              (total, { money }) =>
-                (total += +money - +money * (+watch("percentageFee") / 100)),
-              0
-            );
+            fee = watch("invoices").reduce((total, { money }) => {
+              const calFee = +money * (+watch("percentageFee") / 100);
+              if (calFee % 1000 !== 0) {
+                return (total += +money - Math.ceil(calFee / 1000) * 1000);
+              }
+              return (total +=
+                +money - +money * (+watch("percentageFee") / 100));
+            }, 0);
+
+            if (isNaN(fee)) {
+              return 0;
+            }
             return fee;
           }
-          const feeafterpay =
-            +watch(`invoices.${index}.money`) -
-            +watch(`invoices.${index}.money`) * (+watch("percentageFee") / 100);
+          let feeafterpay = 0;
+          if (watch(`invoices.${index}.money`) !== undefined) {
+            const checkValue2 =
+              +watch(`invoices.${index}.money`) *
+              (+watch("percentageFee") / 100);
+            if (checkValue2 % 1000 !== 0) {
+              feeafterpay =
+                +watch(`invoices.${index}.money`) -
+                Math.ceil(checkValue2 / 1000) * 1000;
+            } else {
+              feeafterpay =
+                +watch(`invoices.${index}.money`) -
+                +watch(`invoices.${index}.money`) *
+                  (+watch("percentageFee") / 100);
+            }
+          }
           return feeafterpay;
         },
         cellClassName: (params: GridCellParams) => {
@@ -462,24 +498,33 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const handleSubmitInvoice = () => {
     let receiptBills: any[] = [];
     watch("invoices").map((item, index) => {
-      if (item?.check !== "TOTAL") {
-        if (item.pos.key !== "") {
-          receiptBills.push({
-            billId: "",
-            posId: item?.pos?.key,
-            moneyAmount: +item?.money,
-            fee: +item?.money * (+watch("percentageFee") / 100),
-          });
+      console.log("item", item);
+      if (item?.check !== "TOTAL" && item?.posId?.key !== "") {
+        let restOfFee = 0;
+        if (+item?.money) {
+          const checkValue2 = +item?.money * (+watch("percentageFee") / 100);
+          if (checkValue2 % 1000 !== 0) {
+            restOfFee = Math.ceil(checkValue2 / 1000) * 1000;
+          } else {
+            restOfFee = +item?.money * (+watch("percentageFee") / 100);
+          }
         }
+        receiptBills.push({
+          billId: "",
+          posId: item?.posId?.key,
+          moneyAmount: +item?.money,
+          fee: restOfFee,
+        });
       }
       return item;
     });
+    console.log("CHECK", receiptBills);
     if (receiptBills.length === 0) {
       enqueueSnackbar("Vui lòng nhập hóa đơn", { variant: "warning" });
       return;
     }
     const request: ReceiptCreationParams = {
-      imageId: watch("imageId"),
+      imageId: imageId,
       branchId: branchId,
       customerCardId: watch("cardCustomer").key,
       percentageFee: +watch("percentageFee"),
@@ -516,14 +561,13 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const getRowId = (row: any) => {
     return row.id;
   };
-  let totalfee = 0;
-  if (watch("invoices")) {
-    totalfee = watch("invoices").reduce(
-      (total, { money }) =>
-        (total += +money - +money * (+watch("percentageFee") / 100)),
-      0
-    );
-  }
+  const totalfee = watch("invoices").reduce((total, { money }) => {
+    const calFee = +money * (+watch("percentageFee") / 100);
+    if (calFee < 1000) {
+      return (total += +money - Math.ceil(calFee / 1000) * 1000);
+    }
+    return (total += +money - +money * (+watch("percentageFee") / 100));
+  }, 0);
   const handleGetCard = () => {};
   const handleSearchCheck = () => {};
 
@@ -627,8 +671,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       getData: handleGetCard,
                     }}
                   />
-                  <StyleButtonSpan>
-                    {rowInfo?.code === null && (
+                  {rowInfo?.code === null && (
+                    <StyleButtonSpan>
                       <Button
                         variant="contained"
                         size="small"
@@ -636,8 +680,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       >
                         Thêm Thẻ
                       </Button>
-                    )}
-                  </StyleButtonSpan>
+                    </StyleButtonSpan>
+                  )}
                 </StyleInputContainer>
                 <InfoBankCard>
                   <InfoOutlinedIcon />
@@ -662,6 +706,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                     backgroundColor: "#EAEAEA",
                     color: "#1a3e72",
                     fontWeight: "600",
+                    justifyContent: "flex-end !important",
                   },
                 }}
               >
@@ -792,7 +837,7 @@ const PageContent = styled.div`
 const StyleButtonSpan = styled.span`
   position: absolute;
   top: 32px;
-  right: -21%;
+  right: -31%;
 `;
 const TextHelper = styled.span`
   color: red;

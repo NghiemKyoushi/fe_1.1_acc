@@ -81,18 +81,19 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   };
   useEffect(() => {
     if (rowInfo) {
+      console.log("rowInfo?.imageId", rowInfo?.imageId);
       if (rowInfo?.imageId !== "") {
         getPathImage(rowInfo.imageId).then((res) => {
           URL.createObjectURL(res.data);
           setImagePath(URL.createObjectURL(res.data));
         });
       }
-
+      setImageId(rowInfo?.imageId);
       reset({
         name: rowInfo?.name,
         code: rowInfo?.code,
         explanation: rowInfo?.explanation,
-        moneyAmount: rowInfo?.moneyAmount,
+        moneyAmount: getValueWithComma(rowInfo?.moneyAmount),
         entryType: {
           key: rowInfo?.entryType,
           values: rowInfo?.entryType,
@@ -124,12 +125,12 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   };
 
   const handleUpdate = async () => {
-    const { imageId, moneyAmount, entryType, explanation, transactionType } =
+    const { moneyAmount, entryType, explanation, transactionType } =
       getValues();
     const bodySend = {
       entryType: entryType?.key,
       transactionType: transactionType?.key,
-      moneyAmount: +moneyAmount,
+      moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
       explanation: explanation,
       branchId: branchId,
       imageId: imageId,

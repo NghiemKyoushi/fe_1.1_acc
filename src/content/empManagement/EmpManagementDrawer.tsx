@@ -2,6 +2,7 @@ import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import { fetchCreateEmp } from "@/api/service/empManagementApis";
 import { fetchBranch, fetchRoles } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
+import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
@@ -22,7 +23,7 @@ export interface NEmpManagementDrawerProps {
 }
 export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch } = props;
-  const [banchList, setBranchList] = useState([]);
+  const [branchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
@@ -31,10 +32,9 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         name: "",
         phoneNumber: "",
         code: "",
-        branchIds: {
-          keys: "",
-          values: "",
-        },
+        bank: "",
+        accountNumber: "",
+        branchIds: [],
         roleIds: {
           keys: "",
           values: "",
@@ -55,41 +55,60 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       phoneNumber,
       roleIds,
       startDate,
+      salary,
+      bank,
       password,
       email,
+      accountNumber,
     } = getValues();
+    let arrBranchId: any[] = [];
+    if (branchIds) {
+      arrBranchId = branchIds.map((item) => {
+        return item.key;
+      });
+    }
     const bodySend: NewUserPrarams = {
       name: name,
       code: code,
       email: email,
       phoneNumber: phoneNumber,
       password: password,
+      salary: salary,
+      bank: bank,
+      accountNumber: accountNumber,
       roleIds: roleIds?.keys ? [roleIds?.keys] : [],
-      branchIds: branchIds?.keys ? [branchIds?.keys] : [],
+      branchIds: arrBranchId ? arrBranchId : [],
     };
+    console.log("bodySend", bodySend);
     fetchCreateEmp(bodySend)
       .then((res) => {
-        enqueueSnackbar("Tạo thẻ mới thành công!!", { variant: "success" });
+        enqueueSnackbar("Tạo nhân viên thành công!!", { variant: "success" });
         handleCloseDrawer();
         handleSearch();
       })
       .catch(function (error) {
-        // enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
-          enqueueSnackbar("Tạo thẻ mới thất bại", { variant: "error" });
+          if (error.response.data.errors?.length > 0) {
+            enqueueSnackbar(error.response.data.errors[0], {
+              variant: "error",
+            });
+          } else {
+            enqueueSnackbar("Tạo nhân viên thất bại", { variant: "error" });
+          }
         }
       });
   };
   const getDataCustomerFromApi = (value: string) => {};
+  const getValueBranch = (value: string) => {};
   useEffect(() => {
     fetchBranch().then((res) => {
       if (res.data) {
         const branch = res.data.map((item: any) => {
           return {
-            values: item?.name,
-            keys: item?.id,
+            value: item?.name,
+            key: item?.id,
           };
         });
         setBranchList(branch);
@@ -135,21 +154,27 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("phoneNumber", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "phoneNumber",
+                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                    );
+                  }}
                 />
               </StyleInputContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Chi nhánh</LabelComponent>
-                <SelectSearchComponent
+                <AutoCompleteMultiple
                   control={control}
                   props={{
                     name: "branchIds",
                     placeHoder: "",
-                    results: banchList,
+                    results: branchList,
                     label: "",
                     type: "text",
                     setValue: setValue,
-                    labelWidth: "112",
-                    getData: getDataCustomerFromApi,
+                    labelWidth: "114",
+                    getData: getValueBranch,
                   }}
                 />
               </StyleInputContainer>
@@ -160,6 +185,13 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <DateSiglePicker
                   props={{ name: "startDate", setValue: setValue }}
                   control={control}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Ngân Hàng</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("bank", { required: true })}
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -208,6 +240,19 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("salary", { required: true })}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Số tài khoản</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("accountNumber", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "accountNumber",
+                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                    );
+                  }}
                 />
               </StyleInputContainer>
             </StyleContainer>
