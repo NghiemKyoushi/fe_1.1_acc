@@ -84,7 +84,11 @@ export default function CardCustomerContent() {
         handleSearch();
       })
       .catch(function (error: any) {
-        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Xóa thất bại", { variant: "error" });
+        }
       });
   };
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =

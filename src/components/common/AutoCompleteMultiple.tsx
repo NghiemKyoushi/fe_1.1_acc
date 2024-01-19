@@ -65,12 +65,13 @@ function AutoCompleteMultiple({
             <Autocomplete
               size="small"
               multiple
-              // disabled={disable ? true : false}
+              disabled={disable ? true : false}
               isOptionEqualToValue={(option, value) => option.key === value.key}
               options={results ? results : []}
               // getOptionLabel={(option) => {
               //   return option?.value ? option?.value : "";
               // }}
+
               getOptionLabel={(option) => option.value}
               value={value ?? ""}
               onChange={(event, selectedOptions, reason) => {
@@ -81,13 +82,15 @@ function AutoCompleteMultiple({
                 onChange(selectedOptions);
               }}
               onInputChange={(event, newInputValue) => {
-                console.log("check", newInputValue);
                 getData(newInputValue);
               }}
               sx={{
                 width: `${labelWidth}%`,
                 padding: "0px 32px 0px 0px",
                 fontSize: 14,
+                "& .MuiInputBase-input.Mui-disabled": {
+                  WebkitTextFillColor: "#000000",
+                },
               }}
               renderInput={(params) => (
                 <TextFieldCustom

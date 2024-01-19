@@ -35,6 +35,7 @@ export interface NEmpManagementDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
   handleSearch: () => void;
+  branchId: string;
 }
 export const listTranType = [
   { key: "INTAKE", values: "Thu" },
@@ -47,7 +48,7 @@ export interface AccEntryDetail {
   values: string;
 }
 export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
-  const { isOpen, handleCloseDrawer, handleSearch } = props;
+  const { isOpen, handleCloseDrawer, handleSearch, branchId } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState("");
@@ -55,12 +56,11 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
-  const [branch, setBranch] = useState<Array<any> | undefined>([]);
+  const [branch, setBranch] = useState("");
 
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
   );
-  // const branchId = cookieSetting.get("branchId");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm({
@@ -99,8 +99,13 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       });
   };
   const handleCreateUser = async () => {
-    const { name, branch, moneyAmount, entryType, explanation, transactionType } =
-      getValues();
+    const {
+      name,
+      moneyAmount,
+      entryType,
+      explanation,
+      transactionType,
+    } = getValues();
     // if (imageId === "") {
     //   enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", { variant: "warning" });
     //   return;
@@ -110,7 +115,7 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       transactionType: transactionType?.key,
       moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
       explanation: explanation,
-      branchId: branch.key,
+      branchId: branch,
       imageId: imageId,
     };
     createNewAccountingBook(bodySend)
@@ -132,20 +137,13 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
   useEffect(() => {
     if (listOfBranch.length > 0) {
       let arr: any[] = [];
-      listOfBranch.map((item: any) => {
-        arr.push({
-          key: item?.code,
-          values: item?.name,
-        });
-      });
-      setBranch([...arr]);
-      setValue("branch", {
-        key: listOfBranch[0].code,
-        values: listOfBranch[0].name,
-      });
+      const getBranch = listOfBranch?.find(
+        (item: any) => item.code === branchId
+      );
+      setBranch(getBranch?.id)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listOfBranch]);
+  }, [listOfBranch,branchId]);
   const getDataCustomerFromApi = (value: string) => {};
   const getDataEntryType = (value: string) => {
     getAccEntryApis(value, watch("transactionType.key"))
@@ -164,17 +162,17 @@ export const NewAccountBookDrawer = (props: NEmpManagementDrawerProps) => {
       .catch(function (error) {});
   };
   useEffect(() => {
-    fetchBranch().then((res) => {
-      if (res.data) {
-        const branch = res.data.map((item: any) => {
-          return {
-            values: item?.name,
-            keys: item?.id,
-          };
-        });
-        setBranchList(branch);
-      }
-    });
+    // fetchBranch().then((res) => {
+    //   if (res.data) {
+    //     const branch = res.data.map((item: any) => {
+    //       return {
+    //         values: item?.name,
+    //         keys: item?.id,
+    //       };
+    //     });
+    //     setBranchList(branch);
+    //   }
+    // });
     fetchRoles().then((res) => {
       if (res.data) {
         const roles = res.data.map((item: any) => {

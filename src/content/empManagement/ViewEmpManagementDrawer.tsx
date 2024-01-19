@@ -55,7 +55,6 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         };
       }, [rowInfo]),
     });
-    console.log("check3333", watch())
   useEffect(() => {
     if (rowInfo) {
       const branchFormat = rowInfo?.branches.map((item: any) => {
@@ -64,7 +63,6 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
           key: item?.id,
         };
       });
-      console.log("branchFormat",branchFormat)
       reset({
         name: rowInfo?.name,
         code: rowInfo?.code,
@@ -80,7 +78,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         branchIds: branchFormat,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
   const dispatch = useDispatch();
   const getValueBranch = (value: string) => {};

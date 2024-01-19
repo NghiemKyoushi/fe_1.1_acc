@@ -38,6 +38,7 @@ export interface ViewAccountBookProps {
   handleCloseDrawer: () => void;
   rowInfo: any;
   handleSearch: () => void;
+  branchId: string;
 }
 export const listTranType = [
   { key: "INTAKE", values: "Thu" },
@@ -46,17 +47,19 @@ export const listTranType = [
   { key: "REPAYMENT", values: "Thu nợ" },
 ];
 export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
-  const { isOpen, handleCloseDrawer, handleSearch, rowInfo } = props;
+  const { isOpen, handleCloseDrawer, branchId, handleSearch, rowInfo } = props;
   const [banchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const [imagePath, setImagePath] = useState("");
   const [imageId, setImageId] = useState("");
+  const [branch, setBranch] = useState("");
 
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
-  const branchId = cookieSetting.get("branchId");
-
+  const listOfBranch = useSelector(
+    (state: RootState) => state.branchManaement.branchList
+  );
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm({
       defaultValues: {
@@ -81,7 +84,6 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   };
   useEffect(() => {
     if (rowInfo) {
-      console.log("rowInfo?.imageId", rowInfo?.imageId);
       if (rowInfo?.imageId !== "") {
         getPathImage(rowInfo.imageId).then((res) => {
           URL.createObjectURL(res.data);
@@ -132,7 +134,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
       transactionType: transactionType?.key,
       moneyAmount: parseFloat(moneyAmount.replace(/,/g, "")),
       explanation: explanation,
-      branchId: branchId,
+      branchId: branch,
       imageId: imageId,
     };
     updateDetailAccountingBook(rowInfo.id, bodySend)
@@ -149,17 +151,27 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   };
   const getDataCustomerFromApi = (value: string) => {};
   useEffect(() => {
-    fetchBranch().then((res) => {
-      if (res.data) {
-        const branch = res.data.map((item: any) => {
-          return {
-            values: item?.name,
-            keys: item?.id,
-          };
-        });
-        setBranchList(branch);
-      }
-    });
+    if (listOfBranch.length > 0) {
+      let arr: any[] = [];
+      const getBranch = listOfBranch?.find(
+        (item: any) => item.code === branchId
+      );
+      setBranch(getBranch?.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listOfBranch, branchId]);
+  useEffect(() => {
+    // fetchBranch().then((res) => {
+    //   if (res.data) {
+    //     const branch = res.data.map((item: any) => {
+    //       return {
+    //         values: item?.name,
+    //         keys: item?.id,
+    //       };
+    //     });
+    //     setBranchList(branch);
+    //   }
+    // });
     fetchRoles().then((res) => {
       if (res.data) {
         const roles = res.data.map((item: any) => {

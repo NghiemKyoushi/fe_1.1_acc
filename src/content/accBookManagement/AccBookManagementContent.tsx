@@ -251,6 +251,7 @@ export const AccBookManagementContent = () => {
         ...searchCondition,
         branchCodes: getBranch.key,
       };
+      setSearchCondition(paramSearch);
       dispatch(fetchAccBook(paramSearch));
       dispatch(fetchSumAccBook(paramSearch));
     }
@@ -585,6 +586,7 @@ export const AccBookManagementContent = () => {
   const getRowId = (row: any) => {
     return row.id;
   };
+  console.log('check', watch('branch.key'))
   return (
     <Dashboard>
       {/* {role === ROLE.ADMIN ? ( */}
@@ -594,7 +596,7 @@ export const AccBookManagementContent = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          gap: 10
+          gap: 10,
         }}
       >
         <h3>SỔ KẾ TOÁN CHI NHÁNH</h3>
@@ -674,12 +676,14 @@ export const AccBookManagementContent = () => {
         handleCloseDrawer={handleCloseModal}
         handleSearch={handleSearch}
         isOpen={isOpenModal}
+        branchId={watch("branch.key")}
       />
       <ViewAccountBookDrawer
         handleCloseDrawer={handleCloseViewModal}
         isOpen={isOpenViewModal}
         rowInfo={rowInfo}
         handleSearch={handleSearch}
+        branchId={watch("branch.key")}
       />
       <DialogDeleteComponent
         openDialog={isDeleteForm}

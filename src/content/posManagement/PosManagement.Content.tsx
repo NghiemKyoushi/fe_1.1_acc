@@ -21,7 +21,10 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import NewPosDrawer from "./Drawer/NewPosDrawer";
 import FullScreenLoader from "@/components/common/FullScreenLoader";
 import ViewPosDrawer from "./Drawer/ViewPosDrawer";
-import { deletePosDetailApi, fetchPosDetail } from "@/api/service/posManagerApis";
+import {
+  deletePosDetailApi,
+  fetchPosDetail,
+} from "@/api/service/posManagerApis";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
@@ -81,7 +84,11 @@ export default function PosManagementContent() {
         handleSearch();
       })
       .catch(function (error: any) {
-        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Xóa thất bại", { variant: "error" });
+        }
       });
   };
   const columns: GridColDef<ColPosManagement>[] = useMemo(

@@ -2,30 +2,30 @@
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
 import Dashboard from "@/components/Layout";
 import SelectSearchComponent from "@/components/common/AutoComplete";
+import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 import DateSiglePicker from "@/components/common/DatePicker";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { valueForm } from "@/models/EmpManagement";
-import { cookieSetting } from "@/utils";
+import { ROLE, cookieSetting } from "@/utils";
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 
 function InfoAccountContent() {
-  const [banchList, setBranchList] = useState([]);
+  const [branchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const employeeId = cookieSetting.get("employeeId");
+  const roleCookies = cookieSetting.get("roles");
+
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<valueForm>({
       defaultValues: {
         name: "",
         phoneNumber: "",
         code: "",
-        branchIds: {
-          keys: "",
-          values: "",
-        },
+        branchIds: [],
         roleIds: {
           keys: "",
           values: "",
@@ -43,6 +43,13 @@ function InfoAccountContent() {
     if (employeeId) {
       fetchDetailEmp(employeeId).then((res) => {
         const rowInfo = res.data;
+        let arrBranchId: any[] = [];
+        const branchFormat = rowInfo?.branches.map((item: any) => {
+          return {
+            value: item?.name,
+            key: item?.id,
+          };
+        });
         reset({
           name: rowInfo?.name,
           code: rowInfo?.code,
@@ -56,20 +63,25 @@ function InfoAccountContent() {
             keys: rowInfo?.roles[0].id,
             values: rowInfo?.roles[0].title,
           },
-          branchIds: {
-            keys: rowInfo?.branches[0].id,
-            values: rowInfo?.branches[0].name,
-          },
+          branchIds: branchFormat,
         });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employeeId]);
   const getDataCustomerFromApi = (value: string) => {};
+  const getValueBranch = (value: string) => {};
 
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>THÔNG TIN TÀI KHOẢN</h3>
+      <div>
+        {roleCookies === ROLE.ADMIN && (
+          <Button variant="contained" color="warning">
+            Dự phòng
+          </Button>
+        )}
+      </div>
       <form style={{ padding: 16, width: "100%" }}>
         <div
           style={{
@@ -99,18 +111,18 @@ function InfoAccountContent() {
             </StyleInputContainer>
             <StyleInputContainer>
               <LabelComponent require={true}>Chi nhánh</LabelComponent>
-              <SelectSearchComponent
+              <AutoCompleteMultiple
                 control={control}
                 props={{
                   name: "branchIds",
                   placeHoder: "",
-                  results: banchList,
+                  results: branchList,
                   label: "",
                   type: "text",
                   setValue: setValue,
-                  labelWidth: "105",
-                  getData: getDataCustomerFromApi,
+                  labelWidth: "106",
                   disable: true,
+                  getData: getValueBranch,
                 }}
               />
             </StyleInputContainer>

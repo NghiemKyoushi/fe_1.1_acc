@@ -25,6 +25,8 @@ import {
   updateCardType,
 } from "@/api/service/cardCustomerApis";
 import { AddCardTypeDialogComponent } from "./Dialog/AddCardTypesDialog";
+import { cookieSetting } from "@/utils";
+import { listTranType } from "../accBookManagement/Drawer/ViewAccountBookDrawer";
 
 export const SettingContent = () => {
   const [accEntry, setAccEntry] = useState([]);
@@ -39,6 +41,7 @@ export const SettingContent = () => {
 
   const [typeEntryModal, setTypeEntryModal] = useState("");
   const [typeCardTypeModal, setCardTypeModal] = useState("");
+  const roles = cookieSetting.get("roles");
 
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
@@ -210,6 +213,11 @@ export const SettingContent = () => {
         headerAlign: "center",
         align: "center",
         sortable: false,
+        renderCell: ({ row }) => {
+          return listTranType.find(
+            (item: any) => item.key === row?.transactionType
+          )?.values;
+        },
       },
       {
         headerName: "Thao Tác",
