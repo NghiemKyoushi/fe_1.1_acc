@@ -90,13 +90,7 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
-          if (error.response.data.errors?.length > 0) {
-            enqueueSnackbar(error.response.data.errors[0], {
-              variant: "error",
-            });
-          } else {
-            enqueueSnackbar("Tạo nhân viên thất bại", { variant: "error" });
-          }
+          enqueueSnackbar("Tạo nhân viên thất bại", { variant: "error" });
         }
       });
   };
