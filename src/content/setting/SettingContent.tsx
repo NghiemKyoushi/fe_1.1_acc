@@ -25,7 +25,7 @@ import {
   updateCardType,
 } from "@/api/service/cardCustomerApis";
 import { AddCardTypeDialogComponent } from "./Dialog/AddCardTypesDialog";
-import { cookieSetting } from "@/utils";
+import { ROLE, cookieSetting } from "@/utils";
 import { listTranType } from "../accBookManagement/Drawer/ViewAccountBookDrawer";
 
 export const SettingContent = () => {
@@ -42,6 +42,7 @@ export const SettingContent = () => {
   const [typeEntryModal, setTypeEntryModal] = useState("");
   const [typeCardTypeModal, setCardTypeModal] = useState("");
   const roles = cookieSetting.get("roles");
+  const roleCookies = cookieSetting.get("roles");
 
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
@@ -290,6 +291,7 @@ export const SettingContent = () => {
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>CÀI ĐẶT CHUNG</h3>
+
       <form style={{ display: "flex", flexDirection: "row", gap: 50 }}>
         <div style={{ width: 600 }}>
           <Box sx={{ margin: "7px 16px" }}>
@@ -349,6 +351,13 @@ export const SettingContent = () => {
           handleClickConfirm={handleConfirmCardType}
         />
       </form>
+      <div>
+        {roleCookies === ROLE.ADMIN && (
+          <Button variant="contained" color="warning">
+            Sao lưu dữ liệu
+          </Button>
+        )}
+      </div>
     </Dashboard>
   );
 };

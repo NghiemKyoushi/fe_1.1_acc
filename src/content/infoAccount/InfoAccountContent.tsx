@@ -17,7 +17,6 @@ function InfoAccountContent() {
   const [branchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const employeeId = cookieSetting.get("employeeId");
-  const roleCookies = cookieSetting.get("roles");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<valueForm>({
@@ -75,13 +74,6 @@ function InfoAccountContent() {
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>THÔNG TIN TÀI KHOẢN</h3>
-      <div>
-        {roleCookies === ROLE.ADMIN && (
-          <Button variant="contained" color="warning">
-            Dự phòng
-          </Button>
-        )}
-      </div>
       <form style={{ padding: 16, width: "100%" }}>
         <div
           style={{
