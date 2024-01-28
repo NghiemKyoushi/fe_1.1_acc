@@ -97,7 +97,7 @@ const InvoiceManagementReducers = (
           repayment: action.payload.totalRepayment,
           transactionTotal: action.payload.total,
           calculatedProfit: action.payload.totalCalculatedProfit,
-          estimatedProfit: 0,
+          estimatedProfit: action.payload.totalEstimatedProfit,
           customerCardId: "",
           customerCardName: "",
           employeeId: "",

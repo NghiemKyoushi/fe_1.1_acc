@@ -30,6 +30,7 @@ import {
 import ImageUpload from "@/components/common/ImageUpload";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
+import _ from "lodash";
 
 export interface ViewInvoiceDrawerProps {
   isOpen: boolean;
@@ -141,6 +142,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             ...item,
             money: item.moneyAmount,
             calculatedProfit: item.calculatedProfit,
+            estimatedReturnFromBank: item.estimatedReturnFromBank,
             posId: {
               values: item.pos.code,
               key: item.pos.id,
@@ -158,6 +160,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           fee: "",
           check: "TOTAL",
           calculatedProfit: "",
+          estimatedReturnFromBank: 0,
         });
       }
       reset({
@@ -171,7 +174,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         },
         cardCustomer: {
           key: rowInfo?.customerCard.id,
-          values: rowInfo?.customerCard.name,
+          values:
+            rowInfo?.customerCard.name.toString() +
+            " - " +
+            rowInfo?.customerCard.accountNumber.toString().slice(-4),
         },
         invoices: dataTable,
         invoicesCalculate: invoicesCalculate,
@@ -204,6 +210,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       fee: "",
       feeafterpay: 0,
       billcode: "",
+      estimatedReturnFromBank: 0,
       check: "",
     };
     append(item);
@@ -389,6 +396,39 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           }
           return "super-app-theme--cell";
         },
+      },
+      {
+        headerName: "Tiền về",
+        field: "estimatedReturnFromBank",
+        width: 120,
+        headerAlign: "left",
+        sortable: false,
+        cellClassName: (params: GridCellParams) => {
+          if (params.row.check !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
+        },
+        // editable: true,
+        valueGetter: ({ row }) => {
+          if (row.check === "TOTAL") {
+            let fee = 0;
+            fee = watch("invoices").reduce(
+              (total, { estimatedReturnFromBank }) => {
+                return (total += +estimatedReturnFromBank);
+              },
+              0
+            );
+            return getValueWithComma(fee);
+          }
+          if (row.estimatedReturnFromBank) {
+            return getValueWithComma(row.estimatedReturnFromBank);
+          }
+        },
+        // renderCell: (params: GridRenderCellParams) => {
+        //   const check = getValueWithComma(params.value);
+        //   return <p>{check}</p>;
+        // },
       },
       {
         headerName: "Thao Tác",
@@ -604,9 +644,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   <LabelComponent require={true}>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>%</p>}
-                    {...register("percentageFee", {
-                      required: "Phần trăm phí bắt buộc",
-                    })}
+                    {...register(
+                      "percentageFee"
+                      // , {
+                      //   required: "Phần trăm phí bắt buộc",
+                      // }
+                    )}
                     onChange={(e: any) => {
                       setValue(
                         "percentageFee",
@@ -614,18 +657,21 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
+                  {/* <TextHelper>
                     {errors.percentageFee && errors.percentageFee.message}
-                  </TextHelper>
+                  </TextHelper> */}
                 </StyleInputContainer>
 
                 <StyleInputContainer>
                   <LabelComponent require={true}>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>VND</p>}
-                    {...register("shipmentFee", {
-                      required: "Phí vận chuyển bắt buộc",
-                    })}
+                    {...register(
+                      "shipmentFee"
+                      // , {
+                      //   required: "Phí vận chuyển bắt buộc",
+                      // }
+                    )}
                     onChange={(e: any) => {
                       setValue(
                         "shipmentFee",
@@ -633,9 +679,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
+                  {/* <TextHelper>
                     {errors.shipmentFee && errors.shipmentFee.message}
-                  </TextHelper>
+                  </TextHelper> */}
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
@@ -650,7 +696,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       label: "",
                       type: "text",
                       setValue: setValue,
-                      labelWidth: "100",
+                      labelWidth: "120",
                       getData: getDataCustomerFromApi,
                     }}
                   />
@@ -667,7 +713,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       label: "",
                       type: "text",
                       setValue: setValue,
-                      labelWidth: "100",
+                      labelWidth: "120",
                       getData: handleGetCard,
                     }}
                   />
@@ -744,9 +790,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   type={"text"}
                   disable="true"
                   value={
-                    !isNaN(+totalfee)
+                    _.isNumber(totalfee)
                       ? getValueWithComma(
-                          totalfee - +watch("shipmentFee")
+                          +totalfee -
+                            +watch("shipmentFee").toString().replace(/,/g, "")
                         ).toString()
                       : "0"
                   }

@@ -170,7 +170,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
           </StyleInputContainer>
           <StyleInputContainer>
             <LabelComponent require={true}>
-              Mức chi trả tối thiểu
+              Hạn mức thẻ
             </LabelComponent>
             <TextFieldCustom
               type={"text"}

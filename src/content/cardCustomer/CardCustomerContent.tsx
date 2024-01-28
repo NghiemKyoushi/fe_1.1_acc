@@ -239,7 +239,7 @@ export default function CardCustomerContent() {
         headerAlign: "center",
         align: "center",
         valueGetter: ({ row }) => {
-          return formatDateTime(row.paymentDueDate);
+          return row.paymentDueDate;
         },
       },
       {

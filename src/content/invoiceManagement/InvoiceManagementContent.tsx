@@ -332,13 +332,12 @@ export default function InvoiceManagementContent() {
   };
 
   const handleConfirmInvoice = () => {
-    console.log("check2222222")
     const { formConfirm } = getValues();
     if (formConfirm.explanation === "") {
       enqueueSnackbar("Vui lòng điền thông tin diễn giải", {
         variant: "error",
       });
-      return
+      return;
     }
     const bodySend: InvoiceConfirmParams = {
       receiptId: formConfirm.receiptId,
@@ -623,7 +622,38 @@ export default function InvoiceManagementContent() {
         }),
       },
       {
-        headerName: "Lợi nhuận gộp",
+        headerName: "Lợi nhuận ước tính",
+        field: "estimatedProfit",
+        headerAlign: "center",
+        align: "center",
+        width: 140,
+        hide: true,
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
+        cellClassName: (params: GridCellParams<ColReceiptList>) => {
+          if (params.row.code !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
+        },
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <RangeNumberFilter
+                handleSearch={handleSearch}
+                register={register}
+                fromNumberName="fromEstimatedProfit"
+                toNumberName="toEstimatedProfit"
+              />
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
+      },
+      {
+        headerName: "Lợi nhuận thực tế",
         field: "calculatedProfit",
         headerAlign: "center",
         align: "center",

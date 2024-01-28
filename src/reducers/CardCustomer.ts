@@ -42,7 +42,10 @@ const CardCustomertReducers = (
       if (action.payload.length > 0) {
         result = action.payload.map((item: any) => {
           return {
-            values: item.name,
+            values:
+              item.name.toString() +
+              " - " +
+              item.accountNumber.toString().slice(-4),
             key: item.id,
             item: item,
           };

@@ -92,6 +92,7 @@ export interface InvoiceCreate {
   feeafterpay: number;
   billcode: string;
   check: string;
+  estimatedReturnFromBank: number;
 }
 export interface PosDetail {
   key: string;

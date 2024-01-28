@@ -7,7 +7,7 @@ import DateSiglePicker from "@/components/common/DatePicker";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { valueForm } from "@/models/EmpManagement";
-import { ROLE, cookieSetting } from "@/utils";
+import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -40,7 +40,7 @@ function InfoAccountContent() {
     });
   useEffect(() => {
     if (employeeId) {
-      fetchDetailEmp(employeeId).then((res) => {
+      fetchDetailEmp(employeeId).then((res: any) => {
         const rowInfo = res.data;
         let arrBranchId: any[] = [];
         const branchFormat = rowInfo?.branches.map((item: any) => {
@@ -57,7 +57,7 @@ function InfoAccountContent() {
           phoneNumber: rowInfo?.phoneNumber,
           bank: rowInfo?.bank,
           accountNumber: rowInfo?.accountNumber,
-          accountBalance: rowInfo?.accountBalance,
+          accountBalance: getValueWithComma(rowInfo?.accountBalance),
           roleIds: {
             keys: rowInfo?.roles[0].id,
             values: rowInfo?.roles[0].title,

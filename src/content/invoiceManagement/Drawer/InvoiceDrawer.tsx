@@ -331,6 +331,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       feeafterpay: 0,
       billcode: "",
       check: "",
+      estimatedReturnFromBank: 0,
     };
     append(item);
   };
@@ -773,7 +774,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     [rows2]
   );
   const handleSearchCheck = () => {
-    console.log("check44444444")
     if (watch("customerName")?.key) {
       dispatch(fetchCardCustomer({ customerId: watch("customerName")?.key }));
     }
@@ -811,9 +811,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   <LabelComponent require={true}>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>%</p>}
-                    {...register("percentageFee", {
-                      required: "Phần trăm phí bắt buộc",
-                    })}
+                    {...register("percentageFee")}
                     onChange={(e: any) => {
                       setValue(
                         "percentageFee",
@@ -821,18 +819,13 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
-                    {errors.percentageFee && errors.percentageFee.message}
-                  </TextHelper>
                 </StyleInputContainer>
 
                 <StyleInputContainer>
                   <LabelComponent require={true}>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>VND</p>}
-                    {...register("shipmentFee", {
-                      required: "Phí vận chuyển bắt buộc",
-                    })}
+                    {...register("shipmentFee")}
                     onChange={(e: any) => {
                       setValue(
                         "shipmentFee",
@@ -842,9 +835,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
-                    {errors.shipmentFee && errors.shipmentFee.message}
-                  </TextHelper>
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
@@ -946,9 +936,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   type={"text"}
                   disable="true"
                   value={
-                    !isNaN(+totalfee)
+                    _.isNumber(totalfee)
                       ? getValueWithComma(
-                          totalfee - +watch("shipmentFee")
+                          +totalfee - +watch("shipmentFee").replace(/,/g, "")
                         ).toString()
                       : "0"
                   }

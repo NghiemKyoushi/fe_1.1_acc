@@ -586,7 +586,6 @@ export const AccBookManagementContent = () => {
   const getRowId = (row: any) => {
     return row.id;
   };
-  console.log('check', watch('branch.key'))
   return (
     <Dashboard>
       {/* {role === ROLE.ADMIN ? ( */}
