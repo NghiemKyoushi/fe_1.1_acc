@@ -1,7 +1,7 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
 import { Box, Button, IconButton } from "@mui/material";
-import { GridColDef, GridSortModel } from "@mui/x-data-grid";
+import { GridColDef, GridSortModel, GridValueGetterParams } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
@@ -20,6 +20,7 @@ import ViewEmpManagementDrawer from "./ViewEmpManagementDrawer";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { useForm } from "react-hook-form";
+import { getValueWithComma } from "@/utils";
 
 export const initialPosSearch = {
   page: 0,
@@ -148,7 +149,7 @@ export const EmpManagementContent = () => {
       {
         headerName: "Mã nhân viên",
         field: "code",
-        width: 250,
+        width: 200,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -190,9 +191,22 @@ export const EmpManagementContent = () => {
         }),
       },
       {
+        headerName: "Số dư tài khoản",
+        field: "accountBalance",
+        width: 170,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(params.value);
+        },
+      },
+      {
         headerName: "Email",
         field: "email",
-        width: 270,
+        width: 250,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -202,7 +216,7 @@ export const EmpManagementContent = () => {
       {
         headerName: "Số điện thoại",
         field: "phoneNumber",
-        width: 270,
+        width: 200,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -251,7 +265,7 @@ export const EmpManagementContent = () => {
         align: "center",
         sortable: false,
         filterable: false,
-        width: 263,
+        width: 250,
         renderCell: ({ row }) => {
           return (
             <>

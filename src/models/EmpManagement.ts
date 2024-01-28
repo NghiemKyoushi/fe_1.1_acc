@@ -19,6 +19,7 @@ export interface EmpManageSearchResult {
   phoneNumber: string;
   branchCode: string;
   roleTitle: string;
+  accountBalance: number;
 }
 
 export interface NewUserPrarams {
