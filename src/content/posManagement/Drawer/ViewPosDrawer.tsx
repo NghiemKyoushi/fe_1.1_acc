@@ -11,7 +11,7 @@ import {
   PosParamBodySend,
   SupportedCardTypesParam,
 } from "@/models/PortManagementModel";
-import { Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -26,6 +26,7 @@ import { enqueueSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
 import { InputNumber } from "@/components/common/InputCustom";
 import { fetchPosManagement } from "@/actions/PosManagementActions";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -79,8 +80,10 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
         bank: rowInfo.bank,
         maxBillAmount: rowInfo.maxBillAmount,
         posFeeTable: getCard,
+        note: rowInfo?.note,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
   const { fields: posFeeTable } = useFieldArray({
     control,
@@ -134,12 +137,13 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
     [listOfCard]
   );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code, maxBillAmount } = getValues();
+    const { accountNumber, address, bank, code, maxBillAmount, note } =
+      getValues();
     let formatList: ColCardType[] = [];
     watch("posFeeTable").map((item) => {
       formatList.push({
         cardTypeId: item.cardTypeId,
-        posCardFee: item?.posCardFee,
+        posCardFee: item.posCardFee ? item.posCardFee : 0,
       });
     });
     const request: PosParamBodySend = {
@@ -151,16 +155,22 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
       supportedCardTypes: formatList,
       posStatus: "AVAILABLE",
       maxBillAmount: maxBillAmount,
+      note: note,
     };
     fetchUpdatePos(rowInfo.id, request)
       .then((res) => {
         enqueueSnackbar("Cập nhật thành công!!", { variant: "success" });
         handleCloseDrawer();
         dispatch(fetchPosManagement(searchCondition));
-        reset();
+        // reset();
       })
       .catch(function (error) {
-        enqueueSnackbar("cập nhật thất bại", { variant: "error" });
+        // enqueueSnackbar("cập nhật thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Cập nhật thất bại", { variant: "error" });
+        }
       });
   };
   const getRowId = (row: any) => {
@@ -248,6 +258,18 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 </StyleInputContainer>
               </StyleContainer>
             </SearchContainer>
+            <div style={{ width: "80%" }}>
+              <Typography style={{ fontWeight: "bold" }}>Ghi chú</Typography>
+              <TextareaComponent
+                control={control}
+                valueInput={""}
+                name={"note"}
+                label={"Ghi chú"}
+                width={"100"}
+                type={""}
+                disable={false}
+              />
+            </div>
             <StyleDataGrid>
               <TableDataComponent
                 columns={columnsOther}
@@ -258,7 +280,14 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 getRowId={getRowId}
               />
             </StyleDataGrid>
-            <div>
+            <Box
+              sx={{
+                justifyContent: "flex-end",
+                display: "flex",
+                padding: "0px 16px 8px 16px",
+              }}
+            >
+              {" "}
               <Button
                 style={{ marginTop: 30 }}
                 variant="contained"
@@ -267,7 +296,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
               >
                 Cập nhật
               </Button>
-            </div>
+            </Box>
           </PageContent>
         </form>
       </DrawerCustom>

@@ -2,21 +2,13 @@
 import Dashboard from "@/components/Layout";
 import { useEffect, useMemo, useState } from "react";
 import { Operators } from "@/components/common/DataGrid";
-import DrawerCustom from "@/components/common/Drawer";
-import { InputNumber } from "@/components/common/InputCustom";
-import BasicSelect from "@/components/common/Select";
 import {
   GridCellParams,
   GridColDef,
-  GridFilterItem,
-  GridFilterOperator,
-  GridRenderCellParams,
   GridSortModel,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
-import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
-import { useDebounce } from "use-debounce";
 import { useSearchParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/reducers/rootReducer";
@@ -65,7 +57,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { RepayDialogComponent } from "./Drawer/RepayDialog";
-
+import EditNoteIcon from "@mui/icons-material/EditNote";
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -694,28 +686,35 @@ export default function InvoiceManagementContent() {
         renderCell: ({ row }) => {
           return (
             <>
-              <IconButton
-                color="success"
-                onClick={() => handleOpenApproveDialog(row.id)}
-              >
-                {row.code === null && role !== ROLE.EMPLOYEE ? (
+              {row.code !== "TOTAL" && row.note !== null ? (
+                <IconButton color="error">
+                  <EditNoteIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              ) : null}
+              {row.code === null && role !== ROLE.EMPLOYEE ? (
+                <IconButton
+                  color="success"
+                  onClick={() => handleOpenApproveDialog(row.id)}
+                >
                   <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
-                ) : (
-                  <div></div>
-                )}
-              </IconButton>
-              <IconButton
-                color="info"
-                onClick={() => handleOpenViewDrawer(row.id)}
-              >
-                {row.code !== "TOTAL" ? (
+                </IconButton>
+              ) : (
+                <div></div>
+              )}
+
+              {row.code !== "TOTAL" ? (
+                <IconButton
+                  color="info"
+                  onClick={() => handleOpenViewDrawer(row.id)}
+                >
                   <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
-                ) : (
-                  <div></div>
-                )}
-              </IconButton>
+                </IconButton>
+              ) : (
+                <div></div>
+              )}
               {+row.loan > +row.repayment &&
               row.code !== "TOTAL" &&
+              row.code !== null &&
               row.receiptStatusEnum === "COMPLETED" ? (
                 <IconButton
                   color="info"
@@ -726,14 +725,15 @@ export default function InvoiceManagementContent() {
               ) : (
                 <div></div>
               )}
-              <IconButton
-                color="error"
-                onClick={() => handleOpenDeleteForm(row.id)}
-              >
-                {row.code === null && (
+
+              {row.code === null && (
+                <IconButton
+                  color="error"
+                  onClick={() => handleOpenDeleteForm(row.id)}
+                >
                   <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-                )}
-              </IconButton>
+                </IconButton>
+              )}
             </>
           );
         },
@@ -770,6 +770,15 @@ export default function InvoiceManagementContent() {
   const getRowId = (row: any) => {
     return row.id;
   };
+  const dynamicColumns = columns.filter((item) => {
+    if (
+      (item.field === "calculatedProfit" || item.field === "estimatedProfit") &&
+      role !== ROLE.ADMIN
+    ) {
+      return false;
+    }
+    return true;
+  });
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ HÓA ĐƠN</h3>
@@ -810,7 +819,7 @@ export default function InvoiceManagementContent() {
             }}
           >
             <TableDataComponent
-              columns={columns}
+              columns={dynamicColumns}
               dataInfo={
                 listOfInvoice.length !== 0
                   ? [sumInvoiceRow, ...listOfInvoice]

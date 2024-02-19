@@ -34,6 +34,13 @@ export const CurrencyNumericFormat = forwardRef<unknown, NumericFormatProps>(
                 value: Math.abs(values?.floatValue),
               },
             });
+          } else {
+            onChange({
+              target: {
+                name: props.name,
+                value: 0,
+              },
+            });
           }
         }}
         thousandSeparator={","}

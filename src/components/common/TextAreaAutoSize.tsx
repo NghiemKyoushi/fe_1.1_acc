@@ -36,6 +36,14 @@ const TextareaComponent = <T extends FieldValues>({
     fieldState: { error },
   } = useController(other);
  
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      // Append a new line (\n) to the textarea value
+      const newValue = `${field.value}\n`;
+      field.onChange(newValue);
+    }
+  };
   return (
     <>
       {/* {label !== undefined && (
@@ -70,6 +78,7 @@ const TextareaComponent = <T extends FieldValues>({
             ...textFieldProps?.InputProps,
             rows: 5,
             inputComponent: "textarea",
+            onKeyDown: handleKeyDown, // Attach onKeyDown event handler
           }}
           placeholder="Nhập tại dây"
         />

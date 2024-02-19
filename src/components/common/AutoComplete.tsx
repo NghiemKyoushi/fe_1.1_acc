@@ -86,9 +86,11 @@ function SelectSearchComponent({
                 padding: "0px 32px 0px 0px",
                 fontSize: 14,
               }}
+              placeholder={placeHoder}
               renderInput={(params) => (
                 <TextFieldCustom
                   {...params}
+                  textholder={placeHoder}
                   border={border}
                   type={"text"}
                   fontSize={fontSize}

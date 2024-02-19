@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 import { listTranType } from "./NewAccountBookDrawer";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
+import { useEffect, useState } from "react";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -90,7 +91,11 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
+  const listOfBranch = useSelector(
+    (state: RootState) => state.branchManaement.branchList
+  );
   const dispatch = useDispatch();
+  const [branch, setBranch] = useState<Array<any> | undefined>([]);
 
   const {
     register,
@@ -114,6 +119,10 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
+      branch: {
+        key: "",
+        values: "",
+      },
     },
   });
   const getDataCustomerFromApi = (value: string) => {
@@ -130,6 +139,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toTransactionTotal,
       fromTransactionTotal,
       transactionTypes,
+      branch,
     } = getValues();
     let arr: any[] = [];
     if (transactionTypes.key !== "") {
@@ -145,15 +155,35 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const bodySend = {
       ...searchCondition,
       entryCode: entryCode,
-      transactionTypes: arr,
+      transactionTypes: transactionTypes.key,
+      branchCodes: branch.key,
       fromTransactionTotal: fromTransactionTotal,
       toTransactionTotal: toTransactionTotal,
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };
+    handleChangeSearch(bodySend);
     dispatch(fetchAccBook(bodySend));
     dispatch(fetchSumAccBook(bodySend));
   };
+  useEffect(() => {
+    if (listOfBranch.length > 0) {
+      let arr: any[] = [];
+      listOfBranch.map((item: any) => {
+        arr.push({
+          key: item?.code,
+          values: item?.name,
+        });
+      });
+      setBranch([...arr]);
+      setValue("branch", {
+        key: listOfBranch[0].code,
+        values: listOfBranch[0].name,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listOfBranch]);
+  const handleChangeBranch = (value: string) => {};
   return (
     <DrawerCustom
       widthDrawer={450}
@@ -194,6 +224,22 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                 setValue: setValue,
                 labelWidth: "59",
                 getData: getDataCustomerFromApi,
+              }}
+            />
+          </StyleInputContainer>
+          <StyleInputContainer>
+            <LabelComponent require={true}>Chi nhánh</LabelComponent>
+            <SelectSearchComponent
+              control={control}
+              props={{
+                name: "branch",
+                placeHoder: "",
+                results: branch,
+                label: "",
+                type: "text",
+                setValue: setValue,
+                labelWidth: "59",
+                getData: handleChangeBranch,
               }}
             />
           </StyleInputContainer>

@@ -96,6 +96,12 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       accountNumber,
       bank,
     } = getValues();
+    let arrBranchId: any[] = [];
+    if (branchIds) {
+      arrBranchId = branchIds.map((item) => {
+        return item.key;
+      });
+    }
     const bodySend: EditUserPrarams = {
       name: name,
       code: code,
@@ -106,7 +112,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       bank: bank,
       accountNumber: accountNumber,
       roleIds: [roleIds?.keys],
-      branchIds: branchIds,
+      branchIds: arrBranchId ? arrBranchId : [],
     };
     fetchUpdateEmp(rowInfo.id, bodySend)
       .then((res) => {

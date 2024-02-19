@@ -35,6 +35,9 @@ export interface NewCardTypeFrorm {
   paymentDueDate: string;
   customerId: SearchForm;
   // nationalId: string;
+  expireDate: Date;
+  note: string;
+  prePaidFee?: string;
 }
 export interface CustomerCardSearch {
   page: number;
@@ -89,4 +92,10 @@ export interface SearchForm {
 export interface cardType {
   id: string;
   name: string;
+}
+export interface PayFeeType {
+  customerCardId: string;
+  prePaidFee: string;
+  imageId: string;
+  branchId: string;
 }

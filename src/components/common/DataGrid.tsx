@@ -20,6 +20,7 @@ import {
   MuiEvent,
   useGridApiRef,
   GridSelectionModel,
+  GridRowParams,
 } from "@mui/x-data-grid";
 import { styled } from "@mui/material";
 
@@ -118,48 +119,6 @@ export const Operators = (props: OperatorsProps) => {
 };
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  // border: 0,
-  // color:
-  //   theme.palette.mode === "light"
-  //     ? "rgba(0,0,0,.85)"
-  //     : "rgba(255,255,255,0.85)",
-  // fontFamily: [
-  //   "-apple-system",
-  //   "BlinkMacSystemFont",
-  //   '"Segoe UI"',
-  //   "Roboto",
-  //   '"Helvetica Neue"',
-  //   "Arial",
-  //   "sans-serif",
-  //   '"Apple Color Emoji"',
-  //   '"Segoe UI Emoji"',
-  //   '"Segoe UI Symbol"',
-  // ].join(","),
-  // WebkitFontSmoothing: "auto",
-  // letterSpacing: "normal",
-  // "& .MuiDataGrid-columnsContainer": {
-  //   backgroundColor: theme.palette.mode === "light" ? "#fafafa" : "#1d1d1d",
-  // },
-  // // "& .MuiDataGrid-iconSeparator": {
-  // //   display: "none",
-  // // },
-  // "& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell": {
-  //   borderBottom: `1px solid ${
-  //     theme.palette.mode === "light" ? "#f0f0f0" : "#303030"
-  //   }`,
-  // },
-  // "& .MuiDataGrid-cell": {
-  //   color:
-  //     theme.palette.mode === "light"
-  //       ? "rgba(0,0,0,.85)"
-  //       : "rgba(255,255,255,0.65)",
-  // },
-  // "& .MuiDataGrid-columnHeader, .MuiDataGrid-columnHeader": {
-  //   backgroundColor: "#F1F3F9",
-  // },
-  // "& .super-app-theme--header": {
-  //   height: 20,
-  // },
   border: 0,
   color:
     theme.palette.mode === "light"
@@ -226,6 +185,7 @@ export interface FilterCOmponent {
   handleGetListOfSelect?: (value: Array<string | number>) => void;
   checkboxSelection?: boolean;
   selectionModel?: Array<any>;
+  isRowSelectable?: (params: GridRowParams) => boolean;
 }
 export default function TableDataComponent(props: FilterCOmponent) {
   const {
@@ -245,6 +205,7 @@ export default function TableDataComponent(props: FilterCOmponent) {
     handleSortModelChange,
     processRowUpdate,
     handleGetListOfSelect,
+    isRowSelectable,
   } = props;
   const processRowUpdate1 = (
     newRow: GridValidRowModel,
@@ -313,6 +274,7 @@ export default function TableDataComponent(props: FilterCOmponent) {
           NoRowsOverlay: dataInfo.length < 1 ? CustomNoRowsOverlay : undefined,
         }}
         checkboxSelection={checkboxSelection ? true : false}
+        isRowSelectable={isRowSelectable}
         selectionModel={selectionModel}
         onSelectionModelChange={handleGetSelect}
         componentsProps={{

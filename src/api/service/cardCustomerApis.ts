@@ -2,13 +2,16 @@ import {
   CardCustomerParams,
   CustomerCardSearch,
   NewCardType,
+  PayFeeType,
 } from "@/models/CardCustomerModel";
 import { authApi } from "../authApi";
 import { fetchPosParams } from "./type";
 
 export const fetchCardCustomerSearch = (props: CardCustomerParams) => {
   const { customerId } = props;
-  return authApi.get(`/api/customerCards/findByCustomerId/${customerId}`);
+  return authApi.get(
+    `/api/customerCards/findNonExpiredByCustomerId/${customerId}`
+  );
 };
 export const fetchGetAllCard = async () => {
   return authApi.get(`/api/cardTypes`);
@@ -41,4 +44,8 @@ export const updateCardType = async (name: string, id: string) => {
 
 export const deleteCardType = async (id: string) => {
   return authApi.delete(`/api/cardTypes/${id}`);
+};
+//pay fee
+export const updatePayFeeCustomer = (props: PayFeeType) => {
+  return authApi.put(`/api/customerCards/adjustPrePaidFee`, props);
 };

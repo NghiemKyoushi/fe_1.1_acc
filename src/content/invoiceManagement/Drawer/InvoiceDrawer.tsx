@@ -2,9 +2,9 @@ import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import styled from "styled-components";
-import SearchIcon from "@mui/icons-material/Search";
 import {
   Control,
+  Controller,
   FieldValues,
   UseFormSetValue,
   UseFormWatch,
@@ -24,7 +24,7 @@ import {
   GridValueSetterParams,
 } from "@mui/x-data-grid";
 import TableDataComponent from "@/components/common/DataGrid";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, Checkbox, IconButton, Typography } from "@mui/material";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import SelectSearchComponent from "@/components/common/AutoComplete";
@@ -32,7 +32,7 @@ import { useDispatch } from "react-redux";
 import { fetchPos } from "@/actions/InvoiceManagementActions";
 import { RootState } from "@/reducers/rootReducer";
 import { useSelector } from "react-redux";
-import { cookieSetting, getValueWithComma } from "@/utils";
+import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import { fetchCardCustomer } from "@/actions/CardCustomerActions";
 import {
@@ -43,6 +43,7 @@ import {
 } from "@/models/InvoiceManagement";
 import { enqueueSnackbar } from "notistack";
 import {
+  fetchBranch,
   fetchCreateInvoice,
   fetchSaveImage,
 } from "@/api/service/invoiceManagement";
@@ -51,6 +52,8 @@ import { InputNumber } from "@/components/common/InputCustom";
 import ImageUpload from "@/components/common/ImageUpload";
 import _ from "lodash";
 import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
+import { branchType } from "@/models/PortManagementModel";
 const initialRow = [
   {
     id: randomId(),
@@ -184,6 +187,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     cardType: "",
     bank: "",
     accountNumber: "",
+    prePaidFee: 0,
   });
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
@@ -195,6 +199,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     (state: RootState) => state.cardCustomer.cardType
   );
   const [copyInvoice, setCopyInvoice] = useState<InvoiceCreate[]>([]);
+  const [branchList, setBranchList] = useState<branchType[]>([]);
+  const role = cookieSetting.get("roles");
   // [key: string]: string } |
   const {
     register,
@@ -222,6 +228,13 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         values: "",
       },
       totalBill: "",
+      usingCardPrePayFee: false,
+      acceptExceededFee: false,
+      note: "",
+      branchIds: {
+        key: "",
+        values: "",
+      },
       invoices: [
         {
           id: "",
@@ -390,6 +403,14 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       repayment: watch("invoicesCalculate")[0].repayment,
       employeeId: employeeId,
       receiptBills: receiptBills,
+      note: watch("note"),
+      usingCardPrePayFee: watch("usingCardPrePayFee"),
+      acceptExceededFee:
+        watch("usingCardPrePayFee") === true &&
+        infoCard.prePaidFee < +watch("invoicesCalculate")[0].intake &&
+        watch("acceptExceededFee") === true
+          ? true
+          : false,
     };
     fetchCreateInvoice(request)
       .then((res) => {
@@ -747,32 +768,47 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             cardType: item.item?.cardType?.name,
             bank: item.item?.bank,
             accountNumber: item.item?.accountNumber,
+            prePaidFee: item.item?.prePaidFee,
           });
         }
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("cardCustomer")]);
+  useMemo(() => {
+    if (role !== ROLE.ADMIN) {
+      branchList.map((item) => {
+        if (item?.key === branchId) {
+          setValue("branchIds", {
+            key: item.key,
+            values: item?.values,
+          });
+        }
+      });
+    } else {
+      setValue("branchIds", {
+        key: branchList[0]?.key,
+        values: branchList[0]?.values,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, branchList]);
 
+  useEffect(() => {
+    fetchBranch().then((res) => {
+      if (res.data) {
+        const branch = res.data.map((item: any) => {
+          return {
+            values: item?.name,
+            key: item?.id,
+          };
+        });
+        setBranchList(branch);
+      }
+    });
+  }, []);
   const handleGetCard = () => {};
-  const handleProcessRowUpdate2 = useCallback(
-    async (newRow: GridRowModel) => {
-      const oldRowData = [...rows2];
-      let rowIndex = oldRowData.findIndex(
-        (element) => element.id === newRow.id
-      );
-      oldRowData[rowIndex] = {
-        id: newRow.id,
-        intake: newRow.intake,
-        payout: newRow.payout,
-        loan: newRow.loan,
-        repayment: newRow.repayment,
-      };
-      setRows2(oldRowData);
-      return null;
-    },
-    [rows2]
-  );
+
   const handleSearchCheck = () => {
     if (watch("customerName")?.key) {
       dispatch(fetchCardCustomer({ customerId: watch("customerName")?.key }));
@@ -808,7 +844,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   />
                 </StyleInputContainer>
                 <StyleInputContainer>
-                  <LabelComponent require={true}>Phần trăm phí</LabelComponent>
+                  <LabelComponent>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>%</p>}
                     {...register("percentageFee")}
@@ -822,7 +858,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 </StyleInputContainer>
 
                 <StyleInputContainer>
-                  <LabelComponent require={true}>Phí vận chuyển</LabelComponent>
+                  <LabelComponent>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>VND</p>}
                     {...register("shipmentFee")}
@@ -838,6 +874,23 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
+                <StyleInputContainer>
+                  <LabelComponent require={true}>Chi nhánh</LabelComponent>
+                  <SelectSearchComponent
+                    control={control}
+                    props={{
+                      name: "branchIds",
+                      placeHoder: "",
+                      results: branchList,
+                      label: "",
+                      disable: role !== ROLE.ADMIN && true,
+                      type: "text",
+                      setValue: setValue,
+                      labelWidth: "100",
+                      getData: getDataCustomerFromApi,
+                    }}
+                  />
+                </StyleInputContainer>
                 <StyleInputContainer>
                   <LabelComponent require={true}>Tên Khách Hàng</LabelComponent>
                   <SelectSearchComponent
@@ -883,7 +936,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 <InfoBankCard style={{ minWidth: 300 }}>
                   <InfoOutlinedIcon />
                   {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
-                  {infoCard && infoCard.accountNumber}
+                  {infoCard && infoCard.accountNumber}{" "}
+                  {infoCard.prePaidFee > 0 && `- ${infoCard.prePaidFee} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>
@@ -926,6 +980,58 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 rowCount={100}
                 getRowId={getRowId}
               />
+              <div
+                style={{
+                  display: "flex",
+                  // gridTemplateColumns: "repeat(2, 1fr)",
+                  flexDirection: "column",
+                  marginTop: -30,
+                }}
+              >
+                <StyleCheckBoxTex>
+                  <Controller
+                    name="usingCardPrePayFee"
+                    control={control}
+                    render={({ field }) => <Checkbox {...field} />}
+                  />
+                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                    Sử dụng phí đã ứng của thẻ
+                  </Typography>
+                </StyleCheckBoxTex>
+                <StyleCheckBoxTex>
+                  <Controller
+                    name="acceptExceededFee"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        disabled={
+                          watch("usingCardPrePayFee") === true &&
+                          infoCard.prePaidFee <
+                            +watch("invoicesCalculate")[0].intake
+                            ? false
+                            : true
+                        }
+                        {...field}
+                      />
+                    )}
+                  />
+                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                    Xác nhận thu đủ phần thiếu của phí đã ứng
+                  </Typography>
+                </StyleCheckBoxTex>
+              </div>
+              <div style={{ width: "60%" }}>
+                <Typography style={{ fontWeight: "bold" }}>Ghi chú</Typography>
+                <TextareaComponent
+                  control={control}
+                  valueInput={""}
+                  name={"note"}
+                  label={"Ghi chú"}
+                  width={"100"}
+                  type={""}
+                  disable={false}
+                />
+              </div>
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>
@@ -996,7 +1102,7 @@ const ContainerSum = styled.div`
   flex-direction: row;
   justify-content: space-between;
   padding: 0px 16px;
-  margin-top: -30px;
+  margin-top: -50px;
 `;
 const InfoBankCard = styled.div`
   display: flex;
@@ -1020,6 +1126,11 @@ const PageContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+const StyleCheckBoxTex = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 const StyleButtonSpan = styled.span`
   position: absolute;

@@ -9,7 +9,7 @@ import {
   PosParamBodySend,
   SupportedCardTypesParam,
 } from "@/models/PortManagementModel";
-import { Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import { GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -99,7 +99,11 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
         title="Tạo khách hàng"
         handleClose={handleCloseDrawer}
       >
-        <form onKeyPress={handleKeyPress} style={{ padding: 16 }} onSubmit={handleSubmit(handleCreate)}>
+        <form
+          onKeyPress={handleKeyPress}
+          style={{ padding: 16 }}
+          onSubmit={handleSubmit(handleCreate)}
+        >
           <PageContent>
             <SearchContainer>
               <StyleContainer>
@@ -179,7 +183,15 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
                 </StyleInputContainer>
               </StyleContainer>
             </SearchContainer>
-            <div>
+            <Box
+              sx={{
+                justifyContent: "flex-end",
+                display: "flex",
+                marginTop: 3,
+                padding: "0px 16px 8px 16px",
+              }}
+            >
+              {" "}
               <Button
                 style={{ marginTop: 30 }}
                 variant="contained"
@@ -188,7 +200,7 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
               >
                 Cập nhật
               </Button>
-            </div>
+            </Box>
           </PageContent>
         </form>
       </DrawerCustom>

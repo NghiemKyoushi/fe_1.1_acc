@@ -244,18 +244,18 @@ export const AccBookManagementContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getDataCustomerFromApi = (value: string) => {};
-  const handleChangeBranch = (value: string) => {
-    const getBranch = branch?.find((item) => item.values === value);
-    if (getBranch) {
-      const paramSearch = {
-        ...searchCondition,
-        branchCodes: getBranch.key,
-      };
-      setSearchCondition(paramSearch);
-      dispatch(fetchAccBook(paramSearch));
-      dispatch(fetchSumAccBook(paramSearch));
-    }
-  };
+  // const handleChangeBranch = (value: string) => {
+  //   const getBranch = branch?.find((item) => item.values === value);
+  //   if (getBranch) {
+  //     const paramSearch = {
+  //       ...searchCondition,
+  //       branchCodes: getBranch.key,
+  //     };
+  //     setSearchCondition(paramSearch);
+  //     dispatch(fetchAccBook(paramSearch));
+  //     dispatch(fetchSumAccBook(paramSearch));
+  //   }
+  // };
 
   const columns: GridColDef<ColAccountBook>[] = useMemo(
     () => [
@@ -598,8 +598,8 @@ export const AccBookManagementContent = () => {
           gap: 10,
         }}
       >
-        <h3>SỔ KẾ TOÁN CHI NHÁNH</h3>
-        <SelectSearchComponent
+        <h3>SỔ THU CHI QUẢN LÝ</h3>
+        {/* <SelectSearchComponent
           control={control}
           props={{
             name: "branch",
@@ -613,16 +613,8 @@ export const AccBookManagementContent = () => {
             fontSize: 18,
             getData: handleChangeBranch,
           }}
-        />
+        /> */}
       </div>
-      {/* // ) : role === ROLE.SUBMANAGER ? (
-      //   <h3 style={{ textAlign: "left" }}>
-      //     SỔ KẾ TOÁN CHI NHÁNH {branchName?.toUpperCase()}
-      //   </h3>
-      // ) : (
-      //   ""
-      // )} */}
-
       <Box
         sx={{
           margin: "7px 0px",
@@ -630,20 +622,44 @@ export const AccBookManagementContent = () => {
           justifyContent: "space-between",
         }}
       >
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenModal()}
+        <StyleFilterContainer>
+          <StyleTitleSearch>Số dư hiện tại</StyleTitleSearch>
+          <TextFieldCustom
+            type={"text"}
+            variantshow="outlined"
+            textholder="Số dư hiện tại"
+            disable="true"
+            // {...register(fromNumberName)}
+            // onChange={(e: any) => {
+            //   setvalue(
+            //     fromNumberName,
+            //     e.target.value.trim().replaceAll(/[^0-9]/g, "")
+            //   );
+            // }}
+          />
+        </StyleFilterContainer>
+        <div
+          style={{
+            margin: "7px 0px",
+            display: "flex",
+            gap: 10,
+          }}
         >
-          Tạo bút toán
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenSearchDrawer()}
-        >
-          Tìm kiếm
-        </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenModal()}
+          >
+            Tạo bút toán
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenSearchDrawer()}
+          >
+            Tìm kiếm
+          </Button>
+        </div>
       </Box>
       <form style={{ width: "100%" }}>
         <Box
@@ -706,12 +722,16 @@ export const AccBookManagementContent = () => {
 export default AccBookManagementContent;
 
 const StyleTitleSearch = styled.p`
-  font-size: 12px;
-  font-weight: 400px;
+  font-size: 16px;
+  font-weight: bold;
+  width: 200px;
   margin: 0.5px;
 `;
 const StyleFilterContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  padding: 3px 3px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  width: 30%;
 `;

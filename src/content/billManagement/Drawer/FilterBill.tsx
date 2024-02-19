@@ -13,6 +13,7 @@ import { Box, Button } from "@mui/material";
 import {
   GridCellParams,
   GridColDef,
+  GridRowParams,
   GridSortModel,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
@@ -54,6 +55,8 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   const [listOfSelection, setListOfSelection] = useState<
     Array<string | number>
   >([]);
+  const [sumBill, setSumBill] = useState<ColFilterBill>();
+
   const [imageId, setImageId] = useState("");
   const [listOfBills, setListOfBills] = useState<ColFilterBill[]>([]);
 
@@ -140,24 +143,17 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
       dispatch(fetchFilterBills(sortPage));
-      //   setSearchCondition(sortPage);
     }
   };
   const getRowId = (row: any) => {
     return row.id;
   };
   useEffect(() => {
-    // dispatch(fetchFilterBills(searchCondition));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (listOfFilterBills.length > 0) {
       let countSum = 0;
       let estimateBill = 0;
       listOfFilterBills.map((item: ColFilterBill) => {
-        (countSum = countSum + item.moneyAmount)
-          // (estimateBill = estimateBill + item.estimatedProfit);
+        countSum = countSum + item.moneyAmount;
       });
       const sumBill: ColFilterBill = {
         createdBy: "",
@@ -170,13 +166,13 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         timeStampSeq: 0,
         moneyAmount: countSum,
         fee: 0,
-        // estimatedProfit: estimateBill,
         returnedProfit: 0,
         returnedTime: "0",
       };
+      setSumBill(sumBill);
       setListOfBills([sumBill, ...listOfFilterBills]);
-    }else{
-      setListOfBills([])
+    } else {
+      setListOfBills([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listOfFilterBills]);
@@ -185,6 +181,31 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     dispatch(fetchPos({ posName: value }));
   };
   const handleGetListOfSelect = (value: Array<string | number>) => {
+    let totalTrading = 0;
+    if (value.length > 0) {
+      listOfBills.map((row) => {
+        value.map((select) => {
+          if (row.id === select) {
+            totalTrading += row.moneyAmount;
+          }
+        });
+      });
+    }
+    const shadowData: ColFilterBill[] = listOfBills.map((row) => {
+      if (row.code === "TOTAL") {
+        return {
+          ...row,
+          moneyAmount:
+            value.length > 0
+              ? totalTrading
+              : sumBill?.moneyAmount
+              ? sumBill?.moneyAmount
+              : 0,
+        };
+      }
+      return row;
+    });
+    setListOfBills([...shadowData]);
     setListOfSelection(value);
   };
   const handleOpenConfirmBillDialog = () => {
@@ -202,12 +223,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   };
   const handleConfirmInvoice = () => {
     const { explanation } = getValues();
-    if (listOfSelection.length < 1) {
-      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", {
-        variant: "warning",
-      });
-      return;
-    }
     const bodySend = {
       explanation: explanation,
       imageId: imageId,
@@ -221,7 +236,11 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         handleCloseConfirmBillDialog();
       })
       .catch(function (error) {
-        enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
+        }
       });
   };
   const columns: GridColDef<ColBillInfo>[] = useMemo(
@@ -432,9 +451,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
                     );
                   }}
                 />
-                {/* <TextHelper>
-                {errors.shipmentFee && errors.shipmentFee.message}
-              </TextHelper> */}
               </StyleInputContainer>
               <StyleInputContainer>
                 <LabelComponent require={true}>Mã Pos</LabelComponent>
@@ -451,9 +467,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
                     getData: getDataFromApi,
                   }}
                 />
-                {/* <TextHelper>
-                {errors.percentageFee && errors.percentageFee.message}
-              </TextHelper> */}
               </StyleInputContainer>
               <StyleInputContainer style={{ justifyContent: "flex-end" }}>
                 <Button variant="contained" size="small" type="submit">
@@ -485,6 +498,15 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
               checkboxSelection={true}
               selectionModel={listOfSelection}
               handleGetListOfSelect={handleGetListOfSelect}
+              isRowSelectable={(params: GridRowParams) => {
+                if (
+                  params.row.returnedTime !== null ||
+                  params.row.createdBy === "TOTAL"
+                ) {
+                  return false;
+                }
+                return true;
+              }}
             />
           </Box>
           <ConfirmBillsDialogComponent

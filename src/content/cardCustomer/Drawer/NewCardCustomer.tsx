@@ -5,11 +5,12 @@ import SelectSearchComponent from "@/components/common/AutoComplete";
 import DateSiglePicker from "@/components/common/DatePicker";
 import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
 import { getValueWithComma, handleKeyPress } from "@/utils";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -41,6 +42,8 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
         accountNumber: "",
         paymentDueDate: "",
         paymentLimit: "",
+        expireDate: new Date(),
+        note: "",
       },
     });
   const listOfCustomer = useSelector(
@@ -64,6 +67,8 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       cardTypeId,
       paymentDueDate,
       paymentLimit,
+      expireDate,
+      note,
     } = getValues();
 
     // const getDate = new Date(paymentDueDate);
@@ -75,6 +80,8 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
       name: name,
       paymentDueDate: paymentDueDate,
       paymentLimit: parseFloat(paymentLimit.replace(/,/g, "")),
+      expiredDate: expireDate,
+      note: note,
     };
     fetchCreateCardCustomer(bodySend)
       .then((res) => {
@@ -93,11 +100,11 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
   };
   useEffect(() => {
     dispatch(fetchAllCard());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log("watch", watch());
   return (
     <DrawerCustom
-      widthDrawer={270}
+      widthDrawer={550}
       isOpen={isOpen}
       title="Tạo thẻ"
       handleClose={handleCloseDrawer}
@@ -108,99 +115,127 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
           key={"newCustomerCard"}
           onSubmit={handleSubmit(handleCreateCard)}
         >
-          <StyleInputContainer>
-            <LabelComponent require={true}>Tên khách hàng</LabelComponent>
-            <SelectSearchComponent
+          <StyleContainer>
+            <StyleInputColumn>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Số thẻ</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("accountNumber", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "accountNumber",
+                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                    );
+                  }}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Hạn mức thẻ</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("paymentLimit", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "paymentLimit",
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                      )
+                    );
+                  }}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Tên thẻ</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("name", { required: true })}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Ngân Hàng</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  {...register("bank", { required: true })}
+                />
+              </StyleInputContainer>
+            </StyleInputColumn>
+            <StyleInputColumn>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Tên khách hàng</LabelComponent>
+                <SelectSearchComponent
+                  control={control}
+                  props={{
+                    name: "customerId",
+                    placeHoder: "",
+                    results: listOfCustomer,
+                    label: "",
+                    type: "text",
+                    setValue: setValue,
+                    labelWidth: "110",
+                    getData: getDataCustomerFromApi,
+                  }}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Loại thẻ</LabelComponent>
+                <SelectSearchComponent
+                  control={control}
+                  props={{
+                    name: "cardTypeId",
+                    placeHoder: "",
+                    results: listOfCard,
+                    label: "",
+                    // getData:((value) => setValue("customerId", value)),
+                    type: "text",
+                    setValue: setValue,
+                    labelWidth: "110",
+                    getData: getDataCustomerFromApi,
+                  }}
+                />
+              </StyleInputContainer>
+
+              <StyleInputContainer>
+                <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
+                <TextFieldCustom
+                  type="text"
+                  {...register("paymentDueDate", {
+                    required: true,
+                    min: 1,
+                    max: 31,
+                  })}
+                  onChange={(e: any) => {
+                    const inputValue = e.target.value.trim();
+                    const isValid = /^(0?[1-9]|[12][0-9]|3[0-1])$/.test(
+                      inputValue
+                    );
+                    setValue("paymentDueDate", isValid ? inputValue : "");
+                  }}
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Hạn sử dụng</LabelComponent>
+                <DateSiglePicker
+                  props={{ name: "expireDate", setValue: setValue }}
+                  control={control}
+                />
+              </StyleInputContainer>
+            </StyleInputColumn>
+          </StyleContainer>
+          <div style={{ width: "60%" }}>
+            <Typography style={{ fontWeight: "bold", marginTop: 10 }}>
+              Ghi chú
+            </Typography>
+            <TextareaComponent
               control={control}
-              props={{
-                name: "customerId",
-                placeHoder: "",
-                results: listOfCustomer,
-                label: "",
-                type: "text",
-                setValue: setValue,
-                labelWidth: "112",
-                getData: getDataCustomerFromApi,
-              }}
+              valueInput={""}
+              name={"note"}
+              label={"Ghi chú"}
+              width={"100"}
+              type={""}
+              disable={false}
             />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Loại thẻ</LabelComponent>
-            <SelectSearchComponent
-              control={control}
-              props={{
-                name: "cardTypeId",
-                placeHoder: "",
-                results: listOfCard,
-                label: "",
-                // getData:((value) => setValue("customerId", value)),
-                type: "text",
-                setValue: setValue,
-                labelWidth: "112",
-                getData: getDataCustomerFromApi,
-              }}
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Tên thẻ</LabelComponent>
-            <TextFieldCustom
-              type={"text"}
-              {...register("name", { required: true })}
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Ngân Hàng</LabelComponent>
-            <TextFieldCustom
-              type={"text"}
-              {...register("bank", { required: true })}
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Số thẻ</LabelComponent>
-            <TextFieldCustom
-              type={"text"}
-              {...register("accountNumber", { required: true })}
-              onChange={(e: any) => {
-                setValue(
-                  "accountNumber",
-                  e.target.value.trim().replaceAll(/[^0-9]/g, "")
-                );
-              }}
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>
-              Hạn mức thẻ
-            </LabelComponent>
-            <TextFieldCustom
-              type={"text"}
-              {...register("paymentLimit", { required: true })}
-              onChange={(e: any) => {
-                setValue(
-                  "paymentLimit",
-                  getValueWithComma(
-                    e.target.value.trim().replaceAll(/[^0-9]/g, "")
-                  )
-                );
-              }}
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
-            <TextFieldCustom
-              type="text"
-              {...register("paymentDueDate", {
-                required: true,
-                min: 1,
-                max: 31,
-              })}
-              onChange={(e: any) => {
-                const inputValue = e.target.value.trim();
-                const isValid = /^(0?[1-9]|[12][0-9]|3[0-1])$/.test(inputValue);
-                setValue("paymentDueDate", isValid ? inputValue : "");
-              }}
-            />
-          </StyleInputContainer>
+          </div>
           <Box
             sx={{
               justifyContent: "flex-end",
@@ -231,4 +266,15 @@ const PageContent = styled.div`
   display: flex;
   flex-direction: column;
   padding: 8px;
+`;
+const StyleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+`;
+const StyleInputColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
 `;

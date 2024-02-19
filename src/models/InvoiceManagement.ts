@@ -39,6 +39,9 @@ export interface ReceiptCreationParams {
   repayment: number; // thu nợ
   employeeId?: string;
   receiptBills: Array<BillCreationParams>;
+  note: string;
+  usingCardPrePayFee: boolean;
+  acceptExceededFee: boolean;
 }
 export interface BillCreationParams {
   billId: string;
@@ -75,6 +78,10 @@ export interface ValueFormCreate {
   invoices: Array<InvoiceCreate>;
   invoicesCalculate: Array<InvoicesCalculateType>;
   check: string;
+  usingCardPrePayFee: boolean;
+  acceptExceededFee: boolean;
+  note: string;
+  branchIds: PosDetail;
 }
 export interface InvoicesCalculateType {
   intake: number; //thu
@@ -156,6 +163,7 @@ export interface ColReceiptList {
   employeeName: string;
   branchId: string;
   branchName: string;
+  note: string;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
@@ -186,4 +194,5 @@ export interface InfoCard {
   cardType: string;
   bank: string;
   accountNumber: string;
+  prePaidFee: number;
 }

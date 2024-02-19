@@ -79,7 +79,6 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       roleIds: roleIds?.keys ? [roleIds?.keys] : [],
       branchIds: arrBranchId ? arrBranchId : [],
     };
-    console.log("bodySend", bodySend);
     fetchCreateEmp(bodySend)
       .then((res) => {
         enqueueSnackbar("Tạo nhân viên thành công!!", { variant: "success" });

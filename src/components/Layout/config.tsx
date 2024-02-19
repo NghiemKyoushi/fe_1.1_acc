@@ -25,7 +25,7 @@ export const items = [
     roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
   },
   {
-    title: "Sổ kế Toán",
+    title: "Sổ thu chi quản lý",
     path: "/accBookManagement",
     icon: (
       <SvgIcon fontSize="medium">

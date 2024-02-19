@@ -9,22 +9,25 @@ import {
   FormParams,
   PosParamBodySend,
   SupportedCardTypesParam,
+  branchType,
 } from "@/models/PortManagementModel";
-import { Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
   GridRowModel,
 } from "@mui/x-data-grid";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { fetchCreatePos } from "@/api/service/posManagerApis";
 import { enqueueSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
 import { InputNumber } from "@/components/common/InputCustom";
 import { fetchPosManagement } from "@/actions/PosManagementActions";
+import { fetchBranch } from "@/api/service/invoiceManagement";
+import { ROLE, cookieSetting } from "@/utils";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -34,6 +37,9 @@ export interface NewPosDrawerProps {
 const NewPosDrawer = (props: NewPosDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition } = props;
   const [listOfCard, setListOfCard] = useState<ColCardType[]>([]);
+  const [branchList, setBranchList] = useState<branchType[]>([]);
+  const role = cookieSetting.get("roles");
+  const branchId = cookieSetting.get("branchId");
   const {
     register,
     handleSubmit,
@@ -52,6 +58,11 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       bank: "",
       maxBillAmount: "",
       posFeeTable: [],
+      branchIds: {
+        key: "",
+        values: "",
+      },
+      note: "",
     },
   });
   const dispatch = useDispatch();
@@ -71,7 +82,37 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         setListOfCard([...getCard]);
       }
     });
+    fetchBranch().then((res) => {
+      if (res.data) {
+        const branch = res.data.map((item: any) => {
+          return {
+            values: item?.name,
+            key: item?.id,
+          };
+        });
+        setBranchList(branch);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useMemo(() => {
+    if (role !== ROLE.ADMIN) {
+      branchList.map((item) => {
+        if (item?.key === branchId) {
+          setValue("branchIds", {
+            key: item.key,
+            values: item?.values,
+          });
+        }
+      });
+    } else {
+      setValue("branchIds", {
+        key: branchList[0]?.key,
+        values: branchList[0]?.values,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, branchList]);
   const { fields: posFeeTable } = useFieldArray({
     control,
     name: "posFeeTable",
@@ -104,26 +145,13 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
           );
         },
       },
-      // {
-      //   headerName: "Thao Tác",
-      //   field: "",
-      //   width: 105,
-      //   sortable: false,
-      //   renderCell: ({ row }) => {
-      //     return (
-      //       <>
-      //         <IconButton color="error">
-      //           <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-      //         </IconButton>
-      //       </>
-      //     );
-      //   },
-      // },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfCard]
   );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code, maxBillAmount } = getValues();
+    const { accountNumber, address, bank, code, maxBillAmount, note } =
+      getValues();
     let formatList: ColCardType[] = [];
     watch("posFeeTable").map((item) => {
       formatList.push({
@@ -140,16 +168,24 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       supportedCardTypes: formatList,
       posStatus: "AVAILABLE",
       maxBillAmount: maxBillAmount,
+      note: note,
     };
     fetchCreatePos(request)
       .then((res) => {
         enqueueSnackbar("Tạo Pos thành công!!", { variant: "success" });
         handleCloseDrawer();
         dispatch(fetchPosManagement(searchCondition));
-        reset();
+        reset({
+          code: "",
+          name: "",
+          address: "",
+          accountNumber: "",
+          bank: "",
+          maxBillAmount: "",
+          note: "",
+        });
       })
       .catch(function (error) {
-        // enqueueSnackbar("Tạo Pos thất bại", { variant: "error" });
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
@@ -165,6 +201,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       event.preventDefault();
     }
   };
+  const getDataCustomerFromApi = (value: string) => {};
   return (
     <>
       <DrawerCustom
@@ -242,6 +279,18 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
                 </StyleInputContainer>
               </StyleContainer>
             </SearchContainer>
+            <div style={{ width: "80%" }}>
+              <Typography style={{ fontWeight: "bold" }}>Ghi chú</Typography>
+              <TextareaComponent
+                control={control}
+                valueInput={""}
+                name={"note"}
+                label={"Ghi chú"}
+                width={"100"}
+                type={""}
+                disable={false}
+              />
+            </div>
             <StyleDataGrid>
               <TableDataComponent
                 columns={columnsOther}
@@ -252,16 +301,18 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
                 getRowId={getRowId}
               />
             </StyleDataGrid>
-            <div>
-              <Button
-                style={{ marginTop: 30 }}
-                variant="contained"
-                size="small"
-                type="submit"
-              >
+            <Box
+              sx={{
+                justifyContent: "flex-end",
+                display: "flex",
+                padding: "0px 16px 8px 16px",
+              }}
+            >
+              {" "}
+              <Button variant="contained" size="small" type="submit">
                 Thêm mới Pos
               </Button>
-            </div>
+            </Box>
           </PageContent>
         </form>
       </DrawerCustom>
@@ -290,7 +341,7 @@ const StyleInputContainer = styled.div`
 const StyleContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 5px;
 `;
 const SearchContainer = styled.div`
   display: flex;

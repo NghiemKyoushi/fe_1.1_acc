@@ -3,7 +3,6 @@ import CustomizedDialogs from "@/components/common/DialogComponent";
 import ImageUpload from "@/components/common/ImageUpload";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
-import { Divider } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 import { Control, UseFormSetValue, useController } from "react-hook-form";

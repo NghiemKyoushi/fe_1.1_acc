@@ -1,6 +1,11 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
-import { formatDateTime } from "@/utils";
+import {
+  ROLE,
+  cookieSetting,
+  formatDateTime,
+  getValueWithComma,
+} from "@/utils";
 import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -23,16 +28,22 @@ import { fetchListCardCustomer } from "@/actions/CardCustomerActions";
 import {
   ColCustomerCard,
   ColCustomerCardDetail,
+  PayFeeType,
 } from "@/models/CardCustomerModel";
 import NewCardCustomer from "./Drawer/NewCardCustomer";
 import {
   deleteCardCustomerApi,
   getDetailCardCustomer,
+  updatePayFeeCustomer,
 } from "@/api/service/cardCustomerApis";
 import ViewCardCustomer from "./Drawer/ViewCardCustomer";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
+import SelectSearchComponent from "@/components/common/AutoComplete";
+import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
+import { PayFeeDialogComponent } from "./Drawer/PayFeeDialog";
+import UpdateIcon from "@mui/icons-material/Update";
 
 export default function CardCustomerContent() {
   const dispatch = useDispatch();
@@ -44,9 +55,13 @@ export default function CardCustomerContent() {
   const [rowInfo, setRowInfo] = useState();
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [cardCustomerId, setCardCustomerId] = useState("");
+  const [openPayFeeDialog, setOpenPayFeeDialog] = useState(false);
 
   const listOfCardCustomer = useSelector(
     (state: RootState) => state.cardCustomer.cardCustomerList
+  );
+  const listOfCustomer = useSelector(
+    (state: RootState) => state.customerManagament.customerList
   );
   const pagination = useSelector(
     (state: RootState) => state.cardCustomer.pagination
@@ -54,6 +69,7 @@ export default function CardCustomerContent() {
   const isLoading = useSelector(
     (state: RootState) => state.cardCustomer.isLoading
   );
+  const role = cookieSetting.get("roles");
   const handleOpenModalEdit = (id: string) => {
     getDetailCardCustomer(id).then((res) => {
       setRowInfo(res.data);
@@ -91,13 +107,73 @@ export default function CardCustomerContent() {
         }
       });
   };
+  //pree pay fee dialog
+  const handleOpenPayFeeDialog = (id: string) => {
+    console.log("check", id);
+    setValue("formConfirm.customerCardId", id);
+    setOpenPayFeeDialog(true);
+  };
+  const handleClosePayFeeDialog = () => {
+    setOpenPayFeeDialog(false);
+  };
+  const handleConfirmCreatePayFee = () => {
+    const { formConfirm } = getValues();
+    console.log("formConfirm", formConfirm);
+    if (formConfirm.prePaidFee === "" || +formConfirm.prePaidFee === 0) {
+      enqueueSnackbar("Số phí bắt buộc", { variant: "warning" });
+      return;
+    }
+    if (formConfirm.branchIds.key === "") {
+      enqueueSnackbar("Chi nhánh bắt buộc chọn", { variant: "warning" });
+      return;
+    }
+
+    const bodyUpdate: PayFeeType = {
+      branchId: formConfirm.branchIds.key,
+      customerCardId: formConfirm.customerCardId,
+      imageId: formConfirm.imageId,
+      prePaidFee: formConfirm.prePaidFee,
+    };
+    updatePayFeeCustomer(bodyUpdate)
+      .then((res) => {
+        enqueueSnackbar("Cập nhật phí ứng trước thành công!", {
+          variant: "success",
+        });
+        handleClosePayFeeDialog();
+        handleSearch();
+      })
+      .catch(function (error) {
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Cập nhật phí ứng trước thất bại", {
+            variant: "error",
+          });
+        }
+      });
+  };
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
         customerName: "",
+        accountNumber: "",
         name: "",
+        formConfirm: {
+          customerCardId: "",
+          imageId: "",
+          prePaidFee: "",
+          branchIds: {
+            key: "",
+            values: "",
+          },
+        },
       },
     });
+  const getDataCustomerFromApi = (value: string) => {
+    if (value !== "") {
+      dispatch(fetchSearchCustomer({ customerName: value }));
+    }
+  };
   useEffect(() => {
     if (listOfCardCustomer) {
       let arrList: ColCustomerCardDetail[] = [];
@@ -119,6 +195,19 @@ export default function CardCustomerContent() {
   }, [listOfCardCustomer]);
   const columns: GridColDef<ColCustomerCardDetail>[] = useMemo(
     () => [
+      {
+        headerName: "Ngày tạo thẻ",
+        field: "createdDate",
+        width: 170,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: ({ row }) => {
+          return formatDateTime(row.createdDate);
+        },
+      },
       {
         headerName: "Tên khách hàng",
         field: "customerName",
@@ -166,7 +255,7 @@ export default function CardCustomerContent() {
       {
         headerName: "Tên thẻ",
         field: "name",
-        width: 200,
+        width: 190,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -214,30 +303,41 @@ export default function CardCustomerContent() {
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Ngân hàng",
         field: "bank",
-        width: 150,
+        width: 100,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
       },
       {
         headerName: "Hạn mức",
         field: "paymentLimit",
-        width: 250,
+        width: 220,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: ({ row }) => {
+          return getValueWithComma(row.paymentLimit);
+        },
       },
       {
         headerName: "Hạn thanh toán",
         field: "paymentDueDate",
-        width: 153,
+        width: 120,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
+        sortable: false,
+        filterable: false,
         valueGetter: ({ row }) => {
           return row.paymentDueDate;
         },
@@ -250,7 +350,7 @@ export default function CardCustomerContent() {
         align: "center",
         sortable: false,
         filterable: false,
-        width: 200,
+        width: 150,
         renderCell: ({ row }) => {
           return (
             <>
@@ -266,6 +366,14 @@ export default function CardCustomerContent() {
               >
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
+              {role === ROLE.EMPLOYEE ? null : (
+                <IconButton
+                  onClick={() => handleOpenPayFeeDialog(row.id)}
+                  color="secondary"
+                >
+                  <UpdateIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              )}
             </>
           );
         },
@@ -331,15 +439,62 @@ export default function CardCustomerContent() {
   };
   return (
     <Dashboard>
-      <h3 style={{ textAlign: "left" }}>QUẢN LÝ THẺ KHÁCH HÀNG</h3>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h3 style={{ textAlign: "left" }}>QUẢN LÝ THẺ KHÁCH HÀNG</h3>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            marginTop: 17,
+          }}
+        >
+          <SelectSearchComponent
+            control={control}
+            props={{
+              name: "customerName",
+              placeHoder: "Tìm theo tên khách",
+              results: listOfCustomer,
+              label: "",
+              type: "text",
+              setValue: setValue,
+              labelWidth: "114",
+              getData: getDataCustomerFromApi,
+            }}
+          />
+          <TextFieldCustom
+            textholder="Tìm theo số thẻ"
+            {...register("accountNumber")}
+            onChange={(e: any) => {
+              setValue(
+                "accountNumber",
+                e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+              );
+            }}
+          />
+        </div>
+      </div>
       <>
-        <Box sx={{ margin: "7px 0px" }}>
+        <Box
+          sx={{
+            margin: "7px 16px",
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 3,
+          }}
+        >
           <Button
             variant="contained"
             size="small"
             onClick={() => handleOpenAddCard()}
           >
             Thêm thẻ khách
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleSearch()}
+          >
+            Tìm kiếm
           </Button>
           {/* <DateRangePicker/> */}
         </Box>
@@ -371,6 +526,13 @@ export default function CardCustomerContent() {
             openDialog={isDeleteForm}
             handleClickClose={handleCloseDeleteForm}
             handleClickConfirm={handleConfirmDeleteForm}
+          />
+          <PayFeeDialogComponent
+            control={control}
+            setValue={setValue}
+            handleClickClose={handleClosePayFeeDialog}
+            handleClickConfirm={handleConfirmCreatePayFee}
+            openDialog={openPayFeeDialog}
           />
         </form>
       </>

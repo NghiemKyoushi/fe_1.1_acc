@@ -4,6 +4,7 @@ import { Box, Button, IconButton } from "@mui/material";
 import {
   GridCellParams,
   GridColDef,
+  GridRowParams,
   GridSelectionModel,
   GridSortModel,
   GridValueGetterParams,
@@ -58,7 +59,7 @@ export const BillManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
-
+  const [rowData, setRowData] = useState<ColBillInfo[]>([]);
   const [listOfSelection, setListOfSelection] = useState<
     Array<string | number>
   >([]);
@@ -117,18 +118,32 @@ export const BillManagementContent = () => {
     setOpenConfirmDialog(false);
   };
   const handleGetListOfSelect = (value: Array<string | number>) => {
+    let totalTrading = 0;
+    if (value.length > 0) {
+      rowData.map((row) => {
+        value.map((select) => {
+          if (row.id === select) {
+            totalTrading += row.moneyAmount;
+          }
+        });
+      });
+    }
+    const shadowData = rowData.map((row) => {
+      if (row.createdBy === "TOTAL") {
+        return {
+          ...row,
+          moneyAmount: value.length > 0 ? totalTrading : sumOfBills.moneyAmount,
+        };
+      }
+      return row;
+    });
+    setRowData([...shadowData]);
     setListOfSelection(value);
   };
   const handleConfirmInvoice = () => {
     const { explanation } = getValues();
     if (explanation === "") {
       enqueueSnackbar("Vui lòng nhập diễn giải", {
-        variant: "warning",
-      });
-      return;
-    }
-    if (imageId === "") {
-      enqueueSnackbar("Vui lòng tải ảnh dẫn chứng", {
         variant: "warning",
       });
       return;
@@ -146,9 +161,16 @@ export const BillManagementContent = () => {
         setListOfSelection([]);
       })
       .catch(function (error) {
-        enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
+        }
       });
   };
+  useMemo(() => {
+    setRowData([sumOfBills, ...listOfBills]);
+  }, [sumOfBills, listOfBills]);
   const handleGetFile = async (file: Array<any>) => {
     if (!file || file[0].size > 5 * 1024 * 1024) {
       enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
@@ -378,7 +400,7 @@ export const BillManagementContent = () => {
       },
       {
         headerName: "Thời gian tiền về",
-        field: "repayment",
+        field: "returnedTime",
         width: 150,
         headerAlign: "center",
         align: "center",
@@ -457,7 +479,7 @@ export const BillManagementContent = () => {
         >
           <TableDataComponent
             columns={columns}
-            dataInfo={[sumOfBills, ...listOfBills]}
+            dataInfo={rowData}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
             page={pagination?.pageNumber}
@@ -469,6 +491,15 @@ export const BillManagementContent = () => {
             checkboxSelection={true}
             selectionModel={listOfSelection}
             handleGetListOfSelect={handleGetListOfSelect}
+            isRowSelectable={(params: GridRowParams) => {
+              if (
+                params.row.returnedTime !== null ||
+                params.row.createdBy === "TOTAL"
+              ) {
+                return false;
+              }
+              return true;
+            }}
           />
         </Box>
         <ConfirmBillsDialogComponent

@@ -8,10 +8,17 @@ import {
   ValueFormCreate,
 } from "@/models/InvoiceManagement";
 import { useEffect, useMemo, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Box, Button, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import {
   GridCellParams,
   GridColDef,
@@ -31,6 +38,7 @@ import ImageUpload from "@/components/common/ImageUpload";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
 import _ from "lodash";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 
 export interface ViewInvoiceDrawerProps {
   isOpen: boolean;
@@ -54,14 +62,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     reset,
     control,
   } = useForm<ValueFormCreate>({
-    // defaultValues: useMemo(() => {
-    //   return {
-    //     codeEmployee: rowInfo?.percentageFee,
-
-    //   };
-    // }, [rowInfo]),
     defaultValues: {
       check: "",
+      usingCardPrePayFee: false,
       invoicesCalculate: [
         {
           intake: 0, //thu
@@ -163,6 +166,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           estimatedReturnFromBank: 0,
         });
       }
+      console.log("check22255522", rowInfo?.usingCardPrePayFee);
       reset({
         codeEmployee: rowInfo?.employee.name,
         percentageFee: rowInfo?.percentageFee,
@@ -182,7 +186,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         invoices: dataTable,
         invoicesCalculate: invoicesCalculate,
         imageId: rowInfo?.imageId,
+        note: rowInfo?.note,
+        usingCardPrePayFee: rowInfo.usingCardPrePayFee,
+        acceptExceededFee: rowInfo.acceptExceededFee,
       });
+      // setValue("acceptExceededFee",rowInfo.acceptExceededFee )
+      // setValue("usingCardPrePayFee",rowInfo.usingCardPrePayFee )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
@@ -535,10 +544,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     ],
     []
   );
+  console.log("watch44444", watch());
   const handleSubmitInvoice = () => {
     let receiptBills: any[] = [];
     watch("invoices").map((item, index) => {
-      console.log("item", item);
       if (item?.check !== "TOTAL" && item?.posId?.key !== "") {
         let restOfFee = 0;
         if (+item?.money) {
@@ -558,7 +567,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       }
       return item;
     });
-    console.log("CHECK", receiptBills);
     if (receiptBills.length === 0) {
       enqueueSnackbar("Vui lòng nhập hóa đơn", { variant: "warning" });
       return;
@@ -575,6 +583,15 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       repayment: watch("invoicesCalculate")[0].repayment,
       employeeId: rowInfo.employee.id,
       receiptBills: receiptBills,
+      note: watch("note"),
+      usingCardPrePayFee: watch("usingCardPrePayFee"),
+      acceptExceededFee:
+        watch("usingCardPrePayFee") === true &&
+        rowInfo.customerCard.prePaidFee <
+          +watch("invoicesCalculate")[0].intake &&
+        watch("acceptExceededFee") === true
+          ? true
+          : false,
     };
     updateInvoice(rowInfo.id, request)
       .then((res) => {
@@ -616,6 +633,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       event.preventDefault();
     }
   };
+
   return (
     <DrawerCustom
       widthDrawer={750}
@@ -641,7 +659,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   />
                 </StyleInputContainer>
                 <StyleInputContainer>
-                  <LabelComponent require={true}>Phần trăm phí</LabelComponent>
+                  <LabelComponent>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>%</p>}
                     {...register(
@@ -663,7 +681,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 </StyleInputContainer>
 
                 <StyleInputContainer>
-                  <LabelComponent require={true}>Phí vận chuyển</LabelComponent>
+                  <LabelComponent>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>VND</p>}
                     {...register(
@@ -679,9 +697,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       );
                     }}
                   />
-                  {/* <TextHelper>
-                    {errors.shipmentFee && errors.shipmentFee.message}
-                  </TextHelper> */}
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
@@ -731,7 +746,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 </StyleInputContainer>
                 <InfoBankCard>
                   <InfoOutlinedIcon />
-                  {`${rowInfo.customerCard.cardType.name} - ${rowInfo.customerCard.bank} - ${rowInfo.customerCard.accountNumber}`}
+                  {`${rowInfo.customerCard.cardType.name} - ${rowInfo.customerCard.bank} - ${rowInfo.customerCard.accountNumber}`}{" "}
+                  {rowInfo.customerCard.prePaidFee > 0 &&
+                    `- ${rowInfo.customerCard.prePaidFee} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>
@@ -761,7 +778,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   dataInfo={invoicesField}
                   disableFilter={true}
                   isPage={true}
-                  // processRowUpdate={handleProcessRowUpdate}
                   rowCount={100}
                   getRowId={getRowId}
                 />
@@ -776,10 +792,65 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 dataInfo={invoicesCalculateField}
                 disableFilter={true}
                 isPage={true}
-                // processRowUpdate={handleProcessRowUpdate2}
                 rowCount={100}
                 getRowId={getRowId}
               />
+              <div
+                style={{
+                  display: "flex",
+                  // gridTemplateColumns: "repeat(2, 1fr)",
+                  flexDirection: "column",
+                  marginTop: -30,
+                }}
+              >
+                <StyleCheckBoxTex>
+                  <Controller
+                    control={control}
+                    name={`usingCardPrePayFee`}
+                    defaultValue={false}
+                    render={({ field: { onChange, value } }) => (
+                      <Checkbox checked={value} onChange={onChange} />
+                    )}
+                  />
+
+                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                    Sử dụng phí đã ứng của thẻ
+                  </Typography>
+                </StyleCheckBoxTex>
+                <StyleCheckBoxTex>
+                  <Controller
+                    name="acceptExceededFee"
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <Checkbox
+                        disabled={
+                          watch("usingCardPrePayFee") === true &&
+                          rowInfo.customerCard.prePaidFee <
+                            +watch("invoicesCalculate")[0].intake
+                            ? false
+                            : true
+                        }
+                        checked={value}
+                        onChange={onChange}
+                      />
+                    )}
+                  />
+                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                    Xác nhận thu đủ phần thiếu của phí đã ứng
+                  </Typography>
+                </StyleCheckBoxTex>
+              </div>
+              <div style={{ width: "60%" }}>
+                <TextareaComponent
+                  control={control}
+                  valueInput={""}
+                  name={"note"}
+                  label={"Ghi chú"}
+                  width={"100"}
+                  type={""}
+                  disable={false}
+                />
+              </div>
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>
@@ -884,9 +955,10 @@ const PageContent = styled.div`
 const StyleButtonSpan = styled.span`
   position: absolute;
   top: 32px;
-  right: -31%;
+  right: -50%;
 `;
-const TextHelper = styled.span`
-  color: red;
-  font-size: 12px;
+const StyleCheckBoxTex = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
