@@ -19,7 +19,7 @@ import {
 import _ from "lodash";
 import TableDataComponent from "@/components/common/DataGrid";
 import InvoiceDrawer from "./Drawer/InvoiceDrawer";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import styled from "styled-components";
 import {
   ROLE,
@@ -687,9 +687,11 @@ export default function InvoiceManagementContent() {
           return (
             <>
               {row.code !== "TOTAL" && row.note !== null ? (
-                <IconButton color="error">
-                  <EditNoteIcon sx={{ fontSize: 20 }} />
-                </IconButton>
+                <Tooltip title="Ghi chú" placement="top">
+                  <IconButton color="error">
+                    <EditNoteIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                </Tooltip>
               ) : null}
               {row.code === null && role !== ROLE.EMPLOYEE ? (
                 <IconButton

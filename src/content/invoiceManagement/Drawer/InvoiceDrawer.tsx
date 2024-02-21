@@ -937,7 +937,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   <InfoOutlinedIcon />
                   {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
                   {infoCard && infoCard.accountNumber}{" "}
-                  {infoCard.prePaidFee > 0 && `- ${infoCard.prePaidFee} VND`}
+                  {infoCard.prePaidFee > 0 && `- ${getValueWithComma(infoCard.prePaidFee)} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

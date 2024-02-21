@@ -19,7 +19,7 @@ import { RootState } from "@/reducers/rootReducer";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { fetchPosManagement } from "@/actions/PosManagementActions";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -44,6 +44,7 @@ import SelectSearchComponent from "@/components/common/AutoComplete";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import { PayFeeDialogComponent } from "./Drawer/PayFeeDialog";
 import UpdateIcon from "@mui/icons-material/Update";
+import SearchDrawer from "./Drawer/SearchDrawer";
 
 export default function CardCustomerContent() {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ export default function CardCustomerContent() {
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [cardCustomerId, setCardCustomerId] = useState("");
   const [openPayFeeDialog, setOpenPayFeeDialog] = useState(false);
+  const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
 
   const listOfCardCustomer = useSelector(
     (state: RootState) => state.cardCustomer.cardCustomerList
@@ -109,7 +111,6 @@ export default function CardCustomerContent() {
   };
   //pree pay fee dialog
   const handleOpenPayFeeDialog = (id: string) => {
-    console.log("check", id);
     setValue("formConfirm.customerCardId", id);
     setOpenPayFeeDialog(true);
   };
@@ -118,7 +119,6 @@ export default function CardCustomerContent() {
   };
   const handleConfirmCreatePayFee = () => {
     const { formConfirm } = getValues();
-    console.log("formConfirm", formConfirm);
     if (formConfirm.prePaidFee === "" || +formConfirm.prePaidFee === 0) {
       enqueueSnackbar("Số phí bắt buộc", { variant: "warning" });
       return;
@@ -367,12 +367,14 @@ export default function CardCustomerContent() {
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
               {role === ROLE.EMPLOYEE ? null : (
-                <IconButton
-                  onClick={() => handleOpenPayFeeDialog(row.id)}
-                  color="secondary"
-                >
-                  <UpdateIcon sx={{ fontSize: 20 }} />
-                </IconButton>
+                <Tooltip title="Cập nhật phí" placement="top">
+                  <IconButton
+                    onClick={() => handleOpenPayFeeDialog(row.id)}
+                    color="secondary"
+                  >
+                    <UpdateIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                </Tooltip>
               )}
             </>
           );
@@ -434,44 +436,23 @@ export default function CardCustomerContent() {
       dispatch(fetchListCardCustomer(sortPage));
     }
   };
+  const handleCloseSearchDrawer = () => {
+    setIsOpenSearchDrawer(false);
+  };
+  const handleOpenSearchDrawer = () => {
+    setIsOpenSearchDrawer(true);
+  };
+  const handleChangeSearch = (value: any) => {
+    setSearchCondition(value);
+  };
   const getRowId = (row: any) => {
     return row.id;
   };
+
   return (
     <Dashboard>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h3 style={{ textAlign: "left" }}>QUẢN LÝ THẺ KHÁCH HÀNG</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            marginTop: 17,
-          }}
-        >
-          <SelectSearchComponent
-            control={control}
-            props={{
-              name: "customerName",
-              placeHoder: "Tìm theo tên khách",
-              results: listOfCustomer,
-              label: "",
-              type: "text",
-              setValue: setValue,
-              labelWidth: "114",
-              getData: getDataCustomerFromApi,
-            }}
-          />
-          <TextFieldCustom
-            textholder="Tìm theo số thẻ"
-            {...register("accountNumber")}
-            onChange={(e: any) => {
-              setValue(
-                "accountNumber",
-                e.target.value.trim().replaceAll(/[^0-9.]/g, "")
-              );
-            }}
-          />
-        </div>
       </div>
       <>
         <Box
@@ -492,7 +473,7 @@ export default function CardCustomerContent() {
           <Button
             variant="contained"
             size="small"
-            onClick={() => handleSearch()}
+            onClick={() => handleOpenSearchDrawer()}
           >
             Tìm kiếm
           </Button>
@@ -533,6 +514,12 @@ export default function CardCustomerContent() {
             handleClickClose={handleClosePayFeeDialog}
             handleClickConfirm={handleConfirmCreatePayFee}
             openDialog={openPayFeeDialog}
+          />
+          <SearchDrawer
+            handleCloseDrawer={handleCloseSearchDrawer}
+            isOpen={isOpenSearchDrawer}
+            searchCondition={searchCondition}
+            handleChangeSearch={handleChangeSearch}
           />
         </form>
       </>

@@ -166,7 +166,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           estimatedReturnFromBank: 0,
         });
       }
-      console.log("check22255522", rowInfo?.usingCardPrePayFee);
       reset({
         codeEmployee: rowInfo?.employee.name,
         percentageFee: rowInfo?.percentageFee,
@@ -544,7 +543,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     ],
     []
   );
-  console.log("watch44444", watch());
   const handleSubmitInvoice = () => {
     let receiptBills: any[] = [];
     watch("invoices").map((item, index) => {
@@ -748,7 +746,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   <InfoOutlinedIcon />
                   {`${rowInfo.customerCard.cardType.name} - ${rowInfo.customerCard.bank} - ${rowInfo.customerCard.accountNumber}`}{" "}
                   {rowInfo.customerCard.prePaidFee > 0 &&
-                    `- ${rowInfo.customerCard.prePaidFee} VND`}
+                    `- ${getValueWithComma(rowInfo.customerCard.prePaidFee)} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

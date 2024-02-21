@@ -8,16 +8,10 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { RangeNumberFilter } from "../invoiceManagement/InvoiceManagementContent";
 import { useForm } from "react-hook-form";
-import {
-  ColPosManagement,
-  PosSearchParams,
-} from "@/models/PortManagementModel";
 import { RootState } from "@/reducers/rootReducer";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { fetchPosManagement } from "@/actions/PosManagementActions";
 import { Box, Button, IconButton } from "@mui/material";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";

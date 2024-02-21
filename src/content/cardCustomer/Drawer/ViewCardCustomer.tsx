@@ -143,172 +143,173 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
       title="Xem/Sửa thẻ"
       handleClose={handleCloseDrawer}
     >
-        <form
-          onKeyPress={handleKeyPress}
-          key={"newCustomerCard"}
-          onSubmit={handleSubmit(handleCreateCard)}
-        >
-          <StyleContainer>
-            <StyleInputColumn>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Tên thẻ</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("name", { required: true })}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Ngân Hàng</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("bank", { required: true })}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Số thẻ</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("accountNumber", { required: true })}
-                  onChange={(e: any) => {
-                    setValue(
-                      "accountNumber",
+      <form
+        style={{ padding: 16 }}
+        onKeyPress={handleKeyPress}
+        key={"newCustomerCard"}
+        onSubmit={handleSubmit(handleCreateCard)}
+      >
+        <StyleContainer>
+          <StyleInputColumn>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Tên thẻ</LabelComponent>
+              <TextFieldCustom
+                type={"text"}
+                {...register("name", { required: true })}
+              />
+            </StyleInputContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Ngân Hàng</LabelComponent>
+              <TextFieldCustom
+                type={"text"}
+                {...register("bank", { required: true })}
+              />
+            </StyleInputContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Số thẻ</LabelComponent>
+              <TextFieldCustom
+                type={"text"}
+                {...register("accountNumber", { required: true })}
+                onChange={(e: any) => {
+                  setValue(
+                    "accountNumber",
+                    e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                  );
+                }}
+              />
+            </StyleInputContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Hạn mức thẻ</LabelComponent>
+              <TextFieldCustom
+                type={"text"}
+                {...register("paymentLimit", { required: true })}
+                onChange={(e: any) => {
+                  setValue(
+                    "paymentLimit",
+                    getValueWithComma(
                       e.target.value.trim().replaceAll(/[^0-9]/g, "")
-                    );
-                  }}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Hạn mức thẻ</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  {...register("paymentLimit", { required: true })}
-                  onChange={(e: any) => {
-                    setValue(
-                      "paymentLimit",
-                      getValueWithComma(
-                        e.target.value.trim().replaceAll(/[^0-9]/g, "")
-                      )
-                    );
-                  }}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Phí đã ứng</LabelComponent>
-                <TextFieldCustom
-                  disable="true"
-                  type={"text"}
-                  {...register("prePaidFee", { required: true })}
-                  onChange={(e: any) => {
-                    setValue(
-                      "prePaidFee",
-                      getValueWithComma(
-                        e.target.value.trim().replaceAll(/[^0-9]/g, "")
-                      )
-                    );
-                  }}
-                  // iconend={
-                  //   <IconButton
-                  //     onClick={() => handleOpenPayFeeDialog()}
-                  //     style={{
-                  //       display: role === ROLE.EMPLOYEE ? "none" : "block",
-                  //     }}
-                  //   >
-                  //     <UpdateIcon color="primary" />
-                  //   </IconButton>
-                  // }
-                />
-              </StyleInputContainer>
-            </StyleInputColumn>
-            <StyleInputColumn>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Tên khách hàng</LabelComponent>
-                <SelectSearchComponent
-                  control={control}
-                  props={{
-                    name: "customerId",
-                    placeHoder: "",
-                    results: listOfCustomer,
-                    label: "",
-                    type: "text",
-                    setValue: setValue,
-                    labelWidth: "112",
-                    getData: getDataCustomerFromApi,
-                  }}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Loại thẻ</LabelComponent>
-                <SelectSearchComponent
-                  control={control}
-                  props={{
-                    name: "cardTypeId",
-                    placeHoder: "",
-                    results: listOfCard,
-                    label: "",
-                    // getData:((value) => setValue("customerId", value)),
-                    type: "text",
-                    setValue: setValue,
-                    labelWidth: "112",
-                    getData: getDataCustomerFromApi,
-                  }}
-                />
-              </StyleInputContainer>
+                    )
+                  );
+                }}
+              />
+            </StyleInputContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Phí đã ứng</LabelComponent>
+              <TextFieldCustom
+                disable="true"
+                type={"text"}
+                {...register("prePaidFee", { required: true })}
+                onChange={(e: any) => {
+                  setValue(
+                    "prePaidFee",
+                    getValueWithComma(
+                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                    )
+                  );
+                }}
+                // iconend={
+                //   <IconButton
+                //     onClick={() => handleOpenPayFeeDialog()}
+                //     style={{
+                //       display: role === ROLE.EMPLOYEE ? "none" : "block",
+                //     }}
+                //   >
+                //     <UpdateIcon color="primary" />
+                //   </IconButton>
+                // }
+              />
+            </StyleInputContainer>
+          </StyleInputColumn>
+          <StyleInputColumn>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Tên khách hàng</LabelComponent>
+              <SelectSearchComponent
+                control={control}
+                props={{
+                  name: "customerId",
+                  placeHoder: "",
+                  results: listOfCustomer,
+                  label: "",
+                  type: "text",
+                  setValue: setValue,
+                  labelWidth: "112",
+                  getData: getDataCustomerFromApi,
+                }}
+              />
+            </StyleInputContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Loại thẻ</LabelComponent>
+              <SelectSearchComponent
+                control={control}
+                props={{
+                  name: "cardTypeId",
+                  placeHoder: "",
+                  results: listOfCard,
+                  label: "",
+                  // getData:((value) => setValue("customerId", value)),
+                  type: "text",
+                  setValue: setValue,
+                  labelWidth: "112",
+                  getData: getDataCustomerFromApi,
+                }}
+              />
+            </StyleInputContainer>
 
-              <StyleInputContainer>
-                <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
-                <TextFieldCustom
-                  type="text"
-                  {...register("paymentDueDate", {
-                    required: true,
-                    min: 1,
-                    max: 31,
-                  })}
-                  onChange={(e: any) => {
-                    const inputValue = e.target.value.trim();
-                    const isValid = /^(0?[1-9]|[12][0-9]|3[0-1])$/.test(
-                      inputValue
-                    );
-                    setValue("paymentDueDate", isValid ? inputValue : "");
-                  }}
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <LabelComponent require={true}>Hạn sử dụng</LabelComponent>
-                <DateSiglePicker
-                  props={{ name: "expireDate", setValue: setValue }}
-                  control={control}
-                />
-              </StyleInputContainer>
-            </StyleInputColumn>
-          </StyleContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Hạn thanh toán</LabelComponent>
+              <TextFieldCustom
+                type="text"
+                {...register("paymentDueDate", {
+                  required: true,
+                  min: 1,
+                  max: 31,
+                })}
+                onChange={(e: any) => {
+                  const inputValue = e.target.value.trim();
+                  const isValid = /^(0?[1-9]|[12][0-9]|3[0-1])$/.test(
+                    inputValue
+                  );
+                  setValue("paymentDueDate", isValid ? inputValue : "");
+                }}
+              />
+            </StyleInputContainer>
+            <StyleInputContainer>
+              <LabelComponent require={true}>Hạn sử dụng</LabelComponent>
+              <DateSiglePicker
+                props={{ name: "expireDate", setValue: setValue }}
+                control={control}
+              />
+            </StyleInputContainer>
+          </StyleInputColumn>
+        </StyleContainer>
 
-          <div style={{ width: "60%" }}>
-            <Typography style={{ fontWeight: "bold", marginTop: 10 }}>
-              Ghi chú
-            </Typography>
-            <TextareaComponent
-              control={control}
-              valueInput={""}
-              name={"note"}
-              label={"Ghi chú"}
-              width={"100"}
-              type={""}
-              disable={false}
-            />
-          </div>
-          <Box
-            sx={{
-              justifyContent: "flex-end",
-              display: "flex",
-              marginTop: 3,
-              padding: "0px 16px 8px 16px",
-            }}
-          >
-            <Button size="small" variant="contained" type="submit">
-              Cập nhật
-            </Button>
-          </Box>
-        </form>
+        <div style={{ width: "60%" }}>
+          <Typography style={{ fontWeight: "bold", marginTop: 10 }}>
+            Ghi chú
+          </Typography>
+          <TextareaComponent
+            control={control}
+            valueInput={""}
+            name={"note"}
+            label={"Ghi chú"}
+            width={"100"}
+            type={""}
+            disable={false}
+          />
+        </div>
+        <Box
+          sx={{
+            justifyContent: "flex-end",
+            display: "flex",
+            marginTop: 3,
+            padding: "0px 16px 8px 16px",
+          }}
+        >
+          <Button size="small" variant="contained" type="submit">
+            Cập nhật
+          </Button>
+        </Box>
+      </form>
     </DrawerCustom>
   );
 };
