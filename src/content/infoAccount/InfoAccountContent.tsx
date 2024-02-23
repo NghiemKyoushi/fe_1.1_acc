@@ -1,5 +1,6 @@
 "use client";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
+import { saveDatatoServerApis } from "@/api/service/invoiceManagement";
 import Dashboard from "@/components/Layout";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
@@ -9,6 +10,7 @@ import { TextFieldCustom } from "@/components/common/Textfield";
 import { valueForm } from "@/models/EmpManagement";
 import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import { Button } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
@@ -17,6 +19,7 @@ function InfoAccountContent() {
   const [branchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
   const employeeId = cookieSetting.get("employeeId");
+  const role = cookieSetting.get("roles");
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<valueForm>({
@@ -70,7 +73,15 @@ function InfoAccountContent() {
   }, [employeeId]);
   const getDataCustomerFromApi = (value: string) => {};
   const getValueBranch = (value: string) => {};
-
+  const handleSaveData = () => {
+    saveDatatoServerApis()
+      .then((res) => {
+        enqueueSnackbar("Sao lưu thành công!!", { variant: "success" });
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Sao lưu thất bại!!", { variant: "error" });
+      });
+  };
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>THÔNG TIN TÀI KHOẢN</h3>
@@ -203,6 +214,13 @@ function InfoAccountContent() {
           </StyleContainer>
         </div>
       </form>
+      <div>
+        {role === ROLE.ADMIN && (
+          <Button onClick={handleSaveData} variant="contained" color="warning">
+            Sao lưu dữ liệu
+          </Button>
+        )}
+      </div>
     </Dashboard>
   );
 }

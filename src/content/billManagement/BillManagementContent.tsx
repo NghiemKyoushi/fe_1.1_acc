@@ -527,7 +527,7 @@ export const BillManagementContent = () => {
           Xác nhận khớp bill
         </Button>
       </Box>
-      <FilterBill handleCloseDrawer={handleCloseModal} isOpen={isOpenModal} />
+      <FilterBill handleSearchGeneral={handleSearch} handleCloseDrawer={handleCloseModal} isOpen={isOpenModal} />
       <SearchDrawer
         handleCloseDrawer={handleCloseSearchDrawer}
         isOpen={isOpenSearchDrawer}

@@ -85,7 +85,7 @@ const NewCardCustomer = (props: NewCardCustomerProps) => {
     };
     fetchCreateCardCustomer(bodySend)
       .then((res) => {
-        enqueueSnackbar("Tạo thẻ khách thành công!!", { variant: "success" });
+        enqueueSnackbar("Tạo thẻ mới thành công!!", { variant: "success" });
         handleCloseDrawer();
         handleSearch();
       })

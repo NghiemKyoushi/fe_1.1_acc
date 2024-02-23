@@ -64,3 +64,7 @@ export const conrimRepayInvoice = (reason: RepayConfirmParams) => {
 export const deleteInvoice = (id: string) => {
   return authApi.delete(`/api/receipts/${id}`);
 };
+
+export const saveDatatoServerApis = () => {
+  return authApi.put("/api/files/backup");
+};

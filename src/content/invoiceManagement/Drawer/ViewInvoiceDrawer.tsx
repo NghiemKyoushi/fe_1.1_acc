@@ -27,9 +27,10 @@ import {
 } from "@mui/x-data-grid";
 import { InputSearchPos } from "./InvoiceDrawer";
 import { InputNumber } from "@/components/common/InputCustom";
-import { cookieSetting, getValueWithComma } from "@/utils";
+import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import { enqueueSnackbar } from "notistack";
 import {
+  fetchBranch,
   fetchImagePath,
   fetchSaveImage,
   updateInvoice,
@@ -39,6 +40,7 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
 import _ from "lodash";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
+import { branchType } from "@/models/PortManagementModel";
 
 export interface ViewInvoiceDrawerProps {
   isOpen: boolean;
@@ -52,6 +54,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const [imageId, setImageId] = useState("");
   const [imagePath, setImagePath] = useState("");
   const [isOpenCard, setIsOpenCard] = useState(false);
+  const [branchList, setBranchList] = useState<branchType[]>([]);
 
   const {
     register,
@@ -188,6 +191,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         note: rowInfo?.note,
         usingCardPrePayFee: rowInfo.usingCardPrePayFee,
         acceptExceededFee: rowInfo.acceptExceededFee,
+        branchIds: {
+          key: rowInfo.branch.id,
+          values: rowInfo.branch.name,
+        },
       });
       // setValue("acceptExceededFee",rowInfo.acceptExceededFee )
       // setValue("usingCardPrePayFee",rowInfo.usingCardPrePayFee )
@@ -631,7 +638,37 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       event.preventDefault();
     }
   };
-
+  useMemo(() => {
+    if (role !== ROLE.ADMIN) {
+      branchList.map((item) => {
+        if (item?.key === branchId) {
+          setValue("branchIds", {
+            key: item.key,
+            values: item?.values,
+          });
+        }
+      });
+    } else {
+      setValue("branchIds", {
+        key: branchList[0]?.key,
+        values: branchList[0]?.values,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, branchList]);
+  useEffect(() => {
+    fetchBranch().then((res) => {
+      if (res.data) {
+        const branch = res.data.map((item: any) => {
+          return {
+            values: item?.name,
+            key: item?.id,
+          };
+        });
+        setBranchList(branch);
+      }
+    });
+  }, []);
   return (
     <DrawerCustom
       widthDrawer={750}
@@ -699,6 +736,23 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
               </StyleContainer>
               <StyleContainer>
                 <StyleInputContainer>
+                  <LabelComponent require={true}>Chi nhánh</LabelComponent>
+                  <SelectSearchComponent
+                    control={control}
+                    props={{
+                      name: "branchIds",
+                      placeHoder: "",
+                      results: branchList,
+                      label: "",
+                      disable: role !== ROLE.ADMIN && true,
+                      type: "text",
+                      setValue: setValue,
+                      labelWidth: "100",
+                      getData: getDataCustomerFromApi,
+                    }}
+                  />
+                </StyleInputContainer>
+                <StyleInputContainer>
                   <LabelComponent require={true}>Tên Khách Hàng</LabelComponent>
                   <SelectSearchComponent
                     control={control}
@@ -709,7 +763,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       label: "",
                       type: "text",
                       setValue: setValue,
-                      labelWidth: "120",
+                      labelWidth: "100",
                       getData: getDataCustomerFromApi,
                     }}
                   />
@@ -726,7 +780,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       label: "",
                       type: "text",
                       setValue: setValue,
-                      labelWidth: "120",
+                      labelWidth: "100",
                       getData: handleGetCard,
                     }}
                   />
@@ -746,7 +800,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   <InfoOutlinedIcon />
                   {`${rowInfo.customerCard.cardType.name} - ${rowInfo.customerCard.bank} - ${rowInfo.customerCard.accountNumber}`}{" "}
                   {rowInfo.customerCard.prePaidFee > 0 &&
-                    `- ${getValueWithComma(rowInfo.customerCard.prePaidFee)} VND`}
+                    `- ${getValueWithComma(
+                      rowInfo.customerCard.prePaidFee
+                    )} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>
@@ -890,13 +946,13 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
               )}
             </Box>
           </PageContent>
-          <NewCardCustomer
-            isOpen={isOpenCard}
-            handleCloseDrawer={handleCloseAddCard}
-            handleSearch={handleSearchCheck}
-          />
         </form>
       )}
+      <NewCardCustomer
+        isOpen={isOpenCard}
+        handleCloseDrawer={handleCloseAddCard}
+        handleSearch={handleSearchCheck}
+      />
     </DrawerCustom>
   );
 };
@@ -935,6 +991,7 @@ const InfoBankCard = styled.div`
   border-radius: 10px;
   padding: 10px;
   background-color: #d6f0ff;
+  min-width: 18.75rem;
 `;
 const StyleDataGrid = styled.div`
   width: 683px;
@@ -953,7 +1010,7 @@ const PageContent = styled.div`
 const StyleButtonSpan = styled.span`
   position: absolute;
   top: 32px;
-  right: -50%;
+  right: -20%;
 `;
 const StyleCheckBoxTex = styled.div`
   display: flex;

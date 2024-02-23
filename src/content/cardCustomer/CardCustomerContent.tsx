@@ -388,7 +388,7 @@ export default function CardCustomerContent() {
   const initialPosSearch = {
     page: 0,
     pageSize: 10,
-    sorter: "name",
+    sorter: "createdDate",
     sortDirection: "DESC",
   };
   const [searchCondition, setSearchCondition] =

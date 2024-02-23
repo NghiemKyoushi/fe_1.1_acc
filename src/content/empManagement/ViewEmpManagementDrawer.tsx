@@ -179,6 +179,12 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("phoneNumber", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "phoneNumber",
+                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                    );
+                  }}
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -220,6 +226,16 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("code", { required: true })}
+                  onChange={(e: any) => {
+                    let value = e.target.value;
+                    let replaced = value.replace(
+                      /[a-z]/g,
+                      function (match: any) {
+                        return match.toUpperCase();
+                      }
+                    );
+                    setValue("code", replaced);
+                  }}
                 />
               </StyleInputContainer>
               <StyleInputContainer>

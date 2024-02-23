@@ -8,7 +8,7 @@ import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
-import { getDateOfPresent, handleKeyPress } from "@/utils";
+import { getDateOfPresent, getValueWithComma, handleKeyPress } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -201,6 +201,16 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("code", { required: true })}
+                  onChange={(e: any) => {
+                    let value = e.target.value;
+                    let replaced = value.replace(
+                      /[a-z]/g,
+                      function (match: any) {
+                        return match.toUpperCase();
+                      }
+                    );
+                    setValue("code", replaced);
+                  }}
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -233,6 +243,14 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 <TextFieldCustom
                   type={"text"}
                   {...register("salary", { required: true })}
+                  onChange={(e: any) => {
+                    setValue(
+                      "salary",
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                      )
+                    );
+                  }}
                 />
               </StyleInputContainer>
               <StyleInputContainer>

@@ -48,9 +48,10 @@ export const initialPosSearch = {
 export interface NEmpManagementDrawerProps {
   isOpen: boolean;
   handleCloseDrawer: () => void;
+  handleSearchGeneral: () => void;
 }
 export const FilterBill = (props: NEmpManagementDrawerProps) => {
-  const { isOpen, handleCloseDrawer } = props;
+  const { isOpen, handleCloseDrawer, handleSearchGeneral } = props;
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [listOfSelection, setListOfSelection] = useState<
     Array<string | number>
@@ -232,6 +233,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       .then((res) => {
         enqueueSnackbar("Khớp bill thành công", { variant: "success" });
         handleSearch();
+        handleSearchGeneral();
         setListOfSelection([]);
         handleCloseConfirmBillDialog();
       })

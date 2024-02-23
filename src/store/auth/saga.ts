@@ -1,5 +1,5 @@
 import axios from "axios";
-import { all, call, put, takeLatest } from "redux-saga/effects";
+import { all, call, delay, put, takeLatest } from "redux-saga/effects";
 import Cookies from "js-cookie";
 
 import {
@@ -60,6 +60,20 @@ function* loginSaga(action: any) {
     );
     action.payload.callback(response.token);
     enqueueSnackbar("Đăng nhập thành công!!", { variant: "success" });
+    // Start a timer that counts down from 5 minutes
+
+    let remainingTime = 55 * 60 * 1000;
+    const timer = setInterval(() => {
+      remainingTime -= 1000;
+      if (remainingTime <= 0) {
+        clearInterval(timer);
+        alert("Thời gian đăng nhập sắp hết!!");
+        // enqueueSnackbar("Thời gian đăng nhập sắp hết!!", { variant: "warning" });
+      }
+    }, 1000);
+
+    // yield delay(5 * 60 * 1000 - 300000); // Wait for 5 minutes minus 5 seconds
+    // enqueueSnackbar("Thời gian đăng nhập sắp hết!!", { variant: "warning" });
   } catch (e: any) {
     yield put(
       loginFailure({

@@ -39,6 +39,7 @@ import SearchDrawer from "./Drawer/SearchDrawer";
 import Cookies from "js-cookie";
 import { fetchBranch } from "@/actions/BranchManagementAction";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { fetchDetailEmp } from "@/api/service/empManagementApis";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -90,11 +91,21 @@ export const AccBookManagementContent = () => {
   const [searchCondition, setSearchCondition] = useState<any>(initialPosSearch);
   const [role, setRole] = useState<string | undefined>("");
   const [branchName, setBranchName] = useState<string | undefined>("");
+  const employeeId = cookieSetting.get("employeeId");
+
   useEffect(() => {
     setRole(cookieSetting.get("roles"));
     setBranchName(cookieSetting.get("branchName"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookieSetting.get("roles")]);
+  useEffect(() => {
+    if (employeeId) {
+      fetchDetailEmp(employeeId).then((res: any) => {
+        const rowInfo = res.data;
+        setValue("accountBalance", getValueWithComma(rowInfo?.accountBalance));
+      });
+    }
+  }, [employeeId]);
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
@@ -109,6 +120,7 @@ export const AccBookManagementContent = () => {
           key: "",
           values: "",
         },
+        accountBalance: "",
       },
     });
   const dispatch = useDispatch();
@@ -629,7 +641,9 @@ export const AccBookManagementContent = () => {
             variantshow="outlined"
             textholder="Số dư hiện tại"
             disable="true"
-            // {...register(fromNumberName)}
+            {...register("accountBalance")}
+            iconend={<p style={{ width: 24 }}>VND</p>}
+
             // onChange={(e: any) => {
             //   setvalue(
             //     fromNumberName,
