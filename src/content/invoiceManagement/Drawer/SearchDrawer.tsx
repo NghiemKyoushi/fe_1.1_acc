@@ -146,7 +146,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     },
   });
   const handleGetCard = (value: string) => {};
-  console.log("wattttt", watch("cardCustomer.key"))
+  console.log("wattttt", watch("cardCustomer.key"));
 
   const handleSearch = () => {
     const {
@@ -191,14 +191,17 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       customerCardId: cardCustomer.key,
-      employeeId: isSearchCardTrading ? '' : employeeId,
+      employeeId:
+        watch("cardCustomer.key") !== "" && isSearchCardTrading === true
+          ? ""
+          : employeeId,
       customerName: customerName.values,
       receiptStatusList:
         watch("cardCustomer.key") !== "" && isSearchCardTrading === true
           ? ["COMPLETED", "LOANED"]
           : null,
     };
- 
+
     handleChangeSearch(bodySend);
     dispatch(fetchInvoice(bodySend));
   };
