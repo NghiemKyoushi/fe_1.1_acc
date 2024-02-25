@@ -69,6 +69,8 @@ export const AccBookManagementContent = () => {
   const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const [branch, setBranch] = useState<Array<any> | undefined>([]);
+  const roles = cookieSetting.get("roles");
+
   const listOfAccBook = useSelector(
     (state: RootState) => state.accBookManagement.accBookList
   );
@@ -88,10 +90,16 @@ export const AccBookManagementContent = () => {
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
   );
-  const [searchCondition, setSearchCondition] = useState<any>(initialPosSearch);
-  const [role, setRole] = useState<string | undefined>("");
-  const [branchName, setBranchName] = useState<string | undefined>("");
   const employeeId = cookieSetting.get("employeeId");
+  const code = cookieSetting.get("code");
+  const Role = cookieSetting.get("roles");
+  const [role, setRole] = useState<string | undefined>("");
+ console.log("check code",code)
+  const [searchCondition, setSearchCondition] = useState<any>({
+    ...initialPosSearch,
+    lastModifiedBy: Role !== ROLE.ADMIN ? code : null,
+  });
+  const [branchName, setBranchName] = useState<string | undefined>("");
 
   useEffect(() => {
     setRole(cookieSetting.get("roles"));
@@ -656,6 +664,7 @@ export const AccBookManagementContent = () => {
           style={{
             margin: "7px 0px",
             display: "flex",
+            flexDirection: "row",
             gap: 10,
           }}
         >

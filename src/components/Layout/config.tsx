@@ -95,7 +95,7 @@ export const items = [
         <ContactMailOutlinedIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN", "EMPLOYEE"],
+    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
   },
   {
     title: "Quản lý thẻ khách",
@@ -105,7 +105,7 @@ export const items = [
         <DescriptionIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN", "EMPLOYEE"],
+    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
   },
   {
     title: "Thông tin tài khoản",

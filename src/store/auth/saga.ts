@@ -36,12 +36,14 @@ function* loginSaga(action: any) {
       branches: Array<any>;
       id: string;
       roles: Array<any>;
+      code: string;
     } = yield call(loginUserFn, {
       code: action.payload.values.email,
       password: action.payload.values.password,
     });
     Cookies.set("token", response.token, { expires: 1 / 24 });
     Cookies.set("userName", response.name);
+    Cookies.set("code", response.code);
     Cookies.set("branchId", response.branches[0].id);
     Cookies.set("employeeId", response.id);
     Cookies.set("roles", response.roles[0].title);

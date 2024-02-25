@@ -101,6 +101,7 @@ export default function Dashboard(props: DashboardProps) {
     dispatch(logout());
     Cookies.set("token", "", { expires: new Date(2000, 0, 1) });
     Cookies.remove("userName");
+    Cookies.remove("code");
     Cookies.remove("employeeId");
     Cookies.remove("roles");
     Cookies.remove("branchName");

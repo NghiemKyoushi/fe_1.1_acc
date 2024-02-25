@@ -54,7 +54,7 @@ export interface valueForm {
   roleIds?: SearchForm;
   startDate?: Date;
   email?: string;
-  salary?: string;
+  salary: string;
   password?: string;
   restOfMoney?: string;
   accountBalance?: string;

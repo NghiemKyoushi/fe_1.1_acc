@@ -73,7 +73,7 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       email: email,
       phoneNumber: phoneNumber,
       password: password,
-      salary: salary,
+      salary: salary?.replaceAll(",", ""),
       bank: bank,
       accountNumber: accountNumber,
       roleIds: roleIds?.keys ? [roleIds?.keys] : [],

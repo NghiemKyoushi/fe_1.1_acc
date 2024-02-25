@@ -26,7 +26,7 @@ import { useDispatch } from "react-redux";
 import { InputNumber } from "@/components/common/InputCustom";
 import { fetchPosManagement } from "@/actions/PosManagementActions";
 import { fetchBranch } from "@/api/service/invoiceManagement";
-import { ROLE, cookieSetting } from "@/utils";
+import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 
 export interface NewPosDrawerProps {
@@ -150,7 +150,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     [listOfCard]
   );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code, maxBillAmount, note } =
+    const { accountNumber, address, bank, code, maxBillAmount, note, name } =
       getValues();
     let formatList: ColCardType[] = [];
     watch("posFeeTable").map((item) => {
@@ -161,13 +161,13 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     });
     const request: PosParamBodySend = {
       code: code,
-      name: code,
+      name: name,
       address: address,
       bank: bank,
       accountNumber: accountNumber,
       supportedCardTypes: formatList,
       posStatus: "AVAILABLE",
-      maxBillAmount: maxBillAmount,
+      maxBillAmount: maxBillAmount.replaceAll(",", ""),
       note: note,
     };
     fetchCreatePos(request)
@@ -175,6 +175,14 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         enqueueSnackbar("Tạo Pos thành công!!", { variant: "success" });
         handleCloseDrawer();
         dispatch(fetchPosManagement(searchCondition));
+        const posFee = watch("posFeeTable").map((item) => {
+          return {
+            id: item.id,
+            name: item.name,
+            cardTypeId: item.cardTypeId,
+            posCardFee: 0,
+          };
+        });
         reset({
           code: "",
           name: "",
@@ -183,6 +191,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
           bank: "",
           maxBillAmount: "",
           note: "",
+          posFeeTable: posFee,
         });
       })
       .catch(function (error) {
@@ -247,16 +256,27 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
                     onChange={(e: any) => {
                       setValue(
                         "maxBillAmount",
-                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        getValueWithComma(
+                          e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        )
                       );
                     }}
                   />
+
                   <TextHelper>
                     {errors?.accountNumber && errors.accountNumber.message}
                   </TextHelper>
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
+                <StyleInputContainer>
+                  <LabelComponent require={true}>Tên Pos</LabelComponent>
+                  <TextFieldCustom
+                    type={"text"}
+                    {...register("name", { required: "Tên pos là bắt buộc" })}
+                  />
+                  <TextHelper>{errors?.name && errors.name.message}</TextHelper>
+                </StyleInputContainer>
                 <StyleInputContainer>
                   <LabelComponent require={true}>Địa chỉ</LabelComponent>
                   <TextFieldCustom

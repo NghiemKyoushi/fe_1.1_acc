@@ -27,6 +27,7 @@ import {
 import { AddCardTypeDialogComponent } from "./Dialog/AddCardTypesDialog";
 import { ROLE, cookieSetting } from "@/utils";
 import { listTranType } from "../accBookManagement/Drawer/ViewAccountBookDrawer";
+import { saveDatatoServerApis } from "@/api/service/invoiceManagement";
 
 export const SettingContent = () => {
   const [accEntry, setAccEntry] = useState([]);
@@ -288,6 +289,15 @@ export const SettingContent = () => {
   const getRowId = (row: any) => {
     return row.id;
   };
+  const handleSaveData = () => {
+    saveDatatoServerApis()
+      .then((res) => {
+        enqueueSnackbar("Sao lưu thành công!!", { variant: "success" });
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Sao lưu thất bại!!", { variant: "error" });
+      });
+  };
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>CÀI ĐẶT CHUNG</h3>
@@ -353,7 +363,7 @@ export const SettingContent = () => {
       </form>
       <div>
         {roleCookies === ROLE.ADMIN && (
-          <Button variant="contained" color="warning">
+          <Button onClick={handleSaveData} variant="contained" color="warning">
             Sao lưu dữ liệu
           </Button>
         )}

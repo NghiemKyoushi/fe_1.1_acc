@@ -686,8 +686,8 @@ export default function InvoiceManagementContent() {
         renderCell: ({ row }) => {
           return (
             <>
-              {row.code !== "TOTAL" && row.note !== null ? (
-                <Tooltip title="Ghi chú" placement="top">
+              {row.code !== "TOTAL" && row.note !== null && row.note !== "" ? (
+                <Tooltip title={row.note} placement="top">
                   <IconButton color="error">
                     <EditNoteIcon sx={{ fontSize: 20 }} />
                   </IconButton>

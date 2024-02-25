@@ -15,7 +15,7 @@ import {
   NewUserPrarams,
   valueForm,
 } from "@/models/EmpManagement";
-import { getDateOfPresent, handleKeyPress } from "@/utils";
+import { getDateOfPresent, getValueWithComma, handleKeyPress } from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
@@ -67,7 +67,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         name: rowInfo?.name,
         code: rowInfo?.code,
         email: rowInfo?.email,
-        salary: rowInfo?.salary,
+        salary: getValueWithComma(rowInfo?.salary),
         bank: rowInfo?.bank,
         accountNumber: rowInfo?.accountNumber,
         phoneNumber: rowInfo?.phoneNumber,
@@ -76,6 +76,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
           values: rowInfo?.roles[0].title,
         },
         branchIds: branchFormat,
+        accountBalance: getValueWithComma(rowInfo?.accountBalance),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,7 +109,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       email: email,
       phoneNumber: phoneNumber,
       password: password,
-      salary: salary,
+      salary: salary?.replaceAll(",", ""),
       bank: bank,
       accountNumber: accountNumber,
       roleIds: [roleIds?.keys],
@@ -219,6 +220,15 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   {...register("bank", { required: true })}
                 />
               </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Số dư tài khoản</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  disable="true"
+                  iconend={<p style={{ width: 24 }}>VND</p>}
+                  {...register("accountBalance", { required: true })}
+                />
+              </StyleInputContainer>
             </StyleContainer>
             <StyleContainer>
               <StyleInputContainer>
@@ -270,7 +280,9 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   onChange={(e: any) => {
                     setValue(
                       "salary",
-                      e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                      getValueWithComma(
+                        e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                      )
                     );
                   }}
                 />

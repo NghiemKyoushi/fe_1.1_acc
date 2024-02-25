@@ -4,6 +4,7 @@ import DrawerCustom from "@/components/common/Drawer";
 import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import {
+  InfoCard,
   ReceiptCreationParams,
   ValueFormCreate,
 } from "@/models/InvoiceManagement";
@@ -41,6 +42,11 @@ import NewCardCustomer from "@/content/cardCustomer/Drawer/NewCardCustomer";
 import _ from "lodash";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import { branchType } from "@/models/PortManagementModel";
+import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "@/reducers/rootReducer";
+import { fetchCardCustomer } from "@/actions/CardCustomerActions";
 
 export interface ViewInvoiceDrawerProps {
   isOpen: boolean;
@@ -55,7 +61,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const [imagePath, setImagePath] = useState("");
   const [isOpenCard, setIsOpenCard] = useState(false);
   const [branchList, setBranchList] = useState<branchType[]>([]);
-
+  const [infoCard, setInfoCard] = useState<InfoCard>({
+    cardType: "",
+    bank: "",
+    accountNumber: "",
+    prePaidFee: 0,
+  });
   const {
     register,
     handleSubmit,
@@ -96,7 +107,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     },
   });
   const role = cookieSetting.get("roles");
-
+  const listOfCustomer = useSelector(
+    (state: RootState) => state.customerManagament.customerList
+  );
+  const cardType = useSelector(
+    (state: RootState) => state.cardCustomer.cardType
+  );
   const { fields: invoicesCalculateField } = useFieldArray({
     control,
     name: "invoicesCalculate",
@@ -148,7 +164,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             ...item,
             money: item.moneyAmount,
             calculatedProfit: item.calculatedProfit,
-            estimatedReturnFromBank: item.estimatedReturnFromBank,
+            returnFromBank: item.returnFromBank,
             posId: {
               values: item.pos.code,
               key: item.pos.id,
@@ -166,16 +182,16 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           fee: "",
           check: "TOTAL",
           calculatedProfit: "",
-          estimatedReturnFromBank: 0,
+          returnFromBank: 0,
         });
       }
       reset({
         codeEmployee: rowInfo?.employee.name,
         percentageFee: rowInfo?.percentageFee,
-        shipmentFee: rowInfo?.shipmentFee,
+        shipmentFee: getValueWithComma(rowInfo?.shipmentFee),
         customerName: {
-          key: rowInfo?.customerCard.id,
-          values: rowInfo?.customerCard.name,
+          key: rowInfo?.customerCard.customer?.id,
+          values: rowInfo?.customerCard.customer.name,
           nationalId: "",
         },
         cardCustomer: {
@@ -195,6 +211,12 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           key: rowInfo.branch.id,
           values: rowInfo.branch.name,
         },
+      });
+      setInfoCard({
+        cardType: rowInfo.customerCard.cardType?.name,
+        bank: rowInfo.customerCard.bank,
+        accountNumber: rowInfo.customerCard.accountNumber,
+        prePaidFee: rowInfo.customerCard.prePaidFee,
       });
       // setValue("acceptExceededFee",rowInfo.acceptExceededFee )
       // setValue("usingCardPrePayFee",rowInfo.usingCardPrePayFee )
@@ -226,6 +248,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       feeafterpay: 0,
       billcode: "",
       estimatedReturnFromBank: 0,
+      returnFromBank: 0,
       check: "",
     };
     append(item);
@@ -414,7 +437,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       },
       {
         headerName: "Tiền về",
-        field: "estimatedReturnFromBank",
+        field: "returnFromBank ",
         width: 120,
         headerAlign: "left",
         sortable: false,
@@ -428,16 +451,13 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         valueGetter: ({ row }) => {
           if (row.check === "TOTAL") {
             let fee = 0;
-            fee = watch("invoices").reduce(
-              (total, { estimatedReturnFromBank }) => {
-                return (total += +estimatedReturnFromBank);
-              },
-              0
-            );
+            fee = watch("invoices").reduce((total, { returnFromBank }) => {
+              return (total += +returnFromBank);
+            }, 0);
             return getValueWithComma(fee);
           }
-          if (row.estimatedReturnFromBank) {
-            return getValueWithComma(row.estimatedReturnFromBank);
+          if (row.returnFromBank) {
+            return getValueWithComma(row.returnFromBank);
           }
         },
         // renderCell: (params: GridRenderCellParams) => {
@@ -578,10 +598,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     }
     const request: ReceiptCreationParams = {
       imageId: imageId,
-      branchId: branchId,
+      branchId: watch("branchIds").key,
       customerCardId: watch("cardCustomer").key,
       percentageFee: +watch("percentageFee"),
-      shipmentFee: +watch("shipmentFee"),
+      shipmentFee: +watch("shipmentFee").replaceAll(",", ""),
       intake: watch("invoicesCalculate")[0].intake,
       payout: watch("invoicesCalculate")[0].payout,
       loan: watch("invoicesCalculate")[0].loan,
@@ -615,11 +635,34 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         }
       });
   };
+  const dispatch = useDispatch();
+
   const getDataCustomerFromApi = (value: string) => {
     if (value !== "") {
-      // dispatch(fetchSearchCustomer({ customerName: value }));
+      dispatch(fetchSearchCustomer({ customerName: value }));
     }
   };
+  useEffect(() => {
+    if (watch("cardCustomer")?.key) {
+      cardType.map((item: any) => {
+        if (item.key === watch("cardCustomer")?.key) {
+          setInfoCard({
+            cardType: item.item?.cardType?.name,
+            bank: item.item?.bank,
+            accountNumber: item.item?.accountNumber,
+            prePaidFee: item.item?.prePaidFee,
+          });
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("cardCustomer")]);
+  useEffect(() => {
+    if (watch("customerName")?.key) {
+      dispatch(fetchCardCustomer({ customerId: watch("customerName")?.key }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("customerName")]);
   const getRowId = (row: any) => {
     return row.id;
   };
@@ -719,16 +762,13 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   <LabelComponent>Phí vận chuyển</LabelComponent>
                   <TextFieldCustom
                     iconend={<p style={{ width: 24 }}>VND</p>}
-                    {...register(
-                      "shipmentFee"
-                      // , {
-                      //   required: "Phí vận chuyển bắt buộc",
-                      // }
-                    )}
+                    {...register("shipmentFee")}
                     onChange={(e: any) => {
                       setValue(
                         "shipmentFee",
-                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        getValueWithComma(
+                          e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        )
                       );
                     }}
                   />
@@ -759,7 +799,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                     props={{
                       name: "customerName",
                       placeHoder: "",
-                      results: [],
+                      results: rowInfo?.code === null ? listOfCustomer: [],
                       label: "",
                       type: "text",
                       setValue: setValue,
@@ -776,7 +816,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                     props={{
                       name: "cardCustomer",
                       placeHoder: "",
-                      results: [],
+                      results:  rowInfo?.code === null ? cardType: [],
                       label: "",
                       type: "text",
                       setValue: setValue,
@@ -798,11 +838,10 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 </StyleInputContainer>
                 <InfoBankCard>
                   <InfoOutlinedIcon />
-                  {`${rowInfo.customerCard.cardType.name} - ${rowInfo.customerCard.bank} - ${rowInfo.customerCard.accountNumber}`}{" "}
-                  {rowInfo.customerCard.prePaidFee > 0 &&
-                    `- ${getValueWithComma(
-                      rowInfo.customerCard.prePaidFee
-                    )} VND`}
+                  {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
+                  {infoCard && infoCard.accountNumber}{" "}
+                  {infoCard.prePaidFee > 0 &&
+                    `- ${getValueWithComma(infoCard.prePaidFee)} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

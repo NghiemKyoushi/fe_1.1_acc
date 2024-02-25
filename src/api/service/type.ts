@@ -8,8 +8,8 @@ export interface InvoiceProps {
   percentageFee: number;
   branchId: string;
   shipmentFee: number;
-  customerCardId:string;
-  imageId:string;
+  customerCardId: string;
+  imageId: string;
 
   receiptBills: Array<ReceiptBillsDetail>;
 }
@@ -32,7 +32,8 @@ export interface fetchInvoiceInfoPrams {
   pageSize?: Number;
   sorter?: string;
   sortDirection?: string;
+  receiptStatusList?: Array<string>;
 }
 export interface fetchPosParams {
-  posName:string
+  posName: string;
 }

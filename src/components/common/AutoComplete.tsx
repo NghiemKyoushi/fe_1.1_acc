@@ -73,7 +73,7 @@ function SelectSearchComponent({
               value={value ?? ""}
               onChange={(event, selectedOptions, reason) => {
                 if (reason === "clear") {
-                  onChange({}); // This onChange is from the Hook forms
+                  onChange({key:"", values:""}); // This onChange is from the Hook forms
                   return;
                 }
                 onChange(selectedOptions);

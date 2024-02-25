@@ -137,7 +137,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
     [listOfCard]
   );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code, maxBillAmount, note } =
+    const { accountNumber, address, bank, code, maxBillAmount, note , name} =
       getValues();
     let formatList: ColCardType[] = [];
     watch("posFeeTable").map((item) => {
@@ -148,7 +148,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
     });
     const request: PosParamBodySend = {
       code: code,
-      name: code,
+      name: name,
       address: address,
       bank: bank,
       accountNumber: accountNumber,
@@ -236,6 +236,14 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
+              <StyleInputContainer>
+                  <LabelComponent require={true}>Tên Pos</LabelComponent>
+                  <TextFieldCustom
+                    type={"text"}
+                    {...register("name", { required: "Tên pos là bắt buộc" })}
+                  />
+                  <TextHelper>{errors?.name && errors.name.message}</TextHelper>
+                </StyleInputContainer>
                 <StyleInputContainer>
                   <LabelComponent require={true}>Địa chỉ</LabelComponent>
                   <TextFieldCustom

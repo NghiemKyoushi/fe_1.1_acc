@@ -22,6 +22,8 @@ import {
 } from "@/actions/CardCustomerActions";
 import { useEffect, useMemo, useState } from "react";
 import { cookieSetting } from "@/utils";
+import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
+import _ from "lodash";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -84,22 +86,26 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   const listOfCardCustomer = useSelector(
     (state: RootState) => state.cardCustomer.cardCustomerList
   );
-  const [cardType, setCardType] = useState([]);
+  const cardType = useSelector(
+    (state: RootState) => state.cardCustomer.cardType
+  );
   const dispatch = useDispatch();
   const employeeId = cookieSetting.get("employeeId");
-
-  useMemo(() => {
-    if (listOfCardCustomer) {
-      const listArr: any = [];
-      listOfCardCustomer.map((item: any) => {
-        listArr.push({
-          key: item?.id,
-          values: item?.name,
-        });
-      });
-      setCardType(listArr);
-    }
-  }, [listOfCardCustomer]);
+  const listOfCustomer = useSelector(
+    (state: RootState) => state.customerManagament.customerList
+  );
+  // useMemo(() => {
+  //   if (listOfCardCustomer) {
+  //     const listArr: any = [];
+  //     listOfCardCustomer.map((item: any) => {
+  //       listArr.push({
+  //         key: item?.id,
+  //         values: item?.name,
+  //       });
+  //     });
+  //     setCardType(listArr);
+  //   }
+  // }, [listOfCardCustomer]);
   const {
     register,
     handleSubmit,
@@ -131,22 +137,16 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
+      customerName: {
+        key: "",
+        values: "",
+        nationalId: "",
+      },
       isSearchCardTrading: false,
     },
   });
-  const handleGetCard = (value: string) => {
-    if (value !== "") {
-      dispatch(
-        fetchListCardCustomer({
-          page: 0,
-          pageSize: 10,
-          sorter: "name",
-          sortDirection: "DESC",
-          name: value,
-        })
-      );
-    }
-  };
+  const handleGetCard = (value: string) => {};
+  console.log("wattttt", watch("cardCustomer.key"))
 
   const handleSearch = () => {
     const {
@@ -167,6 +167,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toCreatedDate,
       cardCustomer,
       isSearchCardTrading,
+      customerName,
     } = getValues();
 
     const fromDate = new Date(fromCreatedDate);
@@ -190,10 +191,27 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       customerCardId: cardCustomer.key,
-      employeeId: isSearchCardTrading ? null : employeeId,
+      employeeId: isSearchCardTrading ? '' : employeeId,
+      customerName: customerName.values,
+      receiptStatusList:
+        watch("cardCustomer.key") !== "" && isSearchCardTrading === true
+          ? ["COMPLETED", "LOANED"]
+          : null,
     };
+ 
     handleChangeSearch(bodySend);
     dispatch(fetchInvoice(bodySend));
+  };
+  useEffect(() => {
+    if (watch("customerName")?.key) {
+      dispatch(fetchCardCustomer({ customerId: watch("customerName")?.key }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("customerName")]);
+  const getDataCustomerFromApi = (value: string) => {
+    if (value !== "") {
+      dispatch(fetchSearchCustomer({ customerName: value }));
+    }
   };
   return (
     <DrawerCustom
@@ -212,12 +230,28 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               todatename={"toCreatedDate"}
             />
           </StyleInputContainer>
-          <StyleInputContainer style={{ maxWidth: 273 }}>
+          <StyleInputContainer style={{ maxWidth: 240 }}>
             <LabelComponent require={true}>Mã hóa đơn</LabelComponent>
             <TextFieldCustom type={"text"} {...register("receiptCode")} />
           </StyleInputContainer>
           <StyleInputContainer style={{ maxWidth: 273 }}>
-            <LabelComponent require={true}>Thẻ khách</LabelComponent>
+            <LabelComponent require={true}>Tên Khách Hàng</LabelComponent>
+            <SelectSearchComponent
+              control={control}
+              props={{
+                name: "customerName",
+                placeHoder: "",
+                results: listOfCustomer,
+                label: "",
+                type: "text",
+                setValue: setValue,
+                labelWidth: "100",
+                getData: getDataCustomerFromApi,
+              }}
+            />
+          </StyleInputContainer>
+          <StyleInputContainer style={{ maxWidth: 273 }}>
+            <LabelComponent require={true}>Tên Thẻ</LabelComponent>
             <SelectSearchComponent
               control={control}
               props={{
@@ -230,7 +264,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                 labelWidth: "100",
                 getData: handleGetCard,
               }}
-            />{" "}
+            />
           </StyleInputContainer>
           <StyleCheckBoxTex>
             <Controller
@@ -238,7 +272,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               control={control}
               render={({ field }) => (
                 <Checkbox
-                  disabled={watch("cardCustomer.key") !== "" ? false : true}
+                  disabled={watch("cardCustomer").key !== "" ? false : true}
+                  checked={watch("isSearchCardTrading")}
                   {...field}
                 />
               )}

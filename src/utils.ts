@@ -49,3 +49,8 @@ export enum ROLE {
   SUBMANAGER = "SUB-MANAGER",
   EMPLOYEE = "EMPLOYEE",
 }
+export const LIST_STATUS_RECEIPT = [{ key: "COMPLETED", values: "Hoàn thành" }, { key: "LOANED", values: "Nợ" }];
+// export enum STATUS_RECEIPT {
+//   COMPLETED = "COMPLETED",
+//   LOANED = "LOANED",
+// }

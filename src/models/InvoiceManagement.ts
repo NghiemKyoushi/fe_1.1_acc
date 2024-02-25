@@ -100,6 +100,7 @@ export interface InvoiceCreate {
   billcode: string;
   check: string;
   estimatedReturnFromBank: number;
+  returnFromBank: number
 }
 export interface PosDetail {
   key: string;

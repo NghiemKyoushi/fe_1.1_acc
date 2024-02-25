@@ -345,6 +345,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       billcode: "",
       check: "",
       estimatedReturnFromBank: 0,
+      returnFromBank: 0,
     };
     append(item);
   };
@@ -393,10 +394,10 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     }
     const request: ReceiptCreationParams = {
       imageId: imageId,
-      branchId: branchId,
+      branchId: watch("branchIds").key,
       customerCardId: watch("cardCustomer").key,
       percentageFee: +watch("percentageFee"),
-      shipmentFee: +watch("shipmentFee"),
+      shipmentFee: +watch("shipmentFee").replaceAll(",", ""),
       intake: watch("invoicesCalculate")[0].intake,
       payout: watch("invoicesCalculate")[0].payout,
       loan: watch("invoicesCalculate")[0].loan,
@@ -415,9 +416,14 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     fetchCreateInvoice(request)
       .then((res) => {
         enqueueSnackbar("Tạo hóa đơn thành công!!", { variant: "success" });
-        reset();
         handleSearch();
         handleCloseDrawer();
+        const branch = {
+          key: watch("branchIds").key,
+          values: watch("branchIds").values,
+        };
+        reset();
+        setValue("branchIds", branch);
       })
       .catch(function (error) {
         if (error.response.data.errors?.length > 0) {
@@ -446,6 +452,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
+  console.log("check watch", watch("invoices"));
   const totalfee = watch("invoices").reduce((total, { money }) => {
     const calFee = +money * (+watch("percentageFee") / 100);
     if (calFee < 1000) {
@@ -937,7 +944,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   <InfoOutlinedIcon />
                   {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
                   {infoCard && infoCard.accountNumber}{" "}
-                  {infoCard.prePaidFee > 0 && `- ${getValueWithComma(infoCard.prePaidFee)} VND`}
+                  {infoCard.prePaidFee > 0 &&
+                    `- ${getValueWithComma(infoCard.prePaidFee)} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

@@ -106,7 +106,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     };
     handleChangeSearch(bodySend);
     dispatch(fetchListCardCustomer(bodySend));
-
   };
   return (
     <DrawerCustom
@@ -122,7 +121,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       >
         <PageContent>
           <StyleInputContainer>
-            <LabelComponent require={true}>Thẻ khách</LabelComponent>
+            <LabelComponent>Tên khách hàng</LabelComponent>
             <SelectSearchComponent
               control={control}
               props={{
@@ -138,7 +137,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             />
           </StyleInputContainer>
           <StyleInputContainer>
-            <LabelComponent require={true}>Số thẻ</LabelComponent>
+            <LabelComponent>Số thẻ</LabelComponent>
             <TextFieldCustom
               textholder="Tìm theo số thẻ"
               {...register("accountNumber")}
