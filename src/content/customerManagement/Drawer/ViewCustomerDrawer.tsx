@@ -9,7 +9,7 @@ import {
   PosParamBodySend,
   SupportedCardTypesParam,
 } from "@/models/PortManagementModel";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -24,6 +24,7 @@ import {
   updateCustomer,
 } from "@/api/service/customerManagerApis";
 import { handleKeyPress } from "@/utils";
+import TextareaComponent from "@/components/common/TextAreaAutoSize";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -50,6 +51,7 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
       phoneNumber: "",
       nationalId: "",
       percentageFee: "",
+      note: "",
     },
   });
   const dispatch = useDispatch();
@@ -62,11 +64,12 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
         name: rowInfo.name,
         percentageFee: rowInfo.percentageFee.toString(),
         phoneNumber: rowInfo.phoneNumber,
+        note: rowInfo.note,
       });
     }
   }, [rowInfo]);
   const handleCreate = () => {
-    const { name, address, nationalId, percentageFee, phoneNumber } =
+    const { name, address, nationalId, note, percentageFee, phoneNumber } =
       getValues();
     const bodySend: NewCustomer = {
       address: address,
@@ -74,6 +77,7 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
       nationalId: nationalId,
       percentageFee: +percentageFee,
       phoneNumber: phoneNumber,
+      note: note,
     };
     if (rowInfo?.id) {
       updateCustomer(rowInfo?.id, bodySend)
@@ -183,6 +187,20 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
                 </StyleInputContainer>
               </StyleContainer>
             </SearchContainer>
+            <div style={{ width: "60%" }}>
+              <Typography style={{ fontWeight: "bold", marginTop: 10 }}>
+                Ghi chú
+              </Typography>
+              <TextareaComponent
+                control={control}
+                valueInput={""}
+                name={"note"}
+                label={"Ghi chú"}
+                width={"100"}
+                type={""}
+                disable={false}
+              />
+            </div>
             <Box
               sx={{
                 justifyContent: "flex-end",

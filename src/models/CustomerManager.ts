@@ -24,6 +24,7 @@ export interface ColCustomer {
   phoneNumber: string;
   nationalId: string;
   percentageFee: number;
+  note: string;
 }
 export interface NewCustomer {
   id?: string;
@@ -32,4 +33,5 @@ export interface NewCustomer {
   phoneNumber: string;
   nationalId: string;
   percentageFee: number;
+  note: string;
 }

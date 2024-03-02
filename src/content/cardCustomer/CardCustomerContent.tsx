@@ -188,6 +188,8 @@ export default function CardCustomerContent() {
           paymentDueDate: item.paymentDueDate,
           createdDate: item.createdDate,
           customerName: item.customer.name,
+          lastModifiedBy: item.lastModifiedBy,
+          note: item.note,
         });
       });
       setListCardCustomer(arrList);
@@ -343,6 +345,32 @@ export default function CardCustomerContent() {
         },
       },
       {
+        headerName: "Người cập nhật",
+        field: "lastModifiedBy",
+        width: 120,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: ({ row }) => {
+          return row.lastModifiedBy;
+        },
+      },
+      {
+        headerName: "Thông tin thẻ khách",
+        field: "note",
+        width: 150,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: ({ row }) => {
+          return row.note;
+        },
+      },
+      {
         headerName: "Thao Tác",
         field: "actions",
         headerClassName: "super-app-theme--header",
@@ -360,12 +388,15 @@ export default function CardCustomerContent() {
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton
-                onClick={() => handleOpenDeleteForm(row.id)}
-                color="error"
-              >
-                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+              {role === ROLE.ADMIN && (
+                <IconButton
+                  onClick={() => handleOpenDeleteForm(row.id)}
+                  color="error"
+                >
+                  <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              )}
+
               {role === ROLE.EMPLOYEE ? null : (
                 <Tooltip title="Cập nhật phí" placement="top">
                   <IconButton

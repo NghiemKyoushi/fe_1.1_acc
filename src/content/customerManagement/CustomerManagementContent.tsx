@@ -1,6 +1,6 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
-import { formatDateTime } from "@/utils";
+import { ROLE, cookieSetting, formatDateTime } from "@/utils";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -48,6 +48,8 @@ export default function CustomerManagementContent() {
   const isLoading = useSelector(
     (state: RootState) => state.customerManagament.isLoading
   );
+  const role = cookieSetting.get("roles");
+
   const handleOpenModal = () => {
     setIsOpenModal(true);
   };
@@ -94,16 +96,6 @@ export default function CustomerManagementContent() {
     });
   const columns: GridColDef<ColCustomer>[] = useMemo(
     () => [
-      // {
-      //   field: "id",
-      //   width: 40,
-      //   sortable: false,
-      //   headerName: "STT",
-      //   renderCell: (params: GridRenderCellParams<ColCustomer>) => {
-      //     const index = params.api.getRowIndex(params.row.id);
-      //     return +index + 1;
-      //   },
-      // },
       {
         headerName: "Tên khách hàng",
         field: "name",
@@ -151,7 +143,7 @@ export default function CustomerManagementContent() {
       {
         headerName: "Số điện thoại",
         field: "phoneNumber",
-        width: 200,
+        width: 180,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -223,6 +215,16 @@ export default function CustomerManagementContent() {
         filterable: false,
       },
       {
+        headerName: "Thông tin khách",
+        field: "note",
+        width: 210,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+      },
+      {
         headerName: "Thao Tác",
         field: "actions",
         headerClassName: "super-app-theme--header",
@@ -230,7 +232,7 @@ export default function CustomerManagementContent() {
         align: "center",
         sortable: false,
         filterable: false,
-        width: 300,
+        width: 200,
         renderCell: ({ row }) => {
           return (
             <>
@@ -240,12 +242,14 @@ export default function CustomerManagementContent() {
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton
-                color="error"
-                onClick={() => handleOpenDeleteForm(row.id)}
-              >
-                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+              {role === ROLE.ADMIN && (
+                <IconButton
+                  color="error"
+                  onClick={() => handleOpenDeleteForm(row.id)}
+                >
+                  <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              )}
             </>
           );
         },

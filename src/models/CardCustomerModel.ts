@@ -64,6 +64,8 @@ export interface ColCustomerCard {
   paymentDueDate: string;
   createdDate: string;
   customer: customerType;
+  lastModifiedBy: string;
+  note: string;
 }
 export interface ColCustomerCardDetail {
   name: string;
@@ -75,6 +77,8 @@ export interface ColCustomerCardDetail {
   paymentDueDate: string;
   createdDate: string;
   customerName: string;
+  lastModifiedBy: string;
+  note: string;
 }
 export interface customerType {
   name: string;

@@ -841,7 +841,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
                   {infoCard && infoCard.accountNumber}{" "}
                   {infoCard.prePaidFee > 0 &&
-                    `- ${getValueWithComma(infoCard.prePaidFee)} VND`}
+                    `- Phí đã ứng: ${getValueWithComma(infoCard.prePaidFee)} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

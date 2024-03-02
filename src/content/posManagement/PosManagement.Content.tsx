@@ -140,7 +140,7 @@ export default function PosManagementContent() {
       {
         headerName: "Tài khoản Pos",
         field: "accountNumber",
-        width: 250,
+        width: 150,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -184,7 +184,7 @@ export default function PosManagementContent() {
       {
         headerName: "Ngân hàng",
         field: "bank",
-        width: 250,
+        width: 150,
         headerClassName: "super-app-theme--header",
         headerAlign: "center",
         align: "center",
@@ -236,6 +236,16 @@ export default function PosManagementContent() {
         filterable: false,
       },
       {
+        headerName: "Thông tin Pos",
+        field: "note",
+        width: 250,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+      },
+      {
         headerName: "Thao Tác",
         field: "actions",
         headerClassName: "super-app-theme--header",
@@ -243,7 +253,7 @@ export default function PosManagementContent() {
         align: "center",
         sortable: false,
         filterable: false,
-        width: 334,
+        width: 284,
         renderCell: ({ row }) => {
           return (
             <>
