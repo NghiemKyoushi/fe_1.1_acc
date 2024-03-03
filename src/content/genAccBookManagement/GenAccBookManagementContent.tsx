@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import {
+  cookieSetting,
   formatDate,
   formatDateTime,
   getDateOfPresent,
@@ -46,6 +47,7 @@ import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import SelectSearchComponent from "@/components/common/AutoComplete";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { fetchDetailEmp } from "@/api/service/empManagementApis";
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -74,6 +76,7 @@ export const GenAccBookManagementContent = () => {
   const [isConfirmForm, setIsConfirmForm] = useState(false);
   const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
+  const employeeId = cookieSetting.get("employeeId");
 
   const listOfGenAccBook = useSelector(
     (state: RootState) => state.genAccBookManagement.genAccBookList
@@ -103,6 +106,7 @@ export const GenAccBookManagementContent = () => {
           key: "",
           values: "",
         },
+        accountBalance: "",
       },
     });
   const dispatch = useDispatch();
@@ -167,6 +171,15 @@ export const GenAccBookManagementContent = () => {
     dispatch(fetchGenAccBook(searchCondition));
     dispatch(fetchGenSumAccBook(searchCondition));
   }, []);
+
+  useEffect(() => {
+    if (employeeId) {
+      fetchDetailEmp(employeeId).then((res: any) => {
+        const rowInfo = res.data;
+        setValue("accountBalance", getValueWithComma(rowInfo?.accountBalance));
+      });
+    }
+  }, [employeeId]);
   const handleCloseSearchDrawer = () => {
     setIsOpenSearchDrawer(false);
   };
@@ -559,20 +572,45 @@ export const GenAccBookManagementContent = () => {
           justifyContent: "space-between",
         }}
       >
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenModal()}
+        <StyleFilterContainer>
+          <StyleTitleSearch>Số dư hiện tại</StyleTitleSearch>
+          <TextFieldCustom
+            type={"text"}
+            variantshow="outlined"
+            textholder="Số dư hiện tại"
+            disable="true"
+            {...register("accountBalance")}
+            iconend={<p style={{ width: 24 }}>VND</p>}
+          />
+        </StyleFilterContainer>
+        <div
+          style={{
+            margin: "7px 0px",
+            display: "flex",
+            flexDirection: "row",
+            gap: 10,
+            alignItems:"flex-end"
+          }}
         >
-          Tạo bút toán
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenSearchDrawer()}
-        >
-          Tìm kiếm
-        </Button>
+          <div>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenModal()}
+            >
+              Tạo bút toán
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenSearchDrawer()}
+            >
+              Tìm kiếm
+            </Button>
+          </div>
+        </div>
       </Box>
       <form style={{ width: "100%" }}>
         <StyleDataGrid>

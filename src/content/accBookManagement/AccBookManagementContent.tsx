@@ -94,7 +94,6 @@ export const AccBookManagementContent = () => {
   const code = cookieSetting.get("code");
   const Role = cookieSetting.get("roles");
   const [role, setRole] = useState<string | undefined>("");
- console.log("check code",code)
   const [searchCondition, setSearchCondition] = useState<any>({
     ...initialPosSearch,
     lastModifiedBy: Role !== ROLE.ADMIN ? code : null,
@@ -619,21 +618,6 @@ export const AccBookManagementContent = () => {
         }}
       >
         <h3>SỔ THU CHI QUẢN LÝ</h3>
-        {/* <SelectSearchComponent
-          control={control}
-          props={{
-            name: "branch",
-            placeHoder: "",
-            results: branch,
-            label: "",
-            variantType: "standard",
-            type: "text",
-            setValue: setValue,
-            labelWidth: "17",
-            fontSize: 18,
-            getData: handleChangeBranch,
-          }}
-        /> */}
       </div>
       <Box
         sx={{
@@ -651,13 +635,6 @@ export const AccBookManagementContent = () => {
             disable="true"
             {...register("accountBalance")}
             iconend={<p style={{ width: 24 }}>VND</p>}
-
-            // onChange={(e: any) => {
-            //   setvalue(
-            //     fromNumberName,
-            //     e.target.value.trim().replaceAll(/[^0-9]/g, "")
-            //   );
-            // }}
           />
         </StyleFilterContainer>
         <div
@@ -668,13 +645,13 @@ export const AccBookManagementContent = () => {
             gap: 10,
           }}
         >
-          <Button
+          {/* <Button
             variant="contained"
             size="small"
             onClick={() => handleOpenModal()}
           >
             Tạo bút toán
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             size="small"
