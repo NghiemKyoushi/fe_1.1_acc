@@ -119,7 +119,7 @@ export default function CardCustomerContent() {
   };
   const handleConfirmCreatePayFee = () => {
     const { formConfirm } = getValues();
-    if (formConfirm.prePaidFee === "" || +formConfirm.prePaidFee === 0) {
+    if (formConfirm.prePaidFee === "") {
       enqueueSnackbar("Số phí bắt buộc", { variant: "warning" });
       return;
     }
