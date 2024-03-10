@@ -40,7 +40,7 @@ export default function ImageUpload(props: ImageUploadProps) {
           onChange={loadFile}
           style={{ display: "none" }}
         />
-        <Typography variant="subtitle2">Ảnh dẫn chứng</Typography>
+        <Typography variant="subtitle2">Ảnh chứng từ</Typography>
 
         <img
           src={

@@ -452,10 +452,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
-  console.log("check watch", watch("invoices"));
   const totalfee = watch("invoices").reduce((total, { money }) => {
     const calFee = +money * (+watch("percentageFee") / 100);
-    if (calFee < 1000) {
+    if (calFee % 1000 !== 0) {
       return (total += +money - Math.ceil(calFee / 1000) * 1000);
     }
     return (total += +money - +money * (+watch("percentageFee") / 100));

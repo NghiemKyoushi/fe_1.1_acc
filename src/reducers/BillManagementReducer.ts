@@ -91,6 +91,7 @@ const BillManagementReducers = (
           posCode: "",
           receiptCode: "",
           returnFromBank: action.payload.totalReturnFromBank,
+          estimateReturnFromBank: 0,
         },
       };
     case FETCH_SUM_BILL_FAILURE:

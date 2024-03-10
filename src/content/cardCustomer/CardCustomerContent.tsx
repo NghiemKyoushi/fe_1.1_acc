@@ -158,6 +158,7 @@ export default function CardCustomerContent() {
         customerName: "",
         accountNumber: "",
         name: "",
+        paymentDueDate: "",
         formConfirm: {
           customerCardId: "",
           imageId: "",
@@ -339,10 +340,46 @@ export default function CardCustomerContent() {
         headerAlign: "center",
         align: "center",
         sortable: false,
-        filterable: false,
+        // filterable: false,
         valueGetter: ({ row }) => {
           return row.paymentDueDate;
         },
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <StyleFilterContainer>
+                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("paymentDueDate")}
+                  />
+                </StyleFilterContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 2,
+                  }}
+                >
+                  <Button
+                    onClick={handleSearch}
+                    size="small"
+                    style={{ width: 81 }}
+                  >
+                    xác nhận
+                  </Button>
+                </div>
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
       },
       {
         headerName: "Người cập nhật",
@@ -430,11 +467,13 @@ export default function CardCustomerContent() {
   }, [searchCondition]);
 
   const handleSearch = () => {
-    const { name, customerName } = getValues();
+    const { name, customerName,paymentDueDate } = getValues();
     const bodySend = {
       ...searchCondition,
       name: name,
       customerName: customerName,
+      paymentDueDate: paymentDueDate,
+
     };
     setSearchCondition(bodySend);
     dispatch(fetchListCardCustomer(bodySend));

@@ -119,9 +119,7 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
                   <LabelComponent require={true}>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     type={"text"}
-                    {...register("percentageFee", {
-                      required: "Phần trăm phí là bắt buộc",
-                    })}
+                    {...register("percentageFee")}
                     onChange={(e: any) => {
                       setValue(
                         "percentageFee",
@@ -129,9 +127,6 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
-                    {errors?.percentageFee && errors.percentageFee.message}
-                  </TextHelper>
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>

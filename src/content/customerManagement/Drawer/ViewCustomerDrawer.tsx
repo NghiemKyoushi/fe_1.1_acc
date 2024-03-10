@@ -92,9 +92,6 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
         });
     }
   };
-  const getRowId = (row: any) => {
-    return row.id;
-  };
   return (
     <>
       <DrawerCustom
@@ -137,9 +134,7 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
                   <LabelComponent require={true}>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     type={"text"}
-                    {...register("percentageFee", {
-                      required: "Phần trăm phí là bắt buộc",
-                    })}
+                    {...register("percentageFee")}
                     onChange={(e: any) => {
                       setValue(
                         "percentageFee",
@@ -147,9 +142,9 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
+                  {/* <TextHelper>
                     {errors?.percentageFee && errors.percentageFee.message}
-                  </TextHelper>
+                  </TextHelper> */}
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>

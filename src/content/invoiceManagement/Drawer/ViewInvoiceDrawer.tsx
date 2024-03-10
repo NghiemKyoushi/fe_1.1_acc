@@ -143,6 +143,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   useEffect(() => {
     if (rowInfo) {
       if (rowInfo?.imageId !== "") {
+        setImageId(rowInfo.imageId);
         getPathImage(rowInfo.imageId).then((res) => {
           URL.createObjectURL(res.data);
           setImagePath(URL.createObjectURL(res.data));
@@ -203,7 +204,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         },
         invoices: dataTable,
         invoicesCalculate: invoicesCalculate,
-        imageId: rowInfo?.imageId,
         note: rowInfo?.note,
         usingCardPrePayFee: rowInfo.usingCardPrePayFee,
         acceptExceededFee: rowInfo.acceptExceededFee,
@@ -668,7 +668,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   };
   const totalfee = watch("invoices").reduce((total, { money }) => {
     const calFee = +money * (+watch("percentageFee") / 100);
-    if (calFee < 1000) {
+    if (calFee % 1000 !== 0) {
       return (total += +money - Math.ceil(calFee / 1000) * 1000);
     }
     return (total += +money - +money * (+watch("percentageFee") / 100));
@@ -799,7 +799,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                     props={{
                       name: "customerName",
                       placeHoder: "",
-                      results: rowInfo?.code === null ? listOfCustomer: [],
+                      results: rowInfo?.code === null ? listOfCustomer : [],
                       label: "",
                       type: "text",
                       setValue: setValue,
@@ -816,7 +816,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                     props={{
                       name: "cardCustomer",
                       placeHoder: "",
-                      results:  rowInfo?.code === null ? cardType: [],
+                      results: rowInfo?.code === null ? cardType : [],
                       label: "",
                       type: "text",
                       setValue: setValue,
@@ -841,7 +841,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
                   {infoCard && infoCard.accountNumber}{" "}
                   {infoCard.prePaidFee > 0 &&
-                    `- Phí đã ứng: ${getValueWithComma(infoCard.prePaidFee)} VND`}
+                    `- Phí đã ứng: ${getValueWithComma(
+                      infoCard.prePaidFee
+                    )} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

@@ -119,11 +119,15 @@ export const BillManagementContent = () => {
   };
   const handleGetListOfSelect = (value: Array<string | number>) => {
     let totalTrading = 0;
+    let totalEstimateReturnFromBank = 0;
+    let totalReturnFromBank = 0;
     if (value.length > 0) {
       rowData.map((row) => {
         value.map((select) => {
           if (row.id === select) {
             totalTrading += row.moneyAmount;
+            totalEstimateReturnFromBank += row.estimateReturnFromBank;
+            totalReturnFromBank += row.returnedFromBank;
           }
         });
       });
@@ -133,6 +137,10 @@ export const BillManagementContent = () => {
         return {
           ...row,
           moneyAmount: value.length > 0 ? totalTrading : sumOfBills.moneyAmount,
+          estimateReturnFromBank:
+            value.length > 0 ? totalEstimateReturnFromBank : 0,
+          returnFromBank:
+            value.length > 0 ? totalTrading : sumOfBills.moneyAmount,
         };
       }
       return row;
@@ -231,7 +239,6 @@ export const BillManagementContent = () => {
     dispatch(fetchSumBills(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
-  const getDataCustomerFromApi = (value: string) => {};
 
   const columns: GridColDef<ColBillInfo>[] = useMemo(
     () => [
@@ -392,10 +399,16 @@ export const BillManagementContent = () => {
         sortable: false,
         filterable: false,
         valueGetter: (params: GridValueGetterParams) => {
-          if (params.row.createdBy === "TOTAL") {
+          // if (params.row.createdBy === "TOTAL") {
+          //   return "";
+          // }
+          return getValueWithComma(+params.value);
+        },
+        cellClassName: (params: GridCellParams) => {
+          if (params.row.createdBy !== "TOTAL") {
             return "";
           }
-          return getValueWithComma(+params.value);
+          return "super-app-theme--cell";
         },
       },
       {
@@ -527,7 +540,11 @@ export const BillManagementContent = () => {
           Xác nhận khớp bill
         </Button>
       </Box>
-      <FilterBill handleSearchGeneral={handleSearch} handleCloseDrawer={handleCloseModal} isOpen={isOpenModal} />
+      <FilterBill
+        handleSearchGeneral={handleSearch}
+        handleCloseDrawer={handleCloseModal}
+        isOpen={isOpenModal}
+      />
       <SearchDrawer
         handleCloseDrawer={handleCloseSearchDrawer}
         isOpen={isOpenSearchDrawer}

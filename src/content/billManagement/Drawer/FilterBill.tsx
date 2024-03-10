@@ -155,6 +155,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       let estimateBill = 0;
       listOfFilterBills.map((item: ColFilterBill) => {
         countSum = countSum + item.moneyAmount;
+        estimateBill = estimateBill+ item.estimateReturnFromBank;
       });
       const sumBill: ColFilterBill = {
         createdBy: "",
@@ -169,6 +170,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         fee: 0,
         returnedProfit: 0,
         returnedTime: "0",
+        estimateReturnFromBank: estimateBill,
       };
       setSumBill(sumBill);
       setListOfBills([sumBill, ...listOfFilterBills]);
@@ -183,11 +185,13 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   };
   const handleGetListOfSelect = (value: Array<string | number>) => {
     let totalTrading = 0;
+    let totalEstimateReturnFromBank = 0;
     if (value.length > 0) {
       listOfBills.map((row) => {
         value.map((select) => {
           if (row.id === select) {
             totalTrading += row.moneyAmount;
+            totalEstimateReturnFromBank += row.estimateReturnFromBank;
           }
         });
       });
@@ -356,7 +360,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         },
       },
       {
-        headerName: "Tổng giao dịch ",
+        headerName: "Tổng giao dịch",
         field: "moneyAmount",
         width: 145,
         headerAlign: "center",
@@ -370,6 +374,23 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         },
         valueGetter: (params: GridValueGetterParams) => {
           return getValueWithComma(params.value);
+        },
+      },
+      {
+        headerName: "Dự tính tiền ngân hàng",
+        field: "estimateReturnFromBank",
+        width: 180,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        cellClassName: (params: GridCellParams) => {
+          if (params.row.code !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
+        },
+        valueGetter: (params: GridValueGetterParams) => {
+          return getValueWithComma(+params.value);
         },
       },
       {
