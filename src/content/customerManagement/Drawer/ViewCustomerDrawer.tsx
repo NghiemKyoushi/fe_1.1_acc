@@ -88,7 +88,13 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
           reset();
         })
         .catch(function (error) {
-          enqueueSnackbar("Cập nhật thất bại", { variant: "error" });
+          if (error.response.data.errors?.length > 0) {
+            enqueueSnackbar(error.response.data.errors[0], {
+              variant: "error",
+            });
+          } else {
+            enqueueSnackbar("Cập nhật thất bại", { variant: "error" });
+          }
         });
     }
   };

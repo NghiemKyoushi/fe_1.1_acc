@@ -71,7 +71,7 @@ export interface ColFilterBill {
   returnedProfit: number;
   returnedTime: string;
   pos?: PosType;
-  estimateReturnFromBank: number;
+  estimatedReturnFromBank: number;
 }
 export interface PosType {
   id: string;

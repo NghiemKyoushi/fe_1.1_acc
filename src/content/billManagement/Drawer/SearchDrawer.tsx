@@ -5,6 +5,7 @@ import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { RootState } from "@/reducers/rootReducer";
 import {
+  Controller,
   FieldValues,
   UseFormRegister,
   UseFormSetValue,
@@ -12,7 +13,7 @@ import {
 } from "react-hook-form";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { Button } from "@mui/material";
+import { Button, Checkbox, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { fetchInvoice, fetchPos } from "@/actions/InvoiceManagementActions";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
@@ -121,6 +122,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toFee: 0,
       fromEstimatedProfit: 0,
       toEstimatedProfit: 0,
+      isBillNotMoney: false,
     },
   });
   const getDataCustomerFromApi = (value: string) => {
@@ -153,6 +155,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromEstimatedProfit,
       toEstimatedProfit,
       posCode,
+      isBillNotMoney,
     } = getValues();
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
@@ -170,6 +173,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toMoneyAmount: toMoneyAmount === 0 ? "" : toMoneyAmount,
       fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
       toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
+      isBillNotMoney: isBillNotMoney,
     };
     handleChangeSearch(bodySend);
     dispatch(fetchBills(bodySend));
@@ -185,7 +189,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       <form onKeyPress={handleKeyPress} onSubmit={handleSubmit(handleSearch)}>
         <PageContent>
           <StyleInputContainer style={{ width: "100%" }}>
-            <LabelComponent require={true}>Thời gian</LabelComponent>
+            <LabelComponent>Thời gian</LabelComponent>
             <DateRangePicker
               watch={watch}
               setvalue={setValue}
@@ -194,7 +198,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             />
           </StyleInputContainer>
           <StyleInputContainer style={{ maxWidth: 273 }}>
-            <LabelComponent require={true}>Mã bill</LabelComponent>
+            <LabelComponent>Mã bill</LabelComponent>
             <TextFieldCustom
               type={"text"}
               {...register("code")}
@@ -202,7 +206,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             />
           </StyleInputContainer>
           <StyleInputContainer>
-            <LabelComponent require={true}>Pos</LabelComponent>
+            <LabelComponent>Pos</LabelComponent>
             <SelectSearchComponent
               control={control}
               props={{
@@ -218,8 +222,20 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               }}
             />
           </StyleInputContainer>
+          <StyleCheckBoxTex>
+            <Controller
+              name="isBillNotMoney"
+              control={control}
+              render={({ field }) => (
+                <Checkbox checked={watch("isBillNotMoney")} {...field} />
+              )}
+            />
+            <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
+              Bill chưa có tiền về
+            </Typography>
+          </StyleCheckBoxTex>
           <StyleInputContainer>
-            <LabelComponent require={true}>Tổng giao dịch</LabelComponent>
+            <LabelComponent>Tổng giao dịch</LabelComponent>
             <RangeNumberFilter
               setvalue={setValue}
               handleSearch={handleSearch}
@@ -229,7 +245,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             />
           </StyleInputContainer>
           <StyleInputContainer>
-            <LabelComponent require={true}>Ước tính</LabelComponent>
+            <LabelComponent>Ước tính</LabelComponent>
             <RangeNumberFilter
               setvalue={setValue}
               handleSearch={handleSearch}
@@ -281,4 +297,9 @@ const StyleTitleSearch = styled.p`
   font-size: 12px;
   font-weight: 400px;
   margin: 0.5px;
+`;
+const StyleCheckBoxTex = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;

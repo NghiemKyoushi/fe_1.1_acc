@@ -21,6 +21,7 @@ import { fetchBills, fetchSumBills } from "@/actions/BillManagementActions";
 import { handleKeyPress } from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import { fetchListCardCustomer } from "@/actions/CardCustomerActions";
+import { RangeNumberFilter } from "@/content/invoiceManagement/Drawer/SearchDrawer";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -75,6 +76,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
+      fromPaymentDueDate: "",
+      toPaymentDueDate: "",
     },
   });
   const getDataCustomerFromApi = (value: string) => {
@@ -98,11 +101,18 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     }
   }, [listOfPos]);
   const handleSearch = () => {
-    const { accountNumber, customerName } = getValues();
+    const {
+      accountNumber,
+      customerName,
+      fromPaymentDueDate,
+      toPaymentDueDate,
+    } = getValues();
     const bodySend = {
       ...searchCondition,
       accountNumber: accountNumber,
       customerName: customerName.values,
+      fromPaymentDueDate: fromPaymentDueDate,
+      toPaymentDueDate: toPaymentDueDate,
     };
     handleChangeSearch(bodySend);
     dispatch(fetchListCardCustomer(bodySend));
@@ -147,6 +157,16 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                   e.target.value.trim().replaceAll(/[^0-9.]/g, "")
                 );
               }}
+            />
+          </StyleInputContainer>
+          <StyleInputContainer>
+            <LabelComponent>Hạn thanh toán</LabelComponent>
+            <RangeNumberFilter
+              setvalue={setValue}
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromPaymentDueDate"
+              toNumberName="toPaymentDueDate"
             />
           </StyleInputContainer>
 

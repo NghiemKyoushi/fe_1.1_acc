@@ -27,6 +27,8 @@ import { useDispatch } from "react-redux";
 import { InputNumber } from "@/components/common/InputCustom";
 import { fetchPosManagement } from "@/actions/PosManagementActions";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
+import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
+import { fetchBranch } from "@/api/service/invoiceManagement";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -37,6 +39,8 @@ export interface NewPosDrawerProps {
 const ViewPosDrawer = (props: NewPosDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition, rowInfo } = props;
   const [listOfCard, setListOfCard] = useState<ColCardType[]>([]);
+  const [branchList, setBranchList] = useState([]);
+
   const {
     register,
     handleSubmit,
@@ -55,6 +59,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
       bank: "",
       maxBillAmount: "",
       posFeeTable: [],
+      branchIds: [],
     },
   });
   const dispatch = useDispatch();
@@ -72,6 +77,12 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
           });
         }
       );
+      const branchFormat = rowInfo?.branches.map((item: any) => {
+        return {
+          value: item?.name,
+          key: item?.id,
+        };
+      });
       reset({
         code: rowInfo.code,
         name: rowInfo.name,
@@ -81,10 +92,24 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
         maxBillAmount: rowInfo.maxBillAmount,
         posFeeTable: getCard,
         note: rowInfo?.note,
+        branchIds: branchFormat,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
+  useEffect(() => {
+    fetchBranch().then((res) => {
+      if (res.data) {
+        const branch = res.data.map((item: any) => {
+          return {
+            value: item?.name,
+            key: item?.id,
+          };
+        });
+        setBranchList(branch);
+      }
+    });
+  }, []);
   const { fields: posFeeTable } = useFieldArray({
     control,
     name: "posFeeTable",
@@ -137,8 +162,16 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
     [listOfCard]
   );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code, maxBillAmount, note , name} =
-      getValues();
+    const {
+      accountNumber,
+      branchIds,
+      address,
+      bank,
+      code,
+      maxBillAmount,
+      note,
+      name,
+    } = getValues();
     let formatList: ColCardType[] = [];
     watch("posFeeTable").map((item) => {
       formatList.push({
@@ -146,6 +179,12 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
         posCardFee: item.posCardFee ? item.posCardFee : 0,
       });
     });
+    let arrBranchId: any[] = [];
+    if (branchIds) {
+      arrBranchId = branchIds.map((item) => {
+        return item.key;
+      });
+    }
     const request: PosParamBodySend = {
       code: code,
       name: name,
@@ -156,6 +195,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
       posStatus: "AVAILABLE",
       maxBillAmount: maxBillAmount,
       note: note,
+      branchIds: arrBranchId ? arrBranchId : [],
     };
     fetchUpdatePos(rowInfo.id, request)
       .then((res) => {
@@ -181,6 +221,8 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
       event.preventDefault();
     }
   };
+  const getValueBranch = (value: string) => {};
+
   return (
     <>
       <DrawerCustom
@@ -234,9 +276,25 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                     {errors?.accountNumber && errors.accountNumber.message}
                   </TextHelper>
                 </StyleInputContainer>
+                <StyleInputContainer>
+                  <LabelComponent require={true}>Chi nhánh</LabelComponent>
+                  <AutoCompleteMultiple
+                    control={control}
+                    props={{
+                      name: "branchIds",
+                      placeHoder: "",
+                      results: branchList,
+                      label: "",
+                      type: "text",
+                      setValue: setValue,
+                      labelWidth: "114",
+                      getData: getValueBranch,
+                    }}
+                  />
+                </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>
-              <StyleInputContainer>
+                <StyleInputContainer>
                   <LabelComponent require={true}>Tên Pos</LabelComponent>
                   <TextFieldCustom
                     type={"text"}

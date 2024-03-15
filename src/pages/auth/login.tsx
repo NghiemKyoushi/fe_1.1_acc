@@ -32,7 +32,6 @@ export default function SignIn() {
   // const roles = useSelector((state: RootState) => state.auth.roles);
   // const branchName = useSelector((state: RootState) => state.auth.branchName);
   // const branch = useSelector((state: RootState) => state.auth.branch);
-  // console.log("selector", token);
   const tokenCookie = Cookies.get("token");
   const {
     register,

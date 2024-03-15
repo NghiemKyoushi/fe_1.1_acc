@@ -28,6 +28,7 @@ import { fetchPosManagement } from "@/actions/PosManagementActions";
 import { fetchBranch } from "@/api/service/invoiceManagement";
 import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
+import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -37,9 +38,10 @@ export interface NewPosDrawerProps {
 const NewPosDrawer = (props: NewPosDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition } = props;
   const [listOfCard, setListOfCard] = useState<ColCardType[]>([]);
-  const [branchList, setBranchList] = useState<branchType[]>([]);
+  const [branchList, setBranchList] = useState([]);
   const role = cookieSetting.get("roles");
   const branchId = cookieSetting.get("branchId");
+
   const {
     register,
     handleSubmit,
@@ -58,10 +60,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       bank: "",
       maxBillAmount: "",
       posFeeTable: [],
-      branchIds: {
-        key: "",
-        values: "",
-      },
+      branchIds: [],
       note: "",
     },
   });
@@ -86,7 +85,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       if (res.data) {
         const branch = res.data.map((item: any) => {
           return {
-            values: item?.name,
+            value: item?.name,
             key: item?.id,
           };
         });
@@ -95,24 +94,24 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useMemo(() => {
-    if (role !== ROLE.ADMIN) {
-      branchList.map((item) => {
-        if (item?.key === branchId) {
-          setValue("branchIds", {
-            key: item.key,
-            values: item?.values,
-          });
-        }
-      });
-    } else {
-      setValue("branchIds", {
-        key: branchList[0]?.key,
-        values: branchList[0]?.values,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, branchList]);
+  // useMemo(() => {
+  //   if (role !== ROLE.ADMIN) {
+  //     branchList.map((item) => {
+  //       if (item?.key === branchId) {
+  //         setValue("branchIds", {
+  //           key: item.key,
+  //           values: item?.values,
+  //         });
+  //       }
+  //     });
+  //   } else {
+  //     setValue("branchIds", {
+  //       key: branchList[0]?.key,
+  //       values: branchList[0]?.values,
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [role, branchList]);
   const { fields: posFeeTable } = useFieldArray({
     control,
     name: "posFeeTable",
@@ -150,8 +149,16 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
     [listOfCard]
   );
   const handleCreate = () => {
-    const { accountNumber, address, bank, code, maxBillAmount, note, name } =
-      getValues();
+    const {
+      accountNumber,
+      address,
+      bank,
+      code,
+      maxBillAmount,
+      note,
+      name,
+      branchIds,
+    } = getValues();
     let formatList: ColCardType[] = [];
     watch("posFeeTable").map((item) => {
       formatList.push({
@@ -159,6 +166,13 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         posCardFee: item.posCardFee,
       });
     });
+    let arrBranchId: any[] = [];
+
+    if (branchIds) {
+      arrBranchId = branchIds.map((item) => {
+        return item.key;
+      });
+    }
     const request: PosParamBodySend = {
       code: code,
       name: name,
@@ -169,6 +183,8 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       posStatus: "AVAILABLE",
       maxBillAmount: maxBillAmount.replaceAll(",", ""),
       note: note,
+      branchIds: arrBranchId ? arrBranchId : [],
+
     };
     fetchCreatePos(request)
       .then((res) => {
@@ -210,7 +226,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       event.preventDefault();
     }
   };
-  const getDataCustomerFromApi = (value: string) => {};
+  const getValueBranch = (value: string) => {};
   return (
     <>
       <DrawerCustom
@@ -266,6 +282,23 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
                   <TextHelper>
                     {errors?.accountNumber && errors.accountNumber.message}
                   </TextHelper>
+                </StyleInputContainer>
+
+                <StyleInputContainer>
+                  <LabelComponent require={true}>Chi nhánh</LabelComponent>
+                  <AutoCompleteMultiple
+                    control={control}
+                    props={{
+                      name: "branchIds",
+                      placeHoder: "",
+                      results: branchList,
+                      label: "",
+                      type: "text",
+                      setValue: setValue,
+                      labelWidth: "114",
+                      getData: getValueBranch,
+                    }}
+                  />
                 </StyleInputContainer>
               </StyleContainer>
               <StyleContainer>

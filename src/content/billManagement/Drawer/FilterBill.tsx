@@ -82,7 +82,6 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
     result = [];
   }
   const dispatch = useDispatch();
-
   const [searchCondition, setSearchCondition] = useState(initialPosSearch);
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
@@ -155,7 +154,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       let estimateBill = 0;
       listOfFilterBills.map((item: ColFilterBill) => {
         countSum = countSum + item.moneyAmount;
-        estimateBill = estimateBill+ item.estimateReturnFromBank;
+        estimateBill = estimateBill + item.estimatedReturnFromBank;
       });
       const sumBill: ColFilterBill = {
         createdBy: "",
@@ -170,7 +169,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         fee: 0,
         returnedProfit: 0,
         returnedTime: "0",
-        estimateReturnFromBank: estimateBill,
+        estimatedReturnFromBank: estimateBill,
       };
       setSumBill(sumBill);
       setListOfBills([sumBill, ...listOfFilterBills]);
@@ -191,7 +190,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
         value.map((select) => {
           if (row.id === select) {
             totalTrading += row.moneyAmount;
-            totalEstimateReturnFromBank += row.estimateReturnFromBank;
+            totalEstimateReturnFromBank += row.estimatedReturnFromBank;
           }
         });
       });
@@ -205,6 +204,12 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
               ? totalTrading
               : sumBill?.moneyAmount
               ? sumBill?.moneyAmount
+              : 0,
+          estimatedReturnFromBank:
+            value.length > 0
+              ? totalEstimateReturnFromBank
+              : sumBill?.estimatedReturnFromBank
+              ? sumBill?.estimatedReturnFromBank
               : 0,
         };
       }
@@ -356,7 +361,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           //     return row.moneyAmount;
           //   }
           //   return row.entryCode;
-          return row.posCode;
+          return row.pos?.code;
         },
       },
       {
@@ -378,7 +383,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
       },
       {
         headerName: "Dự tính tiền ngân hàng",
-        field: "estimateReturnFromBank",
+        field: "estimatedReturnFromBank",
         width: 180,
         headerAlign: "center",
         align: "center",
@@ -404,7 +409,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
           if (params.row.code === "TOTAL") {
             return "";
           }
-          return params.row.fee;
+          return getValueWithComma(params.row.fee);
         },
       },
       // {
@@ -437,7 +442,7 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
   );
   return (
     <DrawerCustom
-      widthDrawer={750}
+      widthDrawer={850}
       isOpen={isOpen}
       title="Tạo bút toán"
       handleClose={handleCloseDrawer}

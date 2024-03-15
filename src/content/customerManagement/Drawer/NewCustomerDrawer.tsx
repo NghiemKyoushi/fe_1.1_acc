@@ -71,7 +71,11 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
         reset();
       })
       .catch(function (error) {
-        enqueueSnackbar("Tạo khách hàng thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo khách hàng thất bại", { variant: "error" });
+        }
       });
   };
   const getRowId = (row: any) => {

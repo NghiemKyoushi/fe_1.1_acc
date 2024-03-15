@@ -124,7 +124,11 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         handleSearch();
       })
       .catch(function (error) {
-        enqueueSnackbar("Cập nhật nhân viên thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Cập nhật nhân viên thất bại", { variant: "error" });
+        }
       });
   };
   const getDataCustomerFromApi = (value: string) => {};

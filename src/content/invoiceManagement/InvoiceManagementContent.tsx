@@ -247,9 +247,15 @@ export default function InvoiceManagementContent() {
     conrimRepayInvoice(bodySend)
       .then((res) => {
         enqueueSnackbar("Hoàn trả thành công", { variant: "success" });
+        handleCloseRepay();
+        handleSearch();
       })
-      .catch(function (error) {
-        enqueueSnackbar("Hoàn trả thất bại", { variant: "error" });
+      .catch(function (error: any) {
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Hoàn trả thất bại", { variant: "error" });
+        }
       });
   };
   const handleGetFile = (file: any) => {
@@ -363,386 +369,382 @@ export default function InvoiceManagementContent() {
   const handleChangeSearch = (value: any) => {
     setSearchCondition(value);
   };
-  const columns: GridColDef<ColReceiptList>[] = useMemo(
-    () => [
-      {
-        headerName: "Ngày Tạo",
-        field: "createdDate",
-        headerAlign: "center",
-        width: 147,
-        valueGetter: ({ row }) => {
-          if (row.code === "TOTAL") {
-            return "";
-          }
-          return formatDateTime(row.createdDate);
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <Box width={203} sx={{ padding: "12px 0px" }}>
-                <DateRangePicker
-                  setvalue={setValue}
-                  fromdatename={"fromCreatedDate"}
-                  todatename={"toCreatedDate"}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    marginTop: 2,
-                  }}
+  const columns: GridColDef<ColReceiptList>[] = [
+    {
+      headerName: "Ngày Tạo",
+      field: "createdDate",
+      headerAlign: "center",
+      width: 147,
+      valueGetter: ({ row }) => {
+        if (row.code === "TOTAL") {
+          return "";
+        }
+        return formatDateTime(row.createdDate);
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <Box width={203} sx={{ padding: "12px 0px" }}>
+              <DateRangePicker
+                setvalue={setValue}
+                fromdatename={"fromCreatedDate"}
+                todatename={"toCreatedDate"}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  onClick={handleSearch}
+                  size="small"
+                  style={{ width: 81 }}
                 >
-                  <Button
-                    onClick={handleSearch}
-                    size="small"
-                    style={{ width: 81 }}
-                  >
-                    xác nhận
-                  </Button>
-                </div>
-              </Box>
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
+                  xác nhận
+                </Button>
+              </div>
+            </Box>
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Mã Hóa Đơn",
+      field: "code",
+      width: 140,
+      headerAlign: "center",
+      align: "center",
+      valueGetter: ({ row }) => {
+        if (row.code === "TOTAL") {
+          return "";
+        }
+        return row.code;
       },
-      {
-        headerName: "Mã Hóa Đơn",
-        field: "code",
-        width: 140,
-        headerAlign: "center",
-        align: "center",
-        valueGetter: ({ row }) => {
-          if (row.code === "TOTAL") {
-            return "";
-          }
-          return row.code;
-        },
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <>
-                <StyleFilterContainer>
-                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
-                  <TextFieldCustom
-                    type={"text"}
-                    variantshow="standard"
-                    textholder="Lọc giá trị"
-                    focus={"true"}
-                    {...register("receiptCode", { required: true })}
-                  />
-                </StyleFilterContainer>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    marginTop: 2,
-                  }}
-                >
-                  <Button
-                    onClick={handleSearch}
-                    size="small"
-                    style={{ width: 81 }}
-                  >
-                    xác nhận
-                  </Button>
-                </div>
-              </>
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
       },
-      {
-        headerName: "Tổng giao dịch",
-        field: "transactionTotal",
-        width: 140,
-        headerAlign: "center",
-        align: "center",
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromTransactionTotal"
-                toNumberName="toTransactionTotal"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Thu",
-        field: "intake",
-        width: 140,
-        headerAlign: "center",
-        align: "center",
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromIntake"
-                toNumberName="toIntake"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Chi",
-        field: "payout",
-        width: 140,
-        headerAlign: "center",
-        align: "center",
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromPayout"
-                toNumberName="toPayout"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Công nợ",
-        field: "loan",
-        width: 140,
-        headerAlign: "center",
-        align: "center",
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromLoan"
-                toNumberName="toLoan"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Thu nợ",
-        field: "repayment",
-        width: 140,
-        headerAlign: "center",
-        align: "center",
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromRepayment"
-                toNumberName="torePayment"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Lợi nhuận ước tính",
-        field: "estimatedProfit",
-        headerAlign: "center",
-        align: "center",
-        width: 140,
-        hide: true,
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromEstimatedProfit"
-                toNumberName="toEstimatedProfit"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Lợi nhuận thực tế",
-        field: "calculatedProfit",
-        headerAlign: "center",
-        align: "center",
-        width: 140,
-        valueGetter: (params: GridValueGetterParams) => {
-          return getValueWithComma(params.value);
-        },
-        cellClassName: (params: GridCellParams<ColReceiptList>) => {
-          if (params.row.code !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        filterOperators: Operators({
-          inputComponent: () => {
-            return (
-              <RangeNumberFilter
-                handleSearch={handleSearch}
-                register={register}
-                fromNumberName="fromCalculatedProfit"
-                toNumberName="toCalculatedProfit"
-              />
-            );
-          },
-          value: "input",
-          label: "input",
-        }),
-      },
-      {
-        headerName: "Thao Tác",
-        field: "actions",
-        headerClassName: "super-app-theme--header",
-        headerAlign: "center",
-        align: "center",
-        sortable: false,
-        filterable: false,
-        width: 197,
-        renderCell: ({ row }) => {
+      filterOperators: Operators({
+        inputComponent: () => {
           return (
             <>
-              {row.code !== "TOTAL" && row.note !== null && row.note !== "" ? (
-                <Tooltip title={row.note} placement="top">
-                  <IconButton color="error">
-                    <EditNoteIcon sx={{ fontSize: 20 }} />
-                  </IconButton>
-                </Tooltip>
-              ) : null}
-              {row.code === null && role !== ROLE.EMPLOYEE ? (
-                <IconButton
-                  color="success"
-                  onClick={() => handleOpenApproveDialog(row.id)}
+              <StyleFilterContainer>
+                <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                <TextFieldCustom
+                  type={"text"}
+                  variantshow="standard"
+                  textholder="Lọc giá trị"
+                  focus={"true"}
+                  {...register("receiptCode", { required: true })}
+                />
+              </StyleFilterContainer>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  onClick={handleSearch}
+                  size="small"
+                  style={{ width: 81 }}
                 >
-                  <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
-                </IconButton>
-              ) : (
-                <div></div>
-              )}
-
-              {row.code !== "TOTAL" ? (
-                <IconButton
-                  color="info"
-                  onClick={() => handleOpenViewDrawer(row.id)}
-                >
-                  <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
-                </IconButton>
-              ) : (
-                <div></div>
-              )}
-              {+row.loan > +row.repayment &&
-              row.code !== "TOTAL" &&
-              row.code !== null &&
-              row.receiptStatusEnum === "COMPLETED" ? (
-                <IconButton
-                  color="info"
-                  onClick={() => handleOpenRepay(row.id)}
-                >
-                  <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
-                </IconButton>
-              ) : (
-                <div></div>
-              )}
-
-              {row.code === null && (
-                <IconButton
-                  color="error"
-                  onClick={() => handleOpenDeleteForm(row.id)}
-                >
-                  <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-                </IconButton>
-              )}
+                  xác nhận
+                </Button>
+              </div>
             </>
           );
         },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Tổng giao dịch",
+      field: "transactionTotal",
+      width: 140,
+      headerAlign: "center",
+      align: "center",
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
       },
-    ],
-    []
-  );
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromTransactionTotal"
+              toNumberName="toTransactionTotal"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Thu",
+      field: "intake",
+      width: 140,
+      headerAlign: "center",
+      align: "center",
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromIntake"
+              toNumberName="toIntake"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Chi",
+      field: "payout",
+      width: 140,
+      headerAlign: "center",
+      align: "center",
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromPayout"
+              toNumberName="toPayout"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Công nợ",
+      field: "loan",
+      width: 140,
+      headerAlign: "center",
+      align: "center",
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromLoan"
+              toNumberName="toLoan"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Thu nợ",
+      field: "repayment",
+      width: 140,
+      headerAlign: "center",
+      align: "center",
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromRepayment"
+              toNumberName="torePayment"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Lợi nhuận ước tính",
+      field: "estimatedProfit",
+      headerAlign: "center",
+      align: "center",
+      width: 140,
+      hide: true,
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromEstimatedProfit"
+              toNumberName="toEstimatedProfit"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Lợi nhuận thực tế",
+      field: "calculatedProfit",
+      headerAlign: "center",
+      align: "center",
+      width: 140,
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <RangeNumberFilter
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName="fromCalculatedProfit"
+              toNumberName="toCalculatedProfit"
+            />
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
+    },
+    {
+      headerName: "Thao Tác",
+      field: "actions",
+      headerClassName: "super-app-theme--header",
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      filterable: false,
+      width: 197,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            {row.code !== "TOTAL" && row.note !== null && row.note !== "" ? (
+              <Tooltip title={row.note} placement="top">
+                <IconButton color="error">
+                  <EditNoteIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Tooltip>
+            ) : null}
+            {row.code === null && role !== ROLE.EMPLOYEE ? (
+              <IconButton
+                color="success"
+                onClick={() => handleOpenApproveDialog(row.id)}
+              >
+                <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            ) : (
+              <div></div>
+            )}
+
+            {row.code !== "TOTAL" ? (
+              <IconButton
+                color="info"
+                onClick={() => handleOpenViewDrawer(row.id)}
+              >
+                <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            ) : (
+              <div></div>
+            )}
+            {+row.loan > +row.repayment &&
+            row.code !== "TOTAL" &&
+            // row.code !== null &&
+            row.receiptStatusEnum === "COMPLETED" ? (
+              <IconButton color="info" onClick={() => handleOpenRepay(row.id)}>
+                <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            ) : (
+              <div></div>
+            )}
+
+            {row.code === null && (
+              <IconButton
+                color="error"
+                onClick={() => handleOpenDeleteForm(row.id)}
+              >
+                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            )}
+          </>
+        );
+      },
+    },
+  ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   const onPageChange = (pageNumber: number) => {
     const searchPage = {
       ...searchCondition,
@@ -772,15 +774,21 @@ export default function InvoiceManagementContent() {
   const getRowId = (row: any) => {
     return row.id;
   };
-  const dynamicColumns = columns.filter((item) => {
-    if (
-      (item.field === "calculatedProfit" || item.field === "estimatedProfit") &&
-      role !== ROLE.ADMIN
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const dynamicColumns = useMemo(
+    () =>
+      columns.filter((item) => {
+        if (
+          (item.field === "calculatedProfit" ||
+            item.field === "estimatedProfit") &&
+          role !== ROLE.ADMIN
+        ) {
+          return false;
+        }
+        return true;
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [listOfInvoice, sumInvoiceRow]
+  );
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ HÓA ĐƠN</h3>

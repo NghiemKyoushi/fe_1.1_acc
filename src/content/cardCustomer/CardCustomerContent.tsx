@@ -158,7 +158,8 @@ export default function CardCustomerContent() {
         customerName: "",
         accountNumber: "",
         name: "",
-        paymentDueDate: "",
+        fromPaymentDueDate: "",
+        toPaymentDueDate: "",
         formConfirm: {
           customerCardId: "",
           imageId: "",
@@ -348,32 +349,12 @@ export default function CardCustomerContent() {
           inputComponent: () => {
             return (
               <>
-                <StyleFilterContainer>
-                  <StyleTitleSearch>Giá trị</StyleTitleSearch>
-                  <TextFieldCustom
-                    type={"text"}
-                    variantshow="standard"
-                    textholder="Lọc giá trị"
-                    focus={"true"}
-                    {...register("paymentDueDate")}
-                  />
-                </StyleFilterContainer>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    marginTop: 2,
-                  }}
-                >
-                  <Button
-                    onClick={handleSearch}
-                    size="small"
-                    style={{ width: 81 }}
-                  >
-                    xác nhận
-                  </Button>
-                </div>
+                <RangeNumberFilter
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName="fromPaymentDueDate"
+                  toNumberName="toPaymentDueDate"
+                />
               </>
             );
           },
@@ -467,13 +448,14 @@ export default function CardCustomerContent() {
   }, [searchCondition]);
 
   const handleSearch = () => {
-    const { name, customerName,paymentDueDate } = getValues();
+    const { name, customerName, fromPaymentDueDate, toPaymentDueDate } =
+      getValues();
     const bodySend = {
       ...searchCondition,
       name: name,
       customerName: customerName,
-      paymentDueDate: paymentDueDate,
-
+      fromPaymentDueDate: fromPaymentDueDate,
+      toPaymentDueDate: toPaymentDueDate,
     };
     setSearchCondition(bodySend);
     dispatch(fetchListCardCustomer(bodySend));

@@ -146,7 +146,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     },
   });
   const handleGetCard = (value: string) => {};
-  console.log("wattttt", watch("cardCustomer.key"));
 
   const handleSearch = () => {
     const {
