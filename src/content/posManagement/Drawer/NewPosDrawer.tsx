@@ -29,6 +29,7 @@ import { fetchBranch } from "@/api/service/invoiceManagement";
 import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
+import SelectSearchComponent from "@/components/common/AutoComplete";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -60,7 +61,10 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       bank: "",
       maxBillAmount: "",
       posFeeTable: [],
-      branchIds: [],
+      branchIds: {
+        key: "",
+        values: "",
+      },
       note: "",
     },
   });
@@ -85,7 +89,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       if (res.data) {
         const branch = res.data.map((item: any) => {
           return {
-            value: item?.name,
+            values: item?.name,
             key: item?.id,
           };
         });
@@ -166,13 +170,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         posCardFee: item.posCardFee,
       });
     });
-    let arrBranchId: any[] = [];
 
-    if (branchIds) {
-      arrBranchId = branchIds.map((item) => {
-        return item.key;
-      });
-    }
     const request: PosParamBodySend = {
       code: code,
       name: name,
@@ -183,8 +181,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       posStatus: "AVAILABLE",
       maxBillAmount: maxBillAmount.replaceAll(",", ""),
       note: note,
-      branchIds: arrBranchId ? arrBranchId : [],
-
+      branchId: watch("branchIds")?.key,
     };
     fetchCreatePos(request)
       .then((res) => {
@@ -286,7 +283,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
 
                 <StyleInputContainer>
                   <LabelComponent require={true}>Chi nhánh</LabelComponent>
-                  <AutoCompleteMultiple
+                  <SelectSearchComponent
                     control={control}
                     props={{
                       name: "branchIds",

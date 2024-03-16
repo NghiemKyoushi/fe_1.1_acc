@@ -122,7 +122,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toFee: 0,
       fromEstimatedProfit: 0,
       toEstimatedProfit: 0,
-      isBillNotMoney: false,
+      onlyConfirmedBillsWithoutReturnFromBank: false,
     },
   });
   const getDataCustomerFromApi = (value: string) => {
@@ -155,7 +155,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromEstimatedProfit,
       toEstimatedProfit,
       posCode,
-      isBillNotMoney,
+      onlyConfirmedBillsWithoutReturnFromBank,
     } = getValues();
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
@@ -173,7 +173,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toMoneyAmount: toMoneyAmount === 0 ? "" : toMoneyAmount,
       fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
       toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
-      isBillNotMoney: isBillNotMoney,
+      onlyConfirmedBillsWithoutReturnFromBank: onlyConfirmedBillsWithoutReturnFromBank,
     };
     handleChangeSearch(bodySend);
     dispatch(fetchBills(bodySend));
@@ -224,14 +224,14 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           </StyleInputContainer>
           <StyleCheckBoxTex>
             <Controller
-              name="isBillNotMoney"
+              name="onlyConfirmedBillsWithoutReturnFromBank"
               control={control}
               render={({ field }) => (
-                <Checkbox checked={watch("isBillNotMoney")} {...field} />
+                <Checkbox checked={watch("onlyConfirmedBillsWithoutReturnFromBank")} {...field} />
               )}
             />
             <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
-              Bill chưa có tiền về
+              Bill đã xác nhận nhưng chưa có tiền về
             </Typography>
           </StyleCheckBoxTex>
           <StyleInputContainer>

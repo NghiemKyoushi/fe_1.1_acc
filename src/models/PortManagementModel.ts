@@ -33,7 +33,7 @@ export interface PosParamBodySend {
   maxBillAmount?: string;
   supportedCardTypes: Array<ColCardType>;
   note: string;
-  branchIds: Array<any>;
+  branchId?: string;
 }
 export interface SupportedCardTypesParam {
   id: string;
@@ -61,7 +61,7 @@ export interface FormParams {
   bank: string;
   maxBillAmount: string;
   posFeeTable: Array<ColCardType>;
-  branchIds?:  Array<any>;
+  branchIds?: branchType;
   note: string;
 }
 export interface branchType {
