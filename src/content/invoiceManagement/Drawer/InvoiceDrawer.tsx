@@ -100,13 +100,14 @@ export interface InputPosProps<T extends FieldValues> {
   setValue: UseFormSetValue<any>;
   watch: UseFormWatch<any>;
   control: Control<T>;
+  branchId?: string;
 }
 export const InputSearchPos = <T extends FieldValues>(
   props: InputPosProps<T>
 ) => {
   const dispatch = useDispatch();
 
-  const { name, setValue, watch, control } = props;
+  const { name, setValue, watch, control, branchId } = props;
   const listOfPos = useSelector(
     (state: RootState) => state.invoiceManagement.posList
   );
@@ -122,7 +123,7 @@ export const InputSearchPos = <T extends FieldValues>(
     result = [];
   }
   const getDataFromApi = (value: string) => {
-    dispatch(fetchPos({ posName: value }));
+    dispatch(fetchPos({ posName: value, branchId: branchId }));
   };
   return (
     <div>
@@ -487,6 +488,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             return (
               <>
                 <InputSearchPos
+                  branchId={watch("branchIds").key}
                   control={control}
                   name={`invoices[${index}].posId`}
                   watch={watch}
@@ -944,7 +946,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   {infoCard && infoCard.cardType} - {infoCard && infoCard.bank}-{" "}
                   {infoCard && infoCard.accountNumber}{" "}
                   {infoCard.prePaidFee > 0 &&
-                    `- Phí đã ứng:${getValueWithComma(infoCard.prePaidFee)} VND`}
+                    `- Phí đã ứng:${getValueWithComma(
+                      infoCard.prePaidFee
+                    )} VND`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

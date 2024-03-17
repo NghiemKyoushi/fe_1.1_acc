@@ -36,4 +36,5 @@ export interface fetchInvoiceInfoPrams {
 }
 export interface fetchPosParams {
   posName: string;
+  branchId?: string;
 }

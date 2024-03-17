@@ -131,7 +131,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     }
   };
   const getPosFromApi = (value: string) => {
-    dispatch(fetchPos({ posName: value }));
+    dispatch(fetchPos({ posName: value, branchId: "" }));
   };
   useEffect(() => {
     let result = [];
@@ -173,7 +173,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toMoneyAmount: toMoneyAmount === 0 ? "" : toMoneyAmount,
       fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
       toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
-      onlyConfirmedBillsWithoutReturnFromBank: onlyConfirmedBillsWithoutReturnFromBank,
+      onlyConfirmedBillsWithoutReturnFromBank:
+        onlyConfirmedBillsWithoutReturnFromBank,
     };
     handleChangeSearch(bodySend);
     dispatch(fetchBills(bodySend));
@@ -227,7 +228,10 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               name="onlyConfirmedBillsWithoutReturnFromBank"
               control={control}
               render={({ field }) => (
-                <Checkbox checked={watch("onlyConfirmedBillsWithoutReturnFromBank")} {...field} />
+                <Checkbox
+                  checked={watch("onlyConfirmedBillsWithoutReturnFromBank")}
+                  {...field}
+                />
               )}
             />
             <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>

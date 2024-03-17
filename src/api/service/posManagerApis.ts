@@ -6,8 +6,14 @@ import { authApi } from "../authApi";
 import { fetchPosParams } from "./type";
 
 export const fetchPosSearch = (props: fetchPosParams) => {
-  const { posName } = props;
-  return authApi.get(`/api/poses/searchByCode/${posName}`);
+  const { posName, branchId } = props;
+  const param = {
+    searchKey: posName,
+    branchId: branchId,
+  };
+  return authApi.get(`/api/poses/searchByCode`, {
+    params: param,
+  });
 };
 
 export const fetchPosManagementSearch = (param: PosSearchParams) => {
