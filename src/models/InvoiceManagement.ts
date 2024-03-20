@@ -91,16 +91,17 @@ export interface InvoicesCalculateType {
 }
 export interface InvoiceCreate {
   id: string;
-  pos: PosDetail;
+  pos?: PosDetail;
   posId: PosDetail;
   money: string;
-  typeOfCard: string;
-  fee: string;
-  feeafterpay: number;
-  billcode: string;
-  check: string;
-  estimatedReturnFromBank: number;
-  returnFromBank: number
+  typeOfCard?: string;
+  fee?: string;
+  feeafterpay?: number;
+  billcode?: string;
+  check?: string;
+  estimatedReturnFromBank?: number;
+  returnFromBank: number;
+  calculatedProfit?: string;
 }
 export interface PosDetail {
   key: string;

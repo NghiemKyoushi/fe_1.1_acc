@@ -347,6 +347,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       check: "",
       estimatedReturnFromBank: 0,
       returnFromBank: 0,
+      calculatedProfit: "",
     };
     append(item);
   };

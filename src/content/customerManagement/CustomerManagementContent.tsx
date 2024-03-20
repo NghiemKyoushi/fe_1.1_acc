@@ -269,7 +269,8 @@ export default function CustomerManagementContent() {
     useState<CustomerParams>(initialPosSearch);
   useEffect(() => {
     dispatch(fetchListCustomer(searchCondition));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchCondition]);
 
   const handleSearch = () => {
     const { name, phoneNumber } = getValues();

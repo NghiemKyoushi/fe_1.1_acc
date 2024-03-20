@@ -224,13 +224,16 @@ export default function InvoiceManagementContent() {
     });
   };
   const handleCloseRepay = () => {
-    reset({
-      formConfirm: {
-        receiptId: "",
-        explanation: "",
-        repaidAmount: 0,
-      },
-    });
+    // setValue(
+    //   formConfirm, {
+    //     receiptId: "",
+    //     explanation: "",
+    //     repaidAmount: 0,
+    //   },
+    // );
+    setValue("formConfirm.explanation", "");
+    setValue("formConfirm.receiptId", "");
+    setValue("formConfirm.repaidAmount", 0);
     setIsOpenRepay(false);
   };
   const handleOpenRepay = (id: string) => {
@@ -251,6 +254,7 @@ export default function InvoiceManagementContent() {
         handleSearch();
       })
       .catch(function (error: any) {
+        console.log("error", error);
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {

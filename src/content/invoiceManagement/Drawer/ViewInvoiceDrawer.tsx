@@ -143,6 +143,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   useEffect(() => {
     if (rowInfo) {
       if (rowInfo?.imageId !== "") {
+        console.log("check IMG", rowInfo.imageId);
+
         setImageId(rowInfo.imageId);
         getPathImage(rowInfo.imageId).then((res) => {
           URL.createObjectURL(res.data);
@@ -155,8 +157,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         {
           intake: rowInfo.intake, //thu
           payout: rowInfo.payout, // chi
-          loan: rowInfo.number, // công nợ
-          repayment: rowInfo.number,
+          loan: rowInfo.loan, // công nợ
+          repayment: rowInfo.repayment,
         },
       ];
       if (rowInfo.bills.length > 0) {
@@ -186,6 +188,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           returnFromBank: 0,
         });
       }
+      console.log("dataTable", dataTable);
       reset({
         codeEmployee: rowInfo?.employee.name,
         percentageFee: rowInfo?.percentageFee,
@@ -202,7 +205,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             " - " +
             rowInfo?.customerCard.accountNumber.toString().slice(-4),
         },
-        invoices: dataTable,
+        invoices: [...dataTable],
         invoicesCalculate: invoicesCalculate,
         note: rowInfo?.note,
         usingCardPrePayFee: rowInfo.usingCardPrePayFee,
@@ -223,6 +226,27 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
+  console.log("watch()", watch("invoices"));
+  useEffect(() => {
+    if (!isOpen) {
+      setImagePath("");
+      setImageId("");
+      setValue("invoices", [
+        // {
+        //   posId: {
+        //     values: "",
+        //     key: "",
+        //   },
+        //   id: "",
+        //   money: "",
+        //   fee: "",
+        //   check: "TOTAL",
+        //   calculatedProfit: "",
+        //   returnFromBank: 0,
+        // },
+      ]);
+    }
+  }, [isOpen]);
   const {
     fields: invoicesField,
     append,
@@ -624,6 +648,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           variant: "success",
         });
         reset();
+        setImagePath("");
         handleCloseDrawer();
         handleSearch();
       })
@@ -663,6 +688,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("customerName")]);
+
   const getRowId = (row: any) => {
     return row.id;
   };
@@ -868,14 +894,16 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   },
                 }}
               >
-                <TableDataComponent
-                  columns={columns}
-                  dataInfo={invoicesField}
-                  disableFilter={true}
-                  isPage={true}
-                  rowCount={100}
-                  getRowId={getRowId}
-                />
+                {isOpen && (
+                  <TableDataComponent
+                    columns={columns}
+                    dataInfo={invoicesField}
+                    disableFilter={true}
+                    isPage={true}
+                    rowCount={100}
+                    getRowId={getRowId}
+                  />
+                )}
               </Box>
             </StyleDataGrid>
             <StyleDataGrid2>
