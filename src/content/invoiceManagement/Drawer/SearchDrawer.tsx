@@ -21,7 +21,7 @@ import {
   fetchListCardCustomer,
 } from "@/actions/CardCustomerActions";
 import { useEffect, useMemo, useState } from "react";
-import { cookieSetting } from "@/utils";
+import { cookieSetting, getValueWithComma } from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import _ from "lodash";
 
@@ -56,7 +56,9 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
             onChange={(e: any) => {
               setvalue(
                 fromNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                getValueWithComma(
+                  e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                )
               );
             }}
           />
@@ -71,7 +73,9 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
             onChange={(e: any) => {
               setvalue(
                 toNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                getValueWithComma(
+                  e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                )
               );
             }}
           />

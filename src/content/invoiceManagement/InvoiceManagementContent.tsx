@@ -416,7 +416,7 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Mã Hóa Đơn",
       field: "code",
-      width: 140,
+      width: 165,
       headerAlign: "center",
       align: "center",
       valueGetter: ({ row }) => {
@@ -469,9 +469,21 @@ export default function InvoiceManagementContent() {
       }),
     },
     {
+      headerName: "Tên thẻ",
+      field: "customerCardName",
+      width: 130,
+      headerAlign: "center",
+      align: "center",
+      // valueGetter: ({ row }) => {
+      //   return "";
+      // },
+      sortable: false,
+      filterable: false,
+    },
+    {
       headerName: "Tổng giao dịch",
       field: "transactionTotal",
-      width: 140,
+      width: 130,
       headerAlign: "center",
       align: "center",
       cellClassName: (params: GridCellParams<ColReceiptList>) => {
@@ -501,7 +513,7 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Thu",
       field: "intake",
-      width: 140,
+      width: 130,
       headerAlign: "center",
       align: "center",
       cellClassName: (params: GridCellParams<ColReceiptList>) => {
@@ -531,7 +543,7 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Chi",
       field: "payout",
-      width: 140,
+      width: 130,
       headerAlign: "center",
       align: "center",
       cellClassName: (params: GridCellParams<ColReceiptList>) => {
@@ -561,7 +573,7 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Công nợ",
       field: "loan",
-      width: 140,
+      width: 130,
       headerAlign: "center",
       align: "center",
       valueGetter: (params: GridValueGetterParams) => {
@@ -591,7 +603,7 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Thu nợ",
       field: "repayment",
-      width: 140,
+      width: 130,
       headerAlign: "center",
       align: "center",
       valueGetter: (params: GridValueGetterParams) => {
@@ -687,7 +699,7 @@ export default function InvoiceManagementContent() {
       align: "center",
       sortable: false,
       filterable: false,
-      width: 197,
+      width: 190,
       renderCell: ({ row }) => {
         return (
           <>
@@ -697,7 +709,9 @@ export default function InvoiceManagementContent() {
                   <EditNoteIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               </Tooltip>
-            ) : null}
+            ) : (
+              <div></div>
+            )}
             {row.code === null && role !== ROLE.EMPLOYEE ? (
               <IconButton
                 color="success"
@@ -721,8 +735,8 @@ export default function InvoiceManagementContent() {
             )}
             {+row.loan > +row.repayment &&
             row.code !== "TOTAL" &&
-            // row.code !== null &&
-            row.receiptStatusEnum === "COMPLETED" ? (
+            row.code !== null ? (
+              // row.receiptStatusEnum === "COMPLETED"
               <IconButton color="info" onClick={() => handleOpenRepay(row.id)}>
                 <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
               </IconButton>
@@ -730,13 +744,15 @@ export default function InvoiceManagementContent() {
               <div></div>
             )}
 
-            {row.code === null && (
+            {row.code === null ? (
               <IconButton
                 color="error"
                 onClick={() => handleOpenDeleteForm(row.id)}
               >
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
+            ) : (
+              <div></div>
             )}
           </>
         );
