@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button, Checkbox, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { fetchInvoice } from "@/actions/InvoiceManagementActions";
+import { fetchInvoice, fetchSumInvoice } from "@/actions/InvoiceManagementActions";
 import {
   fetchCardCustomer,
   fetchListCardCustomer,
@@ -207,6 +207,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
 
     handleChangeSearch(bodySend);
     dispatch(fetchInvoice(bodySend));
+    dispatch(fetchSumInvoice(bodySend));
   };
   useEffect(() => {
     if (watch("customerName")?.key) {

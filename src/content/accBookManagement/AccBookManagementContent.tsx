@@ -331,6 +331,7 @@ export const AccBookManagementContent = () => {
         align: "center",
         sortable: false,
         filterable: false,
+        hide: true,
       },
       {
         headerName: "Mã bút toán",
@@ -338,6 +339,7 @@ export const AccBookManagementContent = () => {
         width: 160,
         headerAlign: "center",
         align: "center",
+        hide: true,
         valueGetter: ({ row }) => {
           if (row.entryCode === "TOTAL") {
             return "";
@@ -552,14 +554,14 @@ export const AccBookManagementContent = () => {
             <>
               {row.entryCode !== "TOTAL" && (
                 <>
-                  <IconButton
-                    color="success"
-                    onClick={() => handleOpenConfirmForm(row.id)}
-                  >
-                    {row.entryCode === null && (
+                  {row.entryCode === null && (
+                    <IconButton
+                      color="success"
+                      onClick={() => handleOpenConfirmForm(row.id)}
+                    >
                       <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
-                    )}
-                  </IconButton>
+                    </IconButton>
+                  )}
                   <IconButton
                     color="info"
                     onClick={() => handleOpenViewDrawer(row.id)}
@@ -570,14 +572,15 @@ export const AccBookManagementContent = () => {
                       <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
                     )}
                   </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleOpenDeleteForm(row.id)}
-                  >
-                    {row.entryCode === null && (
+
+                  {row.entryCode === null && (
+                    <IconButton
+                      color="error"
+                      onClick={() => handleOpenDeleteForm(row.id)}
+                    >
                       <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-                    )}
-                  </IconButton>
+                    </IconButton>
+                  )}
                 </>
               )}
             </>
