@@ -8,7 +8,7 @@ import { fetchInvoiceInfoPrams } from "./type";
 
 export const fetchInvoiceInfo = (body: fetchInvoiceInfoPrams) => {
   const { receiptStatusList, ...otherParams } = body;
-  const params = new URLSearchParams(otherParams as Record<string, string>);
+  const params = new URLSearchParams(otherParams as unknown as Record<string, string>);
 
   if (receiptStatusList) {
     receiptStatusList.forEach((status) => {
