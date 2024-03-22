@@ -183,6 +183,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const userName = cookieSetting.get("userName");
   const branchId = cookieSetting.get("branchId");
   const employeeId = cookieSetting.get("employeeId");
+  const branchesCodeList = cookieSetting.get("branchesCodeList");
+
   const [isOpenCard, setIsOpenCard] = useState(false);
   const [infoCard, setInfoCard] = useState<InfoCard>({
     cardType: "",
@@ -785,37 +787,46 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("cardCustomer")]);
   useMemo(() => {
-    if (role !== ROLE.ADMIN) {
-      branchList.map((item) => {
-        if (item?.key === branchId) {
-          setValue("branchIds", {
-            key: item.key,
-            values: item?.values,
-          });
-        }
+    if (branchesCodeList) {
+      const branch = JSON.parse(branchesCodeList).map((item: any) => {
+        return {
+          values: item?.name,
+          key: item?.id,
+        };
       });
-    } else {
-      setValue("branchIds", {
-        key: branchList[0]?.key,
-        values: branchList[0]?.values,
-      });
+      setBranchList(branch);
+      if (role !== ROLE.ADMIN) {
+        JSON.parse(branchesCodeList).map((item: { id: string ; name: any; }) => {
+          if (item?.id === branchId) {
+            setValue("branchIds", {
+              key: item.id,
+              values: item?.name,
+            });
+          }
+        });
+      } else {
+        setValue("branchIds", {
+          key: JSON.parse(branchesCodeList)[0]?.id,
+          values: JSON.parse(branchesCodeList)[0]?.name,
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, branchList]);
+  }, [role, branchesCodeList]);
 
-  useEffect(() => {
-    fetchBranch().then((res) => {
-      if (res.data) {
-        const branch = res.data.map((item: any) => {
-          return {
-            values: item?.name,
-            key: item?.id,
-          };
-        });
-        setBranchList(branch);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   fetchBranch().then((res) => {
+  //     if (res.data) {
+  //       const branch = res.data.map((item: any) => {
+  //         return {
+  //           values: item?.name,
+  //           key: item?.id,
+  //         };
+  //       });
+  //       setBranchList(branch);
+  //     }
+  //   });
+  // }, []);
   const handleGetCard = () => {};
 
   const handleSearchCheck = () => {

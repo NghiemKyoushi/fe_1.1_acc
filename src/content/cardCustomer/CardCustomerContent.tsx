@@ -371,6 +371,7 @@ export default function CardCustomerContent() {
         align: "center",
         sortable: false,
         filterable: false,
+        hide: true,
         valueGetter: ({ row }) => {
           return row.lastModifiedBy;
         },

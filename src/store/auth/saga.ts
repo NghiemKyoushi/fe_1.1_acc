@@ -37,6 +37,7 @@ function* loginSaga(action: any) {
       id: string;
       roles: Array<any>;
       code: string;
+      branchesCodeList: Array<any>;
     } = yield call(loginUserFn, {
       code: action.payload.values.email,
       password: action.payload.values.password,
@@ -49,6 +50,8 @@ function* loginSaga(action: any) {
     Cookies.set("roles", response.roles[0].title);
     Cookies.set("branchName", response.branches[0].name);
     Cookies.set("branchCode", response.branches[0].code);
+    Cookies.set("branchesCodeList", JSON.stringify(response.branches));
+
     yield put(
       loginSuccess({
         token: response.token,

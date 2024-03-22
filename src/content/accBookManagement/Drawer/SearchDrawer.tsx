@@ -18,6 +18,7 @@ import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 import { listTranType } from "./NewAccountBookDrawer";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import { useEffect, useState } from "react";
+import { cookieSetting } from "@/utils";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -88,12 +89,12 @@ nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 const SearchDrawer = (props: SearchDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } =
     props;
-  const listOfCustomer = useSelector(
-    (state: RootState) => state.customerManagament.customerList
-  );
+ 
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
   );
+  const branchesCodeList = cookieSetting.get("branchesCodeList");
+
   const dispatch = useDispatch();
   const [branch, setBranch] = useState<Array<any> | undefined>([]);
 
@@ -167,9 +168,9 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     dispatch(fetchSumAccBook(bodySend));
   };
   useEffect(() => {
-    if (listOfBranch.length > 0) {
+    if (branchesCodeList) {
       let arr: any[] = [];
-      listOfBranch.map((item: any) => {
+      JSON.parse(branchesCodeList).map((item: any) => {
         arr.push({
           key: item?.code,
           values: item?.name,
@@ -177,12 +178,12 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       });
       setBranch([...arr]);
       setValue("branch", {
-        key: listOfBranch[0].code,
-        values: listOfBranch[0].name,
+        key: JSON.parse(branchesCodeList)[0].code,
+        values: JSON.parse(branchesCodeList)[0].name,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listOfBranch]);
+  }, [branchesCodeList]);
   const handleChangeBranch = (value: string) => {};
   return (
     <DrawerCustom

@@ -15,15 +15,34 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button, Checkbox, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { fetchInvoice, fetchSumInvoice } from "@/actions/InvoiceManagementActions";
+import {
+  fetchInvoice,
+  fetchSumInvoice,
+} from "@/actions/InvoiceManagementActions";
 import {
   fetchCardCustomer,
   fetchListCardCustomer,
 } from "@/actions/CardCustomerActions";
 import { useEffect, useMemo, useState } from "react";
-import { cookieSetting, getValueWithComma } from "@/utils";
+import {
+  cookieSetting,
+  formatDate,
+  getDateOfPresent,
+  getValueWithComma,
+} from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import _ from "lodash";
+
+const date = new Date();
+const previous = new Date(date.getTime());
+previous.setDate(date.getDate() - 30);
+const offsetInMinutes = previous.getTimezoneOffset();
+previous.setMinutes(previous.getMinutes() - offsetInMinutes);
+const dateNext = new Date();
+const nextDay = new Date(dateNext.getTime());
+nextDay.setDate(dateNext.getDate() + 1);
+const offsetInMinutes2 = nextDay.getTimezoneOffset();
+nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -122,8 +141,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   } = useForm({
     defaultValues: {
       codeInvoice: "",
-      fromCreatedDate: new Date(),
-      toCreatedDate: new Date(),
+      fromCreatedDate: formatDate(previous.getTime()),
+      toCreatedDate: getDateOfPresent(),
       fromTransactionTotal: "",
       toTransactionTotal: "",
       fromIntake: "",
@@ -173,31 +192,70 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       customerName,
     } = getValues();
 
+    // const fromDate = new Date(fromCreatedDate);
+    // const toDate = new Date(toCreatedDate);
     const fromDate = new Date(fromCreatedDate);
-    const toDate = new Date(toCreatedDate);
+    const offsetInMinutes = fromDate.getTimezoneOffset();
+    fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
 
+    const gettoDate = new Date(toCreatedDate);
+    const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+
+    const offsetInMinutes2 = toDate.getTimezoneOffset();
+    toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
-      fromTransactionTotal: fromTransactionTotal,
-      toTransactionTotal: toTransactionTotal,
-      fromIntake: fromIntake,
-      fromEstimatedProfit: fromEstimatedProfit,
-      fromLoan: fromLoan,
-      fromPayout: fromPayout,
-      fromRepayment: fromRepayment,
-      toEstimatedProfit: toEstimatedProfit,
-      toIntake: toIntake,
-      toLoan: toLoan,
-      toPayout: toPayout,
-      toRepayment: toRepayment,
+      fromTransactionTotal:
+        fromTransactionTotal === "0" || fromTransactionTotal === "0"
+          ? ""
+          : _.toNumber(fromTransactionTotal.toString().replace(",", "")),
+      toTransactionTotal:
+        toTransactionTotal === "" || toTransactionTotal === "0"
+          ? ""
+          : _.toNumber(toTransactionTotal.toString().replace(",", "")),
+      fromIntake:
+        fromIntake === "" || fromIntake === "0"
+          ? ""
+          : _.toNumber(fromIntake.toString().replace(",", "")),
+      fromEstimatedProfit:
+        fromEstimatedProfit === "" || fromEstimatedProfit === "0"
+          ? ""
+          : _.toNumber(fromEstimatedProfit.toString().replace(",", "")),
+      fromLoan:
+        fromLoan === "" || fromLoan === "0"
+          ? ""
+          : _.toNumber(fromLoan.toString().replace(",", "")),
+      fromPayout:
+        fromPayout === "" || fromPayout === "0"
+          ? ""
+          : _.toNumber(fromPayout.toString().replace(",", "")),
+      fromRepayment:
+        fromRepayment === "" || fromRepayment === "0"
+          ? ""
+          : _.toNumber(fromRepayment.toString().replace(",", "")),
+      toEstimatedProfit:
+        toEstimatedProfit === "" || toEstimatedProfit === "0"
+          ? ""
+          : _.toNumber(toEstimatedProfit.toString().replace(",", "")),
+      toIntake:
+        toIntake === "" || toIntake === "0"
+          ? ""
+          : _.toNumber(toIntake.toString().replace(",", "")),
+      toLoan:
+        toLoan === "" || toLoan === "0" ? "" : _.toNumber(toLoan.toString().replace(",", "")),
+      toPayout:
+        toPayout === "" || toPayout === "0"
+          ? ""
+          : _.toNumber(toPayout.toString().replace(",", "")),
+      toRepayment:
+        toRepayment === "" || toRepayment === "0"
+          ? ""
+          : _.toNumber(toRepayment.toString().replace(",", "")),
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       customerCardId: cardCustomer.key,
-      employeeId:
-        watch("cardCustomer.key") !== "" && isSearchCardTrading === true
-          ? ""
-          : employeeId,
+      employeeId: "",
       customerName: customerName.values,
       receiptStatusList:
         watch("cardCustomer.key") !== "" && isSearchCardTrading === true

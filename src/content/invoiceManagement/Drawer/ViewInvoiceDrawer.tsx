@@ -226,7 +226,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
-  console.log("watch()", watch("invoices"));
   useEffect(() => {
     if (!isOpen) {
       setImagePath("");

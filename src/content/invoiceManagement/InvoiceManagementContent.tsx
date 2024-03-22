@@ -76,6 +76,7 @@ const initialInvoiceSearch = {
   sortDirection: "DESC",
   fromCreatedDate: previous.toISOString(),
   toCreatedDate: nextDay.toISOString(),
+  branchCodes: "",
 };
 
 export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
@@ -130,8 +131,9 @@ export default function InvoiceManagementContent() {
   const [receiptsId, setReceiptsId] = useState("");
   const [imageId, setImageId] = useState("");
   const branchCodes = cookieSetting.get("branchCode");
+  const branchesCodeList = cookieSetting.get("branchesCodeList");
   const role = cookieSetting.get("roles");
-  const employeeId = cookieSetting.get("employeeId");
+  const userCode = cookieSetting.get("code");
 
   const listOfInvoice = useSelector(
     (state: RootState) => state.invoiceManagement.listOfInvoice
@@ -147,11 +149,43 @@ export default function InvoiceManagementContent() {
   );
   const [searchCondition, setSearchCondition] = useState({
     ...initialInvoiceSearch,
-    branchCodes: role !== ROLE.ADMIN ? branchCodes : "",
-    employeeId: role === ROLE.EMPLOYEE ? employeeId : "",
+    branchCodes: "",
+    employeeId: "",
+    createdBy: role === ROLE.EMPLOYEE ? userCode : "",
   });
   const [openApprovingDialog, setOpenApprovingDialog] = useState(false);
 
+  useEffect(() => {
+    if (branchesCodeList) {
+      let codeBranch = "";
+      JSON.parse(branchesCodeList).map(
+        (item: { code: string }, index: number) => {
+          if (JSON.parse(branchesCodeList).length === index + 1) {
+            codeBranch = codeBranch + item.code;
+          } else {
+            codeBranch = codeBranch + item.code + ",";
+          }
+        }
+      );
+      setSearchCondition({
+        ...searchCondition,
+        branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+      });
+      dispatch(
+        fetchInvoice({
+          ...searchCondition,
+          branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+        })
+      );
+      dispatch(
+        fetchSumInvoice({
+          ...searchCondition,
+          branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branchesCodeList]);
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
@@ -275,11 +309,6 @@ export default function InvoiceManagementContent() {
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
-  useEffect(() => {
-    dispatch(fetchInvoice(searchCondition));
-    dispatch(fetchSumInvoice(searchCondition));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const handleSearch = () => {
     const {
       fromEstimatedProfit,
@@ -308,23 +337,30 @@ export default function InvoiceManagementContent() {
 
     const offsetInMinutes2 = toDate.getTimezoneOffset();
     toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
+
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
       fromTransactionTotal:
-        fromTransactionTotal === 0 ? "" : fromTransactionTotal,
-      toTransactionTotal: toTransactionTotal === 0 ? "" : toTransactionTotal,
-      fromIntake: fromIntake === 0 ? "" : fromIntake,
-      fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
-      fromLoan: fromLoan === 0 ? "" : fromLoan,
-      fromPayout: fromPayout === 0 ? "" : fromPayout,
-      fromRepayment: fromRepayment === 0 ? "" : fromRepayment,
-      toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
-      toIntake: toIntake === 0 ? "" : toIntake,
-      toLoan: toLoan === 0 ? "" : toLoan,
-      toPayout: toPayout === 0 ? "" : toPayout,
-      toRepayment: toRepayment === 0 ? "" : toRepayment,
-      employeeId: role === ROLE.EMPLOYEE ? employeeId : "",
+        fromTransactionTotal === 0
+          ? ""
+          : _.toNumber(fromTransactionTotal.toString().replace(",", "")),
+      toTransactionTotal:
+        toTransactionTotal === 0
+          ? ""
+          : _.toNumber(toTransactionTotal.toString().replace(",", "")),
+      fromIntake: fromIntake === 0 ? "" : +fromIntake,
+      fromEstimatedProfit:
+        fromEstimatedProfit === 0 ? "" : +fromEstimatedProfit,
+      fromLoan: fromLoan === 0 ? "" : +fromLoan,
+      fromPayout: fromPayout === 0 ? "" : +fromPayout,
+      fromRepayment: fromRepayment === 0 ? "" : +fromRepayment,
+      toEstimatedProfit: toEstimatedProfit === 0 ? "" : +toEstimatedProfit,
+      toIntake: toIntake === 0 ? "" : +toIntake,
+      toLoan: toLoan === 0 ? "" : +toLoan,
+      toPayout: toPayout === 0 ? "" : +toPayout,
+      toRepayment: toRepayment === 0 ? "" : +toRepayment,
+      employeeId: "",
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };
@@ -422,7 +458,7 @@ export default function InvoiceManagementContent() {
       field: "code",
       width: 165,
       headerAlign: "center",
-      align: "center",
+      align: "left",
       valueGetter: ({ row }) => {
         if (row.code === "TOTAL") {
           return "";
@@ -475,9 +511,9 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Tên thẻ",
       field: "customerCardName",
-      width: 130,
+      width: 180,
       headerAlign: "center",
-      align: "center",
+      align: "left",
       // valueGetter: ({ row }) => {
       //   return "";
       // },
@@ -580,6 +616,7 @@ export default function InvoiceManagementContent() {
       width: 130,
       headerAlign: "center",
       align: "center",
+      hide: true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
@@ -610,6 +647,7 @@ export default function InvoiceManagementContent() {
       width: 130,
       headerAlign: "center",
       align: "center",
+      hide: true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },

@@ -33,6 +33,7 @@ export interface fetchInvoiceInfoPrams {
   sorter?: string;
   sortDirection?: string;
   receiptStatusList?: Array<string>;
+  branchCodes: string;
 }
 export interface fetchPosParams {
   posName: string;
