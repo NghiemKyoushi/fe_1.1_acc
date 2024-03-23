@@ -61,10 +61,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       bank: "",
       maxBillAmount: "",
       posFeeTable: [],
-      branchIds: {
-        key: "",
-        values: "",
-      },
+      branchIds: [],
       note: "",
     },
   });
@@ -89,7 +86,7 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       if (res.data) {
         const branch = res.data.map((item: any) => {
           return {
-            values: item?.name,
+            value: item?.name,
             key: item?.id,
           };
         });
@@ -170,7 +167,13 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
         posCardFee: item.posCardFee,
       });
     });
+    let arrBranchId: any[] = [];
 
+    if (branchIds) {
+      arrBranchId = branchIds.map((item) => {
+        return item.key;
+      });
+    }
     const request: PosParamBodySend = {
       code: code,
       name: name,
@@ -181,8 +184,9 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       posStatus: "AVAILABLE",
       maxBillAmount: maxBillAmount.replaceAll(",", ""),
       note: note,
-      branchId: watch("branchIds")?.key,
+      branchIds: arrBranchId ? arrBranchId : [],
     };
+    console.log("checkdd", request)
     fetchCreatePos(request)
       .then((res) => {
         enqueueSnackbar("Tạo Pos thành công!!", { variant: "success" });
@@ -281,9 +285,9 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
                   </TextHelper>
                 </StyleInputContainer>
 
-                <StyleInputContainer>
+                <StyleInputContainer style={{maxWidth: 210}}>
                   <LabelComponent require={true}>Chi nhánh</LabelComponent>
-                  <SelectSearchComponent
+                  <AutoCompleteMultiple
                     control={control}
                     props={{
                       name: "branchIds",

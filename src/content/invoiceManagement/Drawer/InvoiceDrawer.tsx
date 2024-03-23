@@ -233,7 +233,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       totalBill: "",
       usingCardPrePayFee: false,
       acceptExceededFee: false,
-      note: "",
+      // note: "",
       branchIds: {
         key: "",
         values: "",
@@ -408,7 +408,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
       repayment: watch("invoicesCalculate")[0].repayment,
       employeeId: employeeId,
       receiptBills: receiptBills,
-      note: watch("note"),
+      // note: watch("note"),
       usingCardPrePayFee: watch("usingCardPrePayFee"),
       acceptExceededFee:
         watch("usingCardPrePayFee") === true &&
@@ -1043,7 +1043,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   </Typography>
                 </StyleCheckBoxTex>
               </div>
-              <div style={{ width: "60%" }}>
+              {/* <div style={{ width: "60%" }}>
                 <Typography style={{ fontWeight: "bold" }}>Ghi chú</Typography>
                 <TextareaComponent
                   control={control}
@@ -1054,7 +1054,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   type={""}
                   disable={false}
                 />
-              </div>
+              </div> */}
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>

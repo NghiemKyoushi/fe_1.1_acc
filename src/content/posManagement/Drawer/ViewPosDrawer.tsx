@@ -30,6 +30,7 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 import { fetchBranch } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
+import { getValueWithComma } from "@/utils";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -77,19 +78,22 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
           });
         }
       );
+      const branchFormat = rowInfo?.branches.map((item: any) => {
+        return {
+          value: item?.name,
+          key: item?.id,
+        };
+      });
       reset({
         code: rowInfo.code,
         name: rowInfo.name,
         address: rowInfo.address,
         accountNumber: rowInfo.accountNumber,
         bank: rowInfo.bank,
-        maxBillAmount: rowInfo.maxBillAmount,
+        maxBillAmount: getValueWithComma(rowInfo.maxBillAmount),
         posFeeTable: getCard,
         note: rowInfo?.note,
-        branchIds: {
-          key: rowInfo.branch.id,
-          values: rowInfo.branch.name,
-        },
+        branchIds: branchFormat,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -176,6 +180,13 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
         posCardFee: item.posCardFee ? item.posCardFee : 0,
       });
     });
+    let arrBranchId: any[] = [];
+
+    if (branchIds) {
+      arrBranchId = branchIds.map((item) => {
+        return item.key;
+      });
+    }
     const request: PosParamBodySend = {
       code: code,
       name: name,
@@ -184,9 +195,9 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
       accountNumber: accountNumber,
       supportedCardTypes: formatList,
       posStatus: "AVAILABLE",
-      maxBillAmount: maxBillAmount,
+      maxBillAmount: maxBillAmount.replaceAll(",", ""),
       note: note,
-      branchId: watch("branchIds")?.key,
+      branchIds: arrBranchId ? arrBranchId : [],
     };
     fetchUpdatePos(rowInfo.id, request)
       .then((res) => {
@@ -259,7 +270,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                     onChange={(e: any) => {
                       setValue(
                         "maxBillAmount",
-                        e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        getValueWithComma(e.target.value.trim().replaceAll(/[^0-9.]/g, ""))
                       );
                     }}
                   />
@@ -269,7 +280,7 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 </StyleInputContainer>
                 <StyleInputContainer>
                   <LabelComponent require={true}>Chi nhánh</LabelComponent>
-                  <SelectSearchComponent
+                  <AutoCompleteMultiple
                     control={control}
                     props={{
                       name: "branchIds",

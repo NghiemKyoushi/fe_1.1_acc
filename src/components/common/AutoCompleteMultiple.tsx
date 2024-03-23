@@ -76,9 +76,10 @@ function AutoCompleteMultiple({
               value={value ?? ""}
               onChange={(event, selectedOptions, reason) => {
                 if (reason === "clear") {
-                  onChange({}); // This onChange is from the Hook forms
+                  onChange([]); // This onChange is from the Hook forms
                   return;
                 }
+                console.log("selectedOptions",selectedOptions)
                 onChange(selectedOptions);
               }}
               onInputChange={(event, newInputValue) => {

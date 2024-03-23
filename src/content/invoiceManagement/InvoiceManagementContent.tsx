@@ -511,12 +511,15 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Tên thẻ",
       field: "customerCardName",
-      width: 180,
+      width: 200,
       headerAlign: "center",
       align: "left",
-      // valueGetter: ({ row }) => {
-      //   return "";
-      // },
+      valueGetter: ({ row }) => {
+        if (row.code === "TOTAL") {
+          return "";
+        }
+        return row.customerCardName + "-" + row.customerCardNumber;
+      },
       sortable: false,
       filterable: false,
     },

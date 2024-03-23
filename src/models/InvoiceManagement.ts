@@ -39,7 +39,7 @@ export interface ReceiptCreationParams {
   repayment: number; // thu nợ
   employeeId?: string;
   receiptBills: Array<BillCreationParams>;
-  note: string;
+  // note: string;
   usingCardPrePayFee: boolean;
   acceptExceededFee: boolean;
 }
@@ -161,6 +161,7 @@ export interface ColReceiptList {
   estimatedProfit: number;
   customerCardId: string;
   customerCardName: string;
+  customerCardNumber: string;
   employeeId: string;
   employeeName: string;
   branchId: string;

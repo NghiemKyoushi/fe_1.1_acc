@@ -207,7 +207,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         },
         invoices: [...dataTable],
         invoicesCalculate: invoicesCalculate,
-        note: rowInfo?.note,
+        // note: rowInfo?.note,
         usingCardPrePayFee: rowInfo.usingCardPrePayFee,
         acceptExceededFee: rowInfo.acceptExceededFee,
         branchIds: {
@@ -631,7 +631,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       repayment: watch("invoicesCalculate")[0].repayment,
       employeeId: rowInfo.employee.id,
       receiptBills: receiptBills,
-      note: watch("note"),
+      // note: watch("note"),
       usingCardPrePayFee: watch("usingCardPrePayFee"),
       acceptExceededFee:
         watch("usingCardPrePayFee") === true &&
@@ -962,7 +962,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   </Typography>
                 </StyleCheckBoxTex>
               </div>
-              <div style={{ width: "60%" }}>
+              {/* <div style={{ width: "60%" }}>
                 <TextareaComponent
                   control={control}
                   valueInput={""}
@@ -972,7 +972,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   type={""}
                   disable={false}
                 />
-              </div>
+              </div> */}
             </StyleDataGrid2>
             <ContainerSum>
               <StyleInputContainer>
