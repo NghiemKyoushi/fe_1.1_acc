@@ -18,7 +18,13 @@ import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 import { listTranType } from "./NewAccountBookDrawer";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import { useEffect, useState } from "react";
-import { cookieSetting } from "@/utils";
+import {
+  cookieSetting,
+  formatDate,
+  getDateOfPresent,
+  getValueWithComma,
+} from "@/utils";
+import _ from "lodash";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -51,7 +57,9 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
             onChange={(e: any) => {
               setvalue(
                 fromNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                getValueWithComma(
+                  e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                )
               );
             }}
           />
@@ -66,7 +74,9 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
             onChange={(e: any) => {
               setvalue(
                 toNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                getValueWithComma(
+                  e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                )
               );
             }}
           />
@@ -89,7 +99,7 @@ nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 const SearchDrawer = (props: SearchDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } =
     props;
- 
+
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
   );
@@ -110,8 +120,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   } = useForm({
     defaultValues: {
       codeInvoice: "",
-      fromCreatedDate: new Date(previous),
-      toCreatedDate: new Date(),
+      fromCreatedDate: formatDate(previous.getTime()),
+      toCreatedDate: getDateOfPresent(),
       fromTransactionTotal: "",
       toTransactionTotal: "",
       entryCode: "",
@@ -158,8 +168,14 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       entryCode: entryCode,
       transactionTypes: transactionTypes.key,
       branchCodes: branch.key,
-      fromTransactionTotal: fromTransactionTotal,
-      toTransactionTotal: toTransactionTotal,
+      fromTransactionTotal:
+        fromTransactionTotal === "0" || fromTransactionTotal === "0"
+          ? ""
+          : _.toNumber(fromTransactionTotal.toString().replaceAll(",", "")),
+      toTransactionTotal:
+        toTransactionTotal === "0" || toTransactionTotal === "0"
+          ? ""
+          : _.toNumber(toTransactionTotal.toString().replaceAll(",", "")),
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };

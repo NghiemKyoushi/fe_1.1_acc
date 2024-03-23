@@ -207,51 +207,53 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       ...searchCondition,
       receiptCode: receiptCode,
       fromTransactionTotal:
-        fromTransactionTotal === "0" || fromTransactionTotal === "0"
+        fromTransactionTotal === "" || fromTransactionTotal === "0"
           ? ""
-          : _.toNumber(fromTransactionTotal.toString().replace(",", "")),
+          : _.toNumber(fromTransactionTotal.toString().replaceAll(",", "")),
       toTransactionTotal:
         toTransactionTotal === "" || toTransactionTotal === "0"
           ? ""
-          : _.toNumber(toTransactionTotal.toString().replace(",", "")),
+          : _.toNumber(toTransactionTotal.toString().replaceAll(",", "")),
       fromIntake:
         fromIntake === "" || fromIntake === "0"
           ? ""
-          : _.toNumber(fromIntake.toString().replace(",", "")),
+          : _.toNumber(fromIntake.toString().replaceAll(",", "")),
       fromEstimatedProfit:
         fromEstimatedProfit === "" || fromEstimatedProfit === "0"
           ? ""
-          : _.toNumber(fromEstimatedProfit.toString().replace(",", "")),
+          : _.toNumber(fromEstimatedProfit.toString().replaceAll(",", "")),
       fromLoan:
         fromLoan === "" || fromLoan === "0"
           ? ""
-          : _.toNumber(fromLoan.toString().replace(",", "")),
+          : _.toNumber(fromLoan.toString().replaceAll(",", "")),
       fromPayout:
         fromPayout === "" || fromPayout === "0"
           ? ""
-          : _.toNumber(fromPayout.toString().replace(",", "")),
+          : _.toNumber(fromPayout.toString().replaceAll(",", "")),
       fromRepayment:
         fromRepayment === "" || fromRepayment === "0"
           ? ""
-          : _.toNumber(fromRepayment.toString().replace(",", "")),
+          : _.toNumber(fromRepayment.toString().replaceAll(",", "")),
       toEstimatedProfit:
         toEstimatedProfit === "" || toEstimatedProfit === "0"
           ? ""
-          : _.toNumber(toEstimatedProfit.toString().replace(",", "")),
+          : _.toNumber(toEstimatedProfit.toString().replaceAll(",", "")),
       toIntake:
         toIntake === "" || toIntake === "0"
           ? ""
-          : _.toNumber(toIntake.toString().replace(",", "")),
+          : _.toNumber(toIntake.toString().replaceAll(",", "")),
       toLoan:
-        toLoan === "" || toLoan === "0" ? "" : _.toNumber(toLoan.toString().replace(",", "")),
+        toLoan === "" || toLoan === "0"
+          ? ""
+          : _.toNumber(toLoan.toString().replaceAll(",", "")),
       toPayout:
         toPayout === "" || toPayout === "0"
           ? ""
-          : _.toNumber(toPayout.toString().replace(",", "")),
+          : _.toNumber(toPayout.toString().replaceAll(",", "")),
       toRepayment:
         toRepayment === "" || toRepayment === "0"
           ? ""
-          : _.toNumber(toRepayment.toString().replace(",", "")),
+          : _.toNumber(toRepayment.toString().replaceAll(",", "")),
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       customerCardId: cardCustomer.key,

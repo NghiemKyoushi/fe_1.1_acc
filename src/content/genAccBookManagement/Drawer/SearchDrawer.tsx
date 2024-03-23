@@ -21,7 +21,9 @@ import {
   fetchGenAccBook,
   fetchGenSumAccBook,
 } from "@/actions/GenAccBookActions";
-import { handleKeyPress } from "@/utils";
+import { formatDate, getDateOfPresent, handleKeyPress } from "@/utils";
+import { RangeNumberFilter } from "@/content/accBookManagement/Drawer/SearchDrawer";
+import _ from "lodash";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -38,46 +40,6 @@ export interface RangeNumberFilterProps<
   handleSearch: () => void;
   setvalue: UseFormSetValue<any>;
 }
-export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
-  const { fromNumberName, toNumberName, register, handleSearch, setvalue } =
-    props;
-  return (
-    <>
-      <StyleRangeFilter>
-        <StyleFilterContainer>
-          <StyleTitleSearch>Từ</StyleTitleSearch>
-          <TextFieldCustom
-            type={"text"}
-            variantshow="outlined"
-            textholder="Lọc giá trị"
-            {...register(fromNumberName)}
-            onChange={(e: any) => {
-              setvalue(
-                fromNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
-              );
-            }}
-          />
-        </StyleFilterContainer>
-        <StyleFilterContainer>
-          <StyleTitleSearch>Đến</StyleTitleSearch>
-          <TextFieldCustom
-            type={"text"}
-            variantshow="outlined"
-            textholder="Lọc giá trị"
-            {...register(toNumberName)}
-            onChange={(e: any) => {
-              setvalue(
-                toNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
-              );
-            }}
-          />
-        </StyleFilterContainer>
-      </StyleRangeFilter>
-    </>
-  );
-};
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -90,7 +52,8 @@ const offsetInMinutes2 = nextDay.getTimezoneOffset();
 nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
 const SearchDrawer = (props: SearchDrawerProps) => {
-  const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } = props;
+  const { isOpen, handleCloseDrawer, searchCondition, handleChangeSearch } =
+    props;
   // const listOfCustomer = useSelector(
   //   (state: RootState) => state.customerManagament.customerList
   // );
@@ -108,8 +71,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   } = useForm({
     defaultValues: {
       codeInvoice: "",
-      fromCreatedDate: new Date(previous),
-      toCreatedDate: new Date(),
+      fromCreatedDate: formatDate(previous.getTime()),
+      toCreatedDate: getDateOfPresent(),
       fromTransactionTotal: "",
       toTransactionTotal: "",
       entryCode: "",
@@ -150,12 +113,18 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       ...searchCondition,
       entryCode: entryCode,
       transactionTypes: transactionTypes.key,
-      fromTransactionTotal: fromTransactionTotal,
-      toTransactionTotal: toTransactionTotal,
+      fromTransactionTotal:
+        fromTransactionTotal === "0" || fromTransactionTotal === "0"
+          ? ""
+          : _.toNumber(fromTransactionTotal.toString().replaceAll(",", "")),
+      toTransactionTotal:
+        toTransactionTotal === "0" || toTransactionTotal === "0"
+          ? ""
+          : _.toNumber(toTransactionTotal.toString().replaceAll(",", "")),
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
     };
-    handleChangeSearch(bodySend)
+    handleChangeSearch(bodySend);
     dispatch(fetchGenAccBook(bodySend));
     dispatch(fetchGenSumAccBook(bodySend));
   };
