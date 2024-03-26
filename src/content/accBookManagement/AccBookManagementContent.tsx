@@ -1,6 +1,6 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import { GridCellParams, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -27,6 +27,7 @@ import SelectSearchComponent from "@/components/common/AutoComplete";
 import { fetchAccEntryType } from "@/actions/AccEntryTypeActions";
 import {
   confirmNewEntry,
+  conrimEditNoteAccountEntries,
   deleteAccountingBook,
   fetchDetailAccountingBook,
 } from "@/api/service/accountingBook";
@@ -40,6 +41,8 @@ import Cookies from "js-cookie";
 import { fetchBranch } from "@/actions/BranchManagementAction";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+import { NoteDialogComponent } from "../invoiceManagement/Drawer/NoteDialog";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -69,7 +72,8 @@ export const AccBookManagementContent = () => {
   const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const [branch, setBranch] = useState<Array<any> | undefined>([]);
-  const roles = cookieSetting.get("roles");
+  const [receiptsIdNote, setReceiptsIdNote] = useState("");
+  const [isOpenNote, setIsOpenNote] = useState(false);
 
   const listOfAccBook = useSelector(
     (state: RootState) => state.accBookManagement.accBookList
@@ -128,6 +132,7 @@ export const AccBookManagementContent = () => {
           values: "",
         },
         accountBalance: "",
+        noteInfo: "",
       },
     });
   const dispatch = useDispatch();
@@ -275,7 +280,34 @@ export const AccBookManagementContent = () => {
   //     dispatch(fetchSumAccBook(paramSearch));
   //   }
   // };
-
+  const handleCloseNote = () => {
+    setIsOpenNote(false);
+  };
+  const handleOpenNote = (id: string, note: string) => {
+    setReceiptsIdNote(id);
+    setValue("noteInfo", note);
+    setIsOpenNote(true);
+  };
+  const handleClickConfirmNote = () => {
+    const bodySend = {
+      id: receiptsIdNote,
+      note: watch("noteInfo"),
+    };
+    conrimEditNoteAccountEntries(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Tạo/Sửa ghi chú thành công", { variant: "success" });
+        handleCloseNote();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        console.log("error", error);
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo/Sửa ghi chú thất bại", { variant: "error" });
+        }
+      });
+  };
   const columns: GridColDef<ColAccountBook>[] = useMemo(
     () => [
       {
@@ -552,6 +584,18 @@ export const AccBookManagementContent = () => {
         renderCell: ({ row }) => {
           return (
             <>
+              {row.entryCode !== "TOTAL" ? (
+                <Tooltip title={row.note} placement="top">
+                  <IconButton
+                    color="error"
+                    onClick={() => handleOpenNote(row.id, row.note)}
+                  >
+                    <EditNoteIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <div></div>
+              )}
               {row.entryCode !== "TOTAL" && (
                 <>
                   {row.entryCode === null && (
@@ -689,6 +733,12 @@ export const AccBookManagementContent = () => {
             getRowId={getRowId}
           />
         </Box>
+        <NoteDialogComponent
+          openDialog={isOpenNote}
+          handleClickConfirm={handleClickConfirmNote}
+          control={control}
+          handleClickClose={handleCloseNote}
+        />
       </form>
       <NewAccountBookDrawer
         handleCloseDrawer={handleCloseModal}

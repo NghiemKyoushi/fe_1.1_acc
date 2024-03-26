@@ -43,6 +43,7 @@ import { TextFieldCustom } from "@/components/common/Textfield";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import { ApproveDialogComponent } from "./Drawer/ApproveDialog";
 import {
+  conrimEditNoteInvoice,
   conrimInvoice,
   conrimRepayInvoice,
   deleteInvoice,
@@ -58,6 +59,7 @@ import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { RepayDialogComponent } from "./Drawer/RepayDialog";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import { NoteDialogComponent } from "./Drawer/NoteDialog";
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -125,10 +127,13 @@ export default function InvoiceManagementContent() {
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const [isOpenViewDrawer, setIsOpenViewDrawer] = useState(false);
   const [isOpenRepay, setIsOpenRepay] = useState(false);
+  const [isOpenNote, setIsOpenNote] = useState(false);
 
   const [rowInfo, setRowInfo] = useState();
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [receiptsId, setReceiptsId] = useState("");
+  const [receiptsIdNote, setReceiptsIdNote] = useState("");
+
   const [imageId, setImageId] = useState("");
   const branchCodes = cookieSetting.get("branchCode");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
@@ -215,6 +220,7 @@ export default function InvoiceManagementContent() {
           explanation: "",
           repaidAmount: 0,
         },
+        noteInfo: "",
       },
     });
 
@@ -258,22 +264,17 @@ export default function InvoiceManagementContent() {
     });
   };
   const handleCloseRepay = () => {
-    // setValue(
-    //   formConfirm, {
-    //     receiptId: "",
-    //     explanation: "",
-    //     repaidAmount: 0,
-    //   },
-    // );
     setValue("formConfirm.explanation", "");
     setValue("formConfirm.receiptId", "");
     setValue("formConfirm.repaidAmount", 0);
     setIsOpenRepay(false);
   };
+
   const handleOpenRepay = (id: string) => {
     setReceiptsId(id);
     setIsOpenRepay(true);
   };
+
   const handleClickConfirmRepay = () => {
     const bodySend: RepayConfirmParams = {
       receiptId: receiptsId,
@@ -293,6 +294,34 @@ export default function InvoiceManagementContent() {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
           enqueueSnackbar("Hoàn trả thất bại", { variant: "error" });
+        }
+      });
+  };
+  const handleCloseNote = () => {
+    setIsOpenNote(false);
+  };
+  const handleOpenNote = (id: string, note: string) => {
+    setReceiptsIdNote(id);
+    setValue("noteInfo", note);
+    setIsOpenNote(true);
+  };
+  const handleClickConfirmNote = () => {
+    const bodySend = {
+      id: receiptsIdNote,
+      note: watch("noteInfo"),
+    };
+    conrimEditNoteInvoice(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Tạo/Sửa ghi chú thành công", { variant: "success" });
+        handleCloseNote();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        console.log("error", error);
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo/Sửa ghi chú thất bại", { variant: "error" });
         }
       });
   };
@@ -748,9 +777,12 @@ export default function InvoiceManagementContent() {
       renderCell: ({ row }) => {
         return (
           <>
-            {row.code !== "TOTAL" && row.note !== null && row.note !== "" ? (
+            {row.code !== "TOTAL" ? (
               <Tooltip title={row.note} placement="top">
-                <IconButton color="error">
+                <IconButton
+                  color="error"
+                  onClick={() => handleOpenNote(row.id, row.note)}
+                >
                   <EditNoteIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               </Tooltip>
@@ -912,6 +944,12 @@ export default function InvoiceManagementContent() {
             handleClickClose={handleCloseApproveDialog}
             handleClickConfirm={handleConfirmInvoice}
             openDialog={openApprovingDialog}
+          />
+          <NoteDialogComponent
+            openDialog={isOpenNote}
+            handleClickConfirm={handleClickConfirmNote}
+            control={control}
+            handleClickClose={handleCloseNote}
           />
         </form>
         <InvoiceDrawer

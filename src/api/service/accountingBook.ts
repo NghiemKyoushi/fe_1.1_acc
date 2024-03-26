@@ -36,3 +36,7 @@ export const updateDetailAccountingBook = (
 export const confirmNewEntry = (entryId: string) => {
   return authApi.put(`/api/branchAccountEntries/approve/${entryId}`);
 };
+
+export const conrimEditNoteAccountEntries = (reason: { id: string; note: string }) => {
+  return authApi.put("/api/branchAccountEntries/note", reason);
+};

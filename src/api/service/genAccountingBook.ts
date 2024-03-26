@@ -38,3 +38,7 @@ export const deleteGenAccountingBook = (id: string) => {
 export const confirmGenNewEntry = (entryId: string) => {
   return authApi.put(`/api/generalAccountEntries/approve/${entryId}`);
 };
+
+export const conrimEditNoteGenAccountingBook = (reason: { id: string; note: string }) => {
+  return authApi.put("/api/generalAccountEntries/note", reason);
+};

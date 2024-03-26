@@ -26,6 +26,7 @@ export interface ColAccountBook {
   payout: number; // chi
   loan: number; // công nợ
   repayment: number; // thu nợ
+  note: string;
 }
 export interface BranchType {
   id: string;

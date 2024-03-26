@@ -1,22 +1,17 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import { GridCellParams, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useSelector } from "react-redux";
 import { RootState } from "@/reducers/rootReducer";
-import {
-  EmpManageParamSearch,
-  EmpManageSearchResult,
-} from "@/models/EmpManagement";
+
 import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
-import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import {
   cookieSetting,
   formatDate,
@@ -34,6 +29,7 @@ import ViewAccountBookDrawer from "./Drawer/ViewAccountBookDrawer";
 import { fetchAccEntryType } from "@/actions/AccEntryTypeActions";
 import {
   confirmGenNewEntry,
+  conrimEditNoteGenAccountingBook,
   deleteGenAccountingBook,
   fetchDetailGenAccountingBook,
 } from "@/api/service/genAccountingBook";
@@ -48,6 +44,9 @@ import SelectSearchComponent from "@/components/common/AutoComplete";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
+import { NoteDialogComponent } from "../invoiceManagement/Drawer/NoteDialog";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -77,6 +76,8 @@ export const GenAccBookManagementContent = () => {
   const [receiptsIdConfirm, setReceiptsIdConfirm] = useState("");
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const employeeId = cookieSetting.get("employeeId");
+  const [receiptsIdNote, setReceiptsIdNote] = useState("");
+  const [isOpenNote, setIsOpenNote] = useState(false);
 
   const listOfGenAccBook = useSelector(
     (state: RootState) => state.genAccBookManagement.genAccBookList
@@ -107,6 +108,7 @@ export const GenAccBookManagementContent = () => {
           values: "",
         },
         accountBalance: "",
+        noteInfo: "",
       },
     });
   const dispatch = useDispatch();
@@ -228,6 +230,34 @@ export const GenAccBookManagementContent = () => {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
           enqueueSnackbar("Xác nhận thất bại", { variant: "error" });
+        }
+      });
+  };
+  const handleCloseNote = () => {
+    setIsOpenNote(false);
+  };
+  const handleOpenNote = (id: string, note: string) => {
+    setReceiptsIdNote(id);
+    setValue("noteInfo", note);
+    setIsOpenNote(true);
+  };
+  const handleClickConfirmNote = () => {
+    const bodySend = {
+      id: receiptsIdNote,
+      note: watch("noteInfo"),
+    };
+    conrimEditNoteGenAccountingBook(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Tạo/Sửa ghi chú thành công", { variant: "success" });
+        handleCloseNote();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        console.log("error", error);
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo/Sửa ghi chú thất bại", { variant: "error" });
         }
       });
   };
@@ -508,6 +538,14 @@ export const GenAccBookManagementContent = () => {
             <>
               {row.entryCode !== "TOTAL" && (
                 <>
+                  <Tooltip title={row.note} placement="top">
+                    <IconButton
+                      color="error"
+                      onClick={() => handleOpenNote(row.id, row.note)}
+                    >
+                      <EditNoteIcon sx={{ fontSize: 20 }} />
+                    </IconButton>
+                  </Tooltip>
                   <IconButton
                     color="success"
                     onClick={() => handleOpenConfirmForm(row.id)}
@@ -589,7 +627,7 @@ export const GenAccBookManagementContent = () => {
             display: "flex",
             flexDirection: "row",
             gap: 10,
-            alignItems:"flex-end"
+            alignItems: "flex-end",
           }}
         >
           <div>
@@ -639,6 +677,12 @@ export const GenAccBookManagementContent = () => {
             />
           </Box>
         </StyleDataGrid>
+        <NoteDialogComponent
+          openDialog={isOpenNote}
+          handleClickConfirm={handleClickConfirmNote}
+          control={control}
+          handleClickClose={handleCloseNote}
+        />
       </form>
       <NewAccountBookDrawer
         handleCloseDrawer={handleCloseModal}

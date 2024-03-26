@@ -8,7 +8,9 @@ import { fetchInvoiceInfoPrams } from "./type";
 
 export const fetchInvoiceInfo = (body: fetchInvoiceInfoPrams) => {
   const { receiptStatusList, ...otherParams } = body;
-  const params = new URLSearchParams(otherParams as unknown as Record<string, string>);
+  const params = new URLSearchParams(
+    otherParams as unknown as Record<string, string>
+  );
 
   if (receiptStatusList) {
     receiptStatusList.forEach((status) => {
@@ -73,4 +75,8 @@ export const deleteInvoice = (id: string) => {
 
 export const saveDatatoServerApis = () => {
   return authApi.put("/api/files/backup");
+};
+
+export const conrimEditNoteInvoice = (reason: { id: string; note: string }) => {
+  return authApi.put("/api/receipts/note", reason);
 };
