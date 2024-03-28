@@ -261,7 +261,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       customerName: customerName.values,
       receiptStatusList:
         watch("cardCustomer.key") !== "" && isSearchCardTrading === true
-          ? ["COMPLETED", "LOANED"]
+          ? "COMPLETED,LOANED"
           : null,
     };
 

@@ -20,8 +20,9 @@ import { enqueueSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
 import { NewCustomer } from "@/models/CustomerManager";
 import { createNewCustomer } from "@/api/service/customerManagerApis";
-import { handleKeyPress } from "@/utils";
+import { getValueWithComma, handleKeyPress } from "@/utils";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
+import _ from "lodash";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -59,7 +60,10 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
       address: address,
       name: name,
       nationalId: nationalId,
-      percentageFee: +percentageFee,
+      percentageFee:
+        percentageFee === ""
+          ? 0
+          : _.toNumber(percentageFee.toString().replaceAll(",", "")),
       phoneNumber: phoneNumber,
       note: note,
     };
@@ -127,7 +131,9 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
                     onChange={(e: any) => {
                       setValue(
                         "percentageFee",
-                        e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                        getValueWithComma(
+                          e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        )
                       );
                     }}
                   />

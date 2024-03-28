@@ -119,10 +119,6 @@ export default function CardCustomerContent() {
   };
   const handleConfirmCreatePayFee = () => {
     const { formConfirm } = getValues();
-    if (formConfirm.prePaidFee === "") {
-      enqueueSnackbar("Số phí bắt buộc", { variant: "warning" });
-      return;
-    }
     if (formConfirm.branchIds.key === "") {
       enqueueSnackbar("Chi nhánh bắt buộc chọn", { variant: "warning" });
       return;
@@ -132,7 +128,7 @@ export default function CardCustomerContent() {
       branchId: formConfirm.branchIds.key,
       customerCardId: formConfirm.customerCardId,
       imageId: formConfirm.imageId,
-      prePaidFee: formConfirm.prePaidFee,
+      prePaidFee: formConfirm.prePaidFee === "" ? 0 : formConfirm.prePaidFee,
     };
     updatePayFeeCustomer(bodyUpdate)
       .then((res) => {

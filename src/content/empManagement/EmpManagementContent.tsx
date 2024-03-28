@@ -1,7 +1,11 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
 import { Box, Button, IconButton } from "@mui/material";
-import { GridColDef, GridSortModel, GridValueGetterParams } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridSortModel,
+  GridValueGetterParams,
+} from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
@@ -17,10 +21,15 @@ import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import EmpManagementDrawer from "./EmpManagementDrawer";
 import ViewEmpManagementDrawer from "./ViewEmpManagementDrawer";
-import { fetchDetailEmp } from "@/api/service/empManagementApis";
+import {
+  deleteDetailEmp,
+  fetchDetailEmp,
+} from "@/api/service/empManagementApis";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { useForm } from "react-hook-form";
 import { getValueWithComma } from "@/utils";
+import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
+import { enqueueSnackbar } from "notistack";
 
 export const initialPosSearch = {
   page: 0,
@@ -32,6 +41,8 @@ export const EmpManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [rowInfo, setRowInfo] = useState();
+  const [isDeleteForm, setIsDeleteForm] = useState(false);
+  const [entryId, setEntryId] = useState("");
 
   const listOfEmp = useSelector(
     (state: RootState) => state.empManagement.empList
@@ -100,6 +111,26 @@ export const EmpManagementContent = () => {
     dispatch(fetchEmp(searchCondition));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleCloseDeleteForm = () => {
+    setIsDeleteForm(false);
+    setEntryId("");
+  };
+  const handleOpenDeleteForm = (id: string) => {
+    setEntryId(id);
+    setIsDeleteForm(true);
+  };
+  const handleConfirmDeleteForm = () => {
+    deleteDetailEmp(entryId)
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        dispatch(fetchEmp(searchCondition));
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
+  };
   const columns: GridColDef<EmpManageSearchResult>[] = useMemo(
     () => [
       {
@@ -278,7 +309,10 @@ export const EmpManagementContent = () => {
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton color="error">
+              <IconButton
+                color="error"
+                onClick={() => handleOpenDeleteForm(row.id)}
+              >
                 <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
             </>
@@ -341,6 +375,11 @@ export const EmpManagementContent = () => {
         handleSearch={handleSearch}
         isOpen={isOpenModalEdit}
         rowInfo={rowInfo}
+      />
+      <DialogDeleteComponent
+        openDialog={isDeleteForm}
+        handleClickClose={handleCloseDeleteForm}
+        handleClickConfirm={handleConfirmDeleteForm}
       />
     </Dashboard>
   );
