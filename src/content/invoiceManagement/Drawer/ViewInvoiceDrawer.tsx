@@ -61,6 +61,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const [imagePath, setImagePath] = useState("");
   const [isOpenCard, setIsOpenCard] = useState(false);
   const [branchList, setBranchList] = useState<branchType[]>([]);
+
+  const branchesCodeList = cookieSetting.get("branchesCodeList");
+
   const [infoCard, setInfoCard] = useState<InfoCard>({
     cardType: "",
     bank: "",
@@ -724,19 +727,34 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, branchList]);
-  useEffect(() => {
-    fetchBranch().then((res) => {
-      if (res.data) {
-        const branch = res.data.map((item: any) => {
-          return {
-            values: item?.name,
-            key: item?.id,
-          };
+
+  useMemo(() => {
+    if (branchesCodeList) {
+      const branch = JSON.parse(branchesCodeList).map((item: any) => {
+        return {
+          values: item?.name,
+          key: item?.id,
+        };
+      });
+      setBranchList(branch);
+      if (role === ROLE.EMPLOYEE) {
+        JSON.parse(branchesCodeList).map((item: { id: string; name: any }) => {
+          if (item?.id === branchId) {
+            setValue("branchIds", {
+              key: item.id,
+              values: item?.name,
+            });
+          }
         });
-        setBranchList(branch);
+      } else {
+        setValue("branchIds", {
+          key: JSON.parse(branchesCodeList)[0]?.id,
+          values: JSON.parse(branchesCodeList)[0]?.name,
+        });
       }
-    });
-  }, []);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, branchesCodeList]);
   return (
     <DrawerCustom
       widthDrawer={750}
@@ -809,7 +827,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       placeHoder: "",
                       results: branchList,
                       label: "",
-                      disable: role !== ROLE.ADMIN && true,
+                      disable: role === ROLE.EMPLOYEE && true,
                       type: "text",
                       setValue: setValue,
                       labelWidth: "100",

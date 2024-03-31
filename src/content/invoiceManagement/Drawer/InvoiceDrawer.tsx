@@ -795,8 +795,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         };
       });
       setBranchList(branch);
-      if (role !== ROLE.ADMIN) {
-        JSON.parse(branchesCodeList).map((item: { id: string ; name: any; }) => {
+      if (role === ROLE.EMPLOYEE) {
+        JSON.parse(branchesCodeList).map((item: { id: string; name: any }) => {
           if (item?.id === branchId) {
             setValue("branchIds", {
               key: item.id,
@@ -903,7 +903,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                       placeHoder: "",
                       results: branchList,
                       label: "",
-                      disable: role !== ROLE.ADMIN && true,
+                      disable: role === ROLE.EMPLOYEE && true,
                       type: "text",
                       setValue: setValue,
                       labelWidth: "100",
@@ -1029,7 +1029,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                       <Checkbox
                         disabled={
                           watch("usingCardPrePayFee") === true &&
-                          infoCard.prePaidFee <
+                          infoCard.prePaidFee <=
                             +watch("invoicesCalculate")[0].intake
                             ? false
                             : true

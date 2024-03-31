@@ -25,6 +25,7 @@ import {
 } from "@/actions/CardCustomerActions";
 import { useEffect, useMemo, useState } from "react";
 import {
+  ROLE,
   cookieSetting,
   formatDate,
   getDateOfPresent,
@@ -32,6 +33,8 @@ import {
 } from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import _ from "lodash";
+import { branchType } from "@/models/PortManagementModel";
+import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -117,6 +120,11 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
+  const [branchList, setBranchList] = useState([]);
+  const role = cookieSetting.get("roles");
+  const branchesCodeList = cookieSetting.get("branchesCodeList");
+  const branchId = cookieSetting.get("branchId");
+
   // useMemo(() => {
   //   if (listOfCardCustomer) {
   //     const listArr: any = [];
@@ -166,6 +174,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         nationalId: "",
       },
       isSearchCardTrading: false,
+      branchIds: [],
     },
   });
   const handleGetCard = (value: string) => {};
@@ -190,8 +199,18 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       cardCustomer,
       isSearchCardTrading,
       customerName,
+      branchIds,
     } = getValues();
-
+    let codeBranch = "";
+    if (branchIds.length > 0) {
+      branchIds.map((item: { key: string }, index) => {
+        if (branchIds.length === index + 1) {
+          codeBranch = codeBranch + item?.key;
+        } else {
+          codeBranch = codeBranch + item?.key + ",";
+        }
+      });
+    }
     // const fromDate = new Date(fromCreatedDate);
     // const toDate = new Date(toCreatedDate);
     const fromDate = new Date(fromCreatedDate);
@@ -206,6 +225,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
+      branchCodes: role === ROLE.ADMIN ? codeBranch : "",
       fromTransactionTotal:
         fromTransactionTotal === "" || fromTransactionTotal === "0"
           ? ""
@@ -280,6 +300,51 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       dispatch(fetchSearchCustomer({ customerName: value }));
     }
   };
+  useMemo(() => {
+    if (branchesCodeList) {
+      const branch = JSON.parse(branchesCodeList).map((item: any) => {
+        return {
+          value: item?.name,
+          key: item?.code,
+        };
+      });
+      setBranchList(branch);
+      if (role === ROLE.EMPLOYEE) {
+        let arr: { key: string; value: any }[] = [];
+
+        JSON.parse(branchesCodeList).map(
+          (item: { code: string; name: any; id: string }) => {
+            if (item?.id === branchId) {
+              arr.push({
+                key: item?.id,
+                value: item?.code,
+              });
+              // setValue("branchIds", [
+              //   {
+              //     key: item?.id,
+              //     value: item?.name,
+              //   },
+              // ]);
+            }
+          }
+        );
+        setValue("branchIds", arr as never[]);
+      } else {
+        let arr: { key: string; value: any }[] = [];
+        JSON.parse(branchesCodeList).map(
+          (item: { code: string; name: any }) => {
+            arr.push({
+              key: item?.code,
+              value: item?.name,
+            });
+          }
+        );
+
+        setValue("branchIds", arr as never[]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, branchesCodeList]);
   return (
     <DrawerCustom
       widthDrawer={450}
@@ -300,6 +365,23 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           <StyleInputContainer style={{ maxWidth: 240 }}>
             <LabelComponent require={true}>Mã hóa đơn</LabelComponent>
             <TextFieldCustom type={"text"} {...register("receiptCode")} />
+          </StyleInputContainer>
+          <StyleInputContainer>
+            <LabelComponent require={true}>Chi nhánh</LabelComponent>
+            <AutoCompleteMultiple
+              control={control}
+              props={{
+                name: "branchIds",
+                placeHoder: "",
+                results: branchList,
+                label: "",
+                disable: role === ROLE.EMPLOYEE && true,
+                type: "text",
+                setValue: setValue,
+                labelWidth: "65",
+                getData: getDataCustomerFromApi,
+              }}
+            />
           </StyleInputContainer>
           <StyleInputContainer style={{ maxWidth: 273 }}>
             <LabelComponent require={true}>Tên Khách Hàng</LabelComponent>

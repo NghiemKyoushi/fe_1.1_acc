@@ -99,7 +99,7 @@ export interface cardType {
 }
 export interface PayFeeType {
   customerCardId: string;
-  prePaidFee: string;
+  prePaidFee: number;
   imageId: string;
   branchId: string;
 }

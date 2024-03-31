@@ -547,7 +547,11 @@ export default function InvoiceManagementContent() {
         if (row.code === "TOTAL") {
           return "";
         }
-        return row.customerCardName + "-" + row.customerCardNumber;
+        return (
+          row.customerCardName +
+          "-" +
+          row.customerCardNumber.toString().slice(-4)
+        );
       },
       sortable: false,
       filterable: false,

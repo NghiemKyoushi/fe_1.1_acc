@@ -128,7 +128,7 @@ export default function CardCustomerContent() {
       branchId: formConfirm.branchIds.key,
       customerCardId: formConfirm.customerCardId,
       imageId: formConfirm.imageId,
-      prePaidFee: formConfirm.prePaidFee === "" ? 0 : formConfirm.prePaidFee,
+      prePaidFee: formConfirm.prePaidFee === "" ? 0 : +formConfirm.prePaidFee.toString().replaceAll(",", ""),
     };
     updatePayFeeCustomer(bodyUpdate)
       .then((res) => {
