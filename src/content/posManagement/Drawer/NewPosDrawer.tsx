@@ -186,7 +186,6 @@ const NewPosDrawer = (props: NewPosDrawerProps) => {
       note: note,
       branchIds: arrBranchId ? arrBranchId : [],
     };
-    console.log("checkdd", request)
     fetchCreatePos(request)
       .then((res) => {
         enqueueSnackbar("Tạo Pos thành công!!", { variant: "success" });

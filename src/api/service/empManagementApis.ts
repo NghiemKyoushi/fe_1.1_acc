@@ -1,7 +1,11 @@
 import { PosSearchParams } from "@/models/PortManagementModel";
 import { authApi } from "../authApi";
 import { fetchPosParams } from "./type";
-import { EditUserPrarams, EmpManageParamSearch, NewUserPrarams } from "@/models/EmpManagement";
+import {
+  EditUserPrarams,
+  EmpManageParamSearch,
+  NewUserPrarams,
+} from "@/models/EmpManagement";
 
 export const fetchCreateEmp = (praramsBody: NewUserPrarams) => {
   return authApi.post("/api/auth/signup", praramsBody);
@@ -21,4 +25,10 @@ export const fetchDetailEmp = (id: string) => {
 
 export const deleteDetailEmp = (id: string) => {
   return authApi.delete(`/api/users/${id}`);
+};
+
+export const changePasswordApi = (id: string, password: string) => {
+  return authApi.put(`/api/users/changePassword/${id}`, {
+    password: password,
+  });
 };

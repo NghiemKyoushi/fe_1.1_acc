@@ -38,6 +38,7 @@ const CustomerManagementReducers = (
             values: item.name,
             key: item.id,
             nationalId: item.nationalId,
+            percentageFee: item.percentageFee,
           };
         });
       } else {

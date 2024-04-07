@@ -100,7 +100,7 @@ export const AccBookManagementContent = () => {
   const [role, setRole] = useState<string | undefined>("");
   const [searchCondition, setSearchCondition] = useState<any>({
     ...initialPosSearch,
-    lastModifiedBy: Role !== ROLE.ADMIN ? code : null,
+    createdBy: code,
   });
   const [branchName, setBranchName] = useState<string | undefined>("");
 

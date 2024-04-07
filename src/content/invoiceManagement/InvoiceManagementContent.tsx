@@ -164,11 +164,11 @@ export default function InvoiceManagementContent() {
     if (branchesCodeList) {
       let codeBranch = "";
       JSON.parse(branchesCodeList).map(
-        (item: { code: string }, index: number) => {
+        (item: { branch: any }, index: number) => {
           if (JSON.parse(branchesCodeList).length === index + 1) {
-            codeBranch = codeBranch + item.code;
+            codeBranch = codeBranch + item.branch?.code;
           } else {
-            codeBranch = codeBranch + item.code + ",";
+            codeBranch = codeBranch + item.branch?.code + ",";
           }
         }
       );
@@ -289,7 +289,6 @@ export default function InvoiceManagementContent() {
         handleSearch();
       })
       .catch(function (error: any) {
-        console.log("error", error);
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
@@ -317,7 +316,6 @@ export default function InvoiceManagementContent() {
         handleSearch();
       })
       .catch(function (error: any) {
-        console.log("error", error);
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {

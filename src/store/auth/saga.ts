@@ -33,7 +33,7 @@ function* loginSaga(action: any) {
     const response: {
       token: string;
       name: string;
-      branches: Array<any>;
+      branchManagementScopes: Array<any>;
       id: string;
       roles: Array<any>;
       code: string;
@@ -42,23 +42,27 @@ function* loginSaga(action: any) {
       code: action.payload.values.email,
       password: action.payload.values.password,
     });
+    const sortBranch = response?.branchManagementScopes.sort(
+      (a: { orderId: number }, b: { orderId: number }) => a.orderId - b.orderId
+    );
     Cookies.set("token", response.token, { expires: 1 / 24 });
     Cookies.set("userName", response.name);
     Cookies.set("code", response.code);
-    Cookies.set("branchId", response.branches[0].id);
+    Cookies.set("branchId", sortBranch[0].id);
     Cookies.set("employeeId", response.id);
     Cookies.set("roles", response.roles[0].title);
-    Cookies.set("branchName", response.branches[0].name);
-    Cookies.set("branchCode", response.branches[0].code);
-    Cookies.set("branchesCodeList", JSON.stringify(response.branches));
+    Cookies.set("branchName", sortBranch[0].branch.name);
+    Cookies.set("branchCode", sortBranch[0].branch.code);
+
+    Cookies.set("branchesCodeList", JSON.stringify(sortBranch));
 
     yield put(
       loginSuccess({
         token: response.token,
         userName: response.name,
-        branchId: response.branches[0].id,
-        branchName: response.branches[0].name,
-        branch: response.branches,
+        branchId: sortBranch[0].id,
+        branchName: sortBranch[0].name,
+        branch: response.branchManagementScopes,
         employeeId: response.id,
         roles: response.roles[0].title,
       })

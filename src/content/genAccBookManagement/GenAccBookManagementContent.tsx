@@ -253,7 +253,6 @@ export const GenAccBookManagementContent = () => {
         handleSearch();
       })
       .catch(function (error: any) {
-        console.log("error", error);
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {

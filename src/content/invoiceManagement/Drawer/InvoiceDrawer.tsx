@@ -221,6 +221,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         key: "",
         values: "",
         nationalId: "",
+        percentageFee: "",
       },
       imageId: "",
       posSearch: "",
@@ -767,10 +768,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   };
   useEffect(() => {
     if (watch("customerName")?.key) {
+      setValue("percentageFee", watch("customerName").percentageFee);
       dispatch(fetchCardCustomer({ customerId: watch("customerName")?.key }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("customerName")]);
+
   useEffect(() => {
     if (watch("cardCustomer")?.key) {
       cardType.map((item: any) => {
@@ -788,26 +791,30 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   }, [watch("cardCustomer")]);
   useMemo(() => {
     if (branchesCodeList) {
-      const branch = JSON.parse(branchesCodeList).map((item: any) => {
+      const sortBranch = JSON.parse(branchesCodeList).sort(
+        (a: { orderId: number }, b: { orderId: number }) =>
+          a.orderId - b.orderId
+      );
+      const branch = sortBranch.map((item: { branch: { id: any; name: any; }; }) => {
         return {
-          values: item?.name,
-          key: item?.id,
+          key: item?.branch.id,
+          values: item?.branch.name,
         };
       });
       setBranchList(branch);
       if (role === ROLE.EMPLOYEE) {
-        JSON.parse(branchesCodeList).map((item: { id: string; name: any }) => {
-          if (item?.id === branchId) {
+        sortBranch.map((item: { branch: { id: string; name: any } }) => {
+          if (item?.branch.id === branchId) {
             setValue("branchIds", {
-              key: item.id,
-              values: item?.name,
+              key: item?.branch.id,
+              values: item?.branch.name,
             });
           }
         });
       } else {
         setValue("branchIds", {
-          key: JSON.parse(branchesCodeList)[0]?.id,
-          values: JSON.parse(branchesCodeList)[0]?.name,
+          key: sortBranch[0]?.branch.id,
+          values: sortBranch[0]?.branch.name,
         });
       }
     }

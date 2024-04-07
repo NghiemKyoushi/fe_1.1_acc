@@ -1,5 +1,6 @@
 import { fetchCreateCardCustomer } from "@/api/service/cardCustomerApis";
 import {
+  changePasswordApi,
   fetchCreateEmp,
   fetchUpdateEmp,
 } from "@/api/service/empManagementApis";
@@ -22,6 +23,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { ChangePassword } from "./ChangePassword";
+import Cookies from "js-cookie";
 
 export interface NEmpManagementDrawerProps {
   isOpen: boolean;
@@ -33,6 +36,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
   const { isOpen, handleCloseDrawer, handleSearch, rowInfo } = props;
   const [branchList, setBranchList] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [isOpenChangePassDrawer, setIsOpenChangePassDrawer] = useState(false);
 
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<valueForm>({
@@ -52,15 +56,20 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
           password: "",
           bank: "",
           accountNumber: "",
+          newPassword: "",
         };
       }, [rowInfo]),
     });
   useEffect(() => {
     if (rowInfo) {
-      const branchFormat = rowInfo?.branches.map((item: any) => {
+      const sortBranch = rowInfo?.branchManagementScopes.sort(
+        (a: { orderId: number }, b: { orderId: number }) =>
+          a.orderId - b.orderId
+      );
+      const branchFormat = sortBranch.map((item: any) => {
         return {
-          value: item?.name,
-          key: item?.id,
+          value: item?.branch.name,
+          key: item?.branch.id,
         };
       });
       reset({
@@ -77,12 +86,39 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
         },
         branchIds: branchFormat,
         accountBalance: getValueWithComma(rowInfo?.accountBalance),
+        newPassword: "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
-  const dispatch = useDispatch();
+
   const getValueBranch = (value: string) => {};
+  const handleChangePassword = () => {
+    if (watch("newPassword") === "") {
+      enqueueSnackbar("Mật khẩu không được bỏ trống", { variant: "warning" });
+      return;
+    }
+    changePasswordApi(rowInfo.id, watch("newPassword"))
+      .then((res) => {
+        enqueueSnackbar("Đổi mật khẩu thành công!!", {
+          variant: "success",
+        });
+        handleCloseChangePassDrawer();
+      })
+      .catch(function (error) {
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Đổi mật khẩu thất bại", { variant: "error" });
+        }
+      });
+  };
+  const handleCloseChangePassDrawer = () => {
+    setIsOpenChangePassDrawer(false);
+  };
+  const handleOpenChangePassDrawer = () => {
+    setIsOpenChangePassDrawer(true);
+  };
   const handleCreateUser = () => {
     const {
       name,
@@ -99,8 +135,11 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
     } = getValues();
     let arrBranchId: any[] = [];
     if (branchIds) {
-      arrBranchId = branchIds.map((item) => {
-        return item.key;
+      branchIds.map((item: { key: any }, index: number) => {
+        arrBranchId.push({
+          branchId: item.key,
+          orderId: index,
+        });
       });
     }
     const bodySend: EditUserPrarams = {
@@ -113,13 +152,20 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       bank: bank,
       accountNumber: accountNumber,
       roleIds: [roleIds?.keys],
-      branchIds: arrBranchId ? arrBranchId : [],
+      saveBranchManagementConfigRequests: arrBranchId ? arrBranchId : [],
     };
     fetchUpdateEmp(rowInfo.id, bodySend)
       .then((res) => {
         enqueueSnackbar("Cập nhật nhân viên thành công!!", {
           variant: "success",
         });
+
+        const sortBranch = res.data?.branchManagementScopes.sort(
+          (a: { orderId: number }, b: { orderId: number }) =>
+            a.orderId - b.orderId
+        );
+        // Cookies.set("branchesCodeList", JSON.stringify(sortBranch));
+
         handleCloseDrawer();
         handleSearch();
       })
@@ -225,13 +271,15 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 />
               </StyleInputContainer>
               <StyleInputContainer>
-                <LabelComponent require={true}>Số dư tài khoản</LabelComponent>
-                <TextFieldCustom
-                  type={"text"}
-                  disable="true"
-                  iconend={<p style={{ width: 24 }}>VND</p>}
-                  {...register("accountBalance", { required: true })}
-                />
+                <Button
+                  style={{ width: 218 }}
+                  variant="contained"
+                  size="small"
+                  color="warning"
+                  onClick={() => handleOpenChangePassDrawer()}
+                >
+                  Đổi mật khẩu
+                </Button>
               </StyleInputContainer>
             </StyleContainer>
             <StyleContainer>
@@ -277,7 +325,7 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 />
               </StyleInputContainer>
               <StyleInputContainer>
-                <LabelComponent require={true}>Lương tháng </LabelComponent>
+                <LabelComponent require={true}>Lương tháng</LabelComponent>
                 <TextFieldCustom
                   type={"text"}
                   {...register("salary", { required: true })}
@@ -298,6 +346,15 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                   {...register("accountNumber", { required: true })}
                 />
               </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Số dư tài khoản</LabelComponent>
+                <TextFieldCustom
+                  type={"text"}
+                  disable="true"
+                  iconend={<p style={{ width: 24 }}>VND</p>}
+                  {...register("accountBalance", { required: true })}
+                />
+              </StyleInputContainer>
             </StyleContainer>
           </SearchContainer>
           <Button
@@ -308,6 +365,12 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
           >
             Xác nhận
           </Button>
+          <ChangePassword
+            handleClickClose={handleCloseChangePassDrawer}
+            openDialog={isOpenChangePassDrawer}
+            handleClickConfirm={handleChangePassword}
+            control={control}
+          />
         </form>
       </PageContent>
     </DrawerCustom>

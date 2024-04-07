@@ -26,8 +26,6 @@ export interface fetchInvoiceInfoPrams {
   employeeId?: string;
   customerCardId?: string;
   posId?: string;
-  // startDate?: string;
-  // endDate?: string;
   page?: Number;
   pageSize?: Number;
   sorter?: string;

@@ -146,8 +146,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   useEffect(() => {
     if (rowInfo) {
       if (rowInfo?.imageId !== "") {
-        console.log("check IMG", rowInfo.imageId);
-
         setImageId(rowInfo.imageId);
         getPathImage(rowInfo.imageId).then((res) => {
           URL.createObjectURL(res.data);
@@ -191,7 +189,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           returnFromBank: 0,
         });
       }
-      console.log("dataTable", dataTable);
       reset({
         codeEmployee: rowInfo?.employee.name,
         percentageFee: rowInfo?.percentageFee,
@@ -730,26 +727,32 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
 
   useMemo(() => {
     if (branchesCodeList) {
-      const branch = JSON.parse(branchesCodeList).map((item: any) => {
-        return {
-          values: item?.name,
-          key: item?.id,
-        };
-      });
+      const sortBranch = JSON.parse(branchesCodeList).sort(
+        (a: { orderId: number }, b: { orderId: number }) =>
+          a.orderId - b.orderId
+      );
+      const branch = sortBranch.map(
+        (item: { branch: { id: any; name: any } }) => {
+          return {
+            key: item?.branch.id,
+            values: item?.branch.name,
+          };
+        }
+      );
       setBranchList(branch);
       if (role === ROLE.EMPLOYEE) {
-        JSON.parse(branchesCodeList).map((item: { id: string; name: any }) => {
-          if (item?.id === branchId) {
+        sortBranch.map((item: { branch: { id: string; name: any } }) => {
+          if (item?.branch.id === branchId) {
             setValue("branchIds", {
-              key: item.id,
-              values: item?.name,
+              key: item?.branch.id,
+              values: item?.branch.name,
             });
           }
         });
       } else {
         setValue("branchIds", {
-          key: JSON.parse(branchesCodeList)[0]?.id,
-          values: JSON.parse(branchesCodeList)[0]?.name,
+          key: sortBranch[0]?.branch.id,
+          values: sortBranch[0]?.branch.name,
         });
       }
     }

@@ -5,6 +5,7 @@ import { LabelComponent } from "@/components/common/LabelComponent";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { RootState } from "@/reducers/rootReducer";
 import {
+  Controller,
   FieldValues,
   UseFormRegister,
   UseFormSetValue,
@@ -12,13 +13,14 @@ import {
 } from "react-hook-form";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { Button } from "@mui/material";
+import { Button, Checkbox, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { fetchInvoice } from "@/actions/InvoiceManagementActions";
 import { listTranType } from "./NewAccountBookDrawer";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import { useEffect, useState } from "react";
 import {
+  ROLE,
   cookieSetting,
   formatDate,
   getDateOfPresent,
@@ -107,6 +109,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
 
   const dispatch = useDispatch();
   const [branch, setBranch] = useState<Array<any> | undefined>([]);
+  const role = cookieSetting.get("roles");
+  const code = cookieSetting.get("code");
 
   const {
     register,
@@ -134,6 +138,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
+      isAllBranch: false,
     },
   });
   const getDataCustomerFromApi = (value: string) => {
@@ -151,6 +156,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromTransactionTotal,
       transactionTypes,
       branch,
+      isAllBranch,
     } = getValues();
     let arr: any[] = [];
     if (transactionTypes.key !== "") {
@@ -178,6 +184,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           : _.toNumber(toTransactionTotal.toString().replaceAll(",", "")),
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
+      createdBy: isAllBranch && role === ROLE.ADMIN ? null : code,
     };
     handleChangeSearch(bodySend);
     dispatch(fetchAccBook(bodySend));
@@ -260,6 +267,25 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               }}
             />
           </StyleInputContainer>
+          {role === ROLE.ADMIN && (
+            <StyleCheckBoxTex>
+              <Controller
+                name="isAllBranch"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    disabled={watch("branch").key !== "" ? false : true}
+                    checked={watch("isAllBranch")}
+                    {...field}
+                  />
+                )}
+              />
+              <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
+                Tra cứu bút toán toàn chi nhánh
+              </Typography>
+            </StyleCheckBoxTex>
+          )}
+
           <StyleInputContainer>
             <LabelComponent require={true}>Số tiền</LabelComponent>
             <RangeNumberFilter
@@ -314,4 +340,9 @@ const StyleTitleSearch = styled.p`
   font-size: 12px;
   font-weight: 400px;
   margin: 0.5px;
+`;
+const StyleCheckBoxTex = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;

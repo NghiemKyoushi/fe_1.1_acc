@@ -120,6 +120,7 @@ export interface Selection {
   key: string;
   values: string;
   nationalId: string;
+  percentageFee: string;
 }
 export interface cardCustomerSelect {
   key: string;
