@@ -302,40 +302,43 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   };
   useMemo(() => {
     if (branchesCodeList) {
-      const branch = JSON.parse(branchesCodeList).map((item: any) => {
-        return {
-          value: item?.name,
-          key: item?.code,
-        };
-      });
+      const sortBranch = JSON.parse(branchesCodeList).sort(
+        (a: { orderId: number }, b: { orderId: number }) =>
+          a.orderId - b.orderId
+      );
+      const branch = sortBranch.map(
+        (item: { branch: { code: any; name: any } }) => {
+          return {
+            key: item?.branch?.code,
+            value: item?.branch?.name,
+          };
+        }
+      );
       setBranchList(branch);
       if (role === ROLE.EMPLOYEE) {
         let arr: { key: string; value: any }[] = [];
-
-        JSON.parse(branchesCodeList).map(
-          (item: { code: string; name: any; id: string }) => {
-            if (item?.id === branchId) {
+        sortBranch.map(
+          (item: {
+            branch: { id: string | undefined; code: any; name: any };
+          }) => {
+            if (item?.branch.id === branchId) {
               arr.push({
-                key: item?.id,
-                value: item?.code,
+                key: item?.branch?.code,
+                value: item?.branch?.name,
               });
-              // setValue("branchIds", [
-              //   {
-              //     key: item?.id,
-              //     value: item?.name,
-              //   },
-              // ]);
             }
           }
         );
         setValue("branchIds", arr as never[]);
       } else {
         let arr: { key: string; value: any }[] = [];
-        JSON.parse(branchesCodeList).map(
-          (item: { code: string; name: any }) => {
+        sortBranch.map(
+          (item: {
+            branch: { id: string | undefined; code: any; name: any };
+          }) => {
             arr.push({
-              key: item?.code,
-              value: item?.name,
+              key: item?.branch?.code,
+              value: item?.branch?.name,
             });
           }
         );

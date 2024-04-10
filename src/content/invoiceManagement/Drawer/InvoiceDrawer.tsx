@@ -795,12 +795,14 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         (a: { orderId: number }, b: { orderId: number }) =>
           a.orderId - b.orderId
       );
-      const branch = sortBranch.map((item: { branch: { id: any; name: any; }; }) => {
-        return {
-          key: item?.branch.id,
-          values: item?.branch.name,
-        };
-      });
+      const branch = sortBranch.map(
+        (item: { branch: { id: any; name: any } }) => {
+          return {
+            key: item?.branch.id,
+            values: item?.branch.name,
+          };
+        }
+      );
       setBranchList(branch);
       if (role === ROLE.EMPLOYEE) {
         sortBranch.map((item: { branch: { id: string; name: any } }) => {

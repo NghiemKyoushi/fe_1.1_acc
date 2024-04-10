@@ -308,15 +308,6 @@ export const GenAccBookManagementContent = () => {
           label: "input",
         }),
       },
-      // {
-      //   headerName: "Cập nhật bởi",
-      //   field: "lastModifiedBy",
-      //   width: 100,
-      //   headerAlign: "center",
-      //   align: "center",
-      //   sortable: false,
-      //   filterable: false,
-      // },
       {
         headerName: "Mã bút toán",
         field: "entryCode",

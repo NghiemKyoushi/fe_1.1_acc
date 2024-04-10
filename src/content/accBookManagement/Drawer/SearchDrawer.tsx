@@ -192,17 +192,45 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   };
   useEffect(() => {
     if (branchesCodeList) {
-      let arr: any[] = [];
-      JSON.parse(branchesCodeList).map((item: any) => {
-        arr.push({
-          key: item?.code,
-          values: item?.name,
-        });
-      });
-      setBranch([...arr]);
+      // let arr: any[] = [];
+      // JSON.parse(branchesCodeList).map((item: any) => {
+      //   arr.push({
+      //     key: item?.code,
+      //     values: item?.name,
+      //   });
+      // });
+      // setBranch([...arr]);
+      // setValue("branch", {
+      //   key: JSON.parse(branchesCodeList)[0].code,
+      //   values: JSON.parse(branchesCodeList)[0].name,
+      // });
+      const sortBranch = JSON.parse(branchesCodeList).sort(
+        (a: { orderId: number }, b: { orderId: number }) =>
+          a.orderId - b.orderId
+      );
+      const branch = sortBranch.map(
+        (item: { branch: { code: any; name: any } }) => {
+          return {
+            key: item?.branch?.code,
+            values: item?.branch?.name,
+          };
+        }
+      );
+      setBranch(branch);
+      let arr: { key: string; value: any }[] = [];
+      sortBranch.map(
+        (item: {
+          branch: { id: string | undefined; code: any; name: any };
+        }) => {
+          arr.push({
+            key: item?.branch?.code,
+            value: item?.branch?.name,
+          });
+        }
+      );
       setValue("branch", {
-        key: JSON.parse(branchesCodeList)[0].code,
-        values: JSON.parse(branchesCodeList)[0].name,
+        key: arr[0]?.key,
+        values: arr[0]?.value,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

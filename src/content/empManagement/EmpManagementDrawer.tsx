@@ -230,7 +230,6 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                     placeHoder: "",
                     results: roles,
                     label: "",
-                    // getData:((value) => setValue("customerName", value)),
                     type: "text",
                     setValue: setValue,
                     labelWidth: "114",
