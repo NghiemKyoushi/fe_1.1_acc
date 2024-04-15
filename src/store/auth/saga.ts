@@ -48,7 +48,7 @@ function* loginSaga(action: any) {
     Cookies.set("token", response.token, { expires: 1 / 24 });
     Cookies.set("userName", response.name);
     Cookies.set("code", response.code);
-    Cookies.set("branchId", sortBranch[0].id);
+    Cookies.set("branchId", sortBranch[0].branch.id);
     Cookies.set("employeeId", response.id);
     Cookies.set("roles", response.roles[0].title);
     Cookies.set("branchName", sortBranch[0].branch.name);
