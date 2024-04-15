@@ -63,8 +63,11 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
     } = getValues();
     let arrBranchId: any[] = [];
     if (branchIds) {
-      arrBranchId = branchIds.map((item) => {
-        return item.key;
+      branchIds.map((item: { key: any }, index: number) => {
+        arrBranchId.push({
+          branchId: item.key,
+          orderId: index,
+        });
       });
     }
     const bodySend: NewUserPrarams = {
@@ -77,7 +80,7 @@ export const EmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
       bank: bank,
       accountNumber: accountNumber,
       roleIds: roleIds?.keys ? [roleIds?.keys] : [],
-      branchIds: arrBranchId ? arrBranchId : [],
+      saveBranchManagementConfigRequests: arrBranchId ? arrBranchId : [],
     };
     fetchCreateEmp(bodySend)
       .then((res) => {

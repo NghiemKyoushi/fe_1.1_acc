@@ -29,7 +29,7 @@ export interface NewUserPrarams {
   phoneNumber?: string;
   password?: string;
   roleIds: Array<any>;
-  branchIds?: Array<any>;
+  saveBranchManagementConfigRequests?: Array<any>;
   salary?: string;
   bank: string;
   accountNumber: string;
