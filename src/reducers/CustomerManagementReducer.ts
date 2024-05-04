@@ -35,7 +35,7 @@ const CustomerManagementReducers = (
       if (action.payload.length > 0) {
         result = action.payload.map((item: any) => {
           return {
-            values: item.name,
+            values: item.name + " - " + item.phoneNumber,
             key: item.id,
             nationalId: item.nationalId,
             percentageFee: item.percentageFee,

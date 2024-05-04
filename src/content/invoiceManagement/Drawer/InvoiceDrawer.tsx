@@ -191,6 +191,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     bank: "",
     accountNumber: "",
     prePaidFee: 0,
+    prePaidFeeReceiverCode: "",
   });
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
@@ -783,6 +784,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             bank: item.item?.bank,
             accountNumber: item.item?.accountNumber,
             prePaidFee: item.item?.prePaidFee,
+            prePaidFeeReceiverCode: item.item?.prePaidFeeReceiverCode,
           });
         }
       });
@@ -969,7 +971,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   {infoCard.prePaidFee > 0 &&
                     `- Phí đã ứng:${getValueWithComma(
                       infoCard.prePaidFee
-                    )} VND`}
+                    )} VND`}{" "}
+                  {infoCard.prePaidFeeReceiverCode &&
+                    `( ${infoCard.prePaidFeeReceiverCode} )`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

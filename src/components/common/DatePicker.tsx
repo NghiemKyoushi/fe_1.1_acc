@@ -32,11 +32,6 @@ function DateSiglePicker({
                 {...fieldProps}
                 value={value}
                 inputFormat="DD-MM-YYYY"
-                // onChange={(value: any) => {
-                //   console.log("check1", value);
-                //   const date = dayjs(value);
-                //   setValue(name, date.format("DD-MM-YYYY"));
-                // }}
                 onChange={onChange}
                 renderInput={(props: any) => <TextFieldCustom {...props} />}
               />

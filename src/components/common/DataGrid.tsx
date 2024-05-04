@@ -280,12 +280,6 @@ export default function TableDataComponent(props: FilterCOmponent) {
         componentsProps={{
           pagination: { classes: null },
           filterPanel: {
-            // : (event: any) => {
-            //   console.log("check22222222222", event);
-            //   // if (event.key === 'Escape') {
-            //   //     apiRef.current.hideFilterPanel()
-            //   // }
-            // },
             filterFormProps: {
               deleteIconProps: {
                 sx: {

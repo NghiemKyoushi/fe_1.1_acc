@@ -161,14 +161,10 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
               </StyleContainer>
               <StyleContainer>
                 <StyleInputContainer>
-                  <LabelComponent require={true}>
-                    Số căn cước công dân
-                  </LabelComponent>
+                  <LabelComponent>Số căn cước công dân</LabelComponent>
                   <TextFieldCustom
                     type={"text"}
-                    {...register("nationalId", {
-                      required: "Số CCCD là bắt buộc",
-                    })}
+                    {...register("nationalId")}
                     onChange={(e: any) => {
                       setValue(
                         "nationalId",
@@ -176,21 +172,10 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
-                    {errors?.nationalId && errors.nationalId.message}
-                  </TextHelper>
                 </StyleInputContainer>
                 <StyleInputContainer>
                   <LabelComponent require={true}>Địa chỉ</LabelComponent>
-                  <TextFieldCustom
-                    type={"text"}
-                    {...register("address", {
-                      required: "Địa chỉ là bắt buộc",
-                    })}
-                  />
-                  <TextHelper>
-                    {errors?.address && errors.address.message}
-                  </TextHelper>
+                  <TextFieldCustom type={"text"} {...register("address")} />
                 </StyleInputContainer>
               </StyleContainer>
             </SearchContainer>

@@ -69,6 +69,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     bank: "",
     accountNumber: "",
     prePaidFee: 0,
+    prePaidFeeReceiverCode: "",
   });
   const {
     register,
@@ -220,9 +221,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         bank: rowInfo.customerCard.bank,
         accountNumber: rowInfo.customerCard.accountNumber,
         prePaidFee: rowInfo.customerCard.prePaidFee,
+        prePaidFeeReceiverCode: rowInfo.customerCard.prePaidFeeReceiverCode,
       });
-      // setValue("acceptExceededFee",rowInfo.acceptExceededFee )
-      // setValue("usingCardPrePayFee",rowInfo.usingCardPrePayFee )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
@@ -675,6 +675,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             bank: item.item?.bank,
             accountNumber: item.item?.accountNumber,
             prePaidFee: item.item?.prePaidFee,
+            prePaidFeeReceiverCode: item.item?.prePaidFeeReceiverCode,
           });
         }
       });
@@ -889,7 +890,9 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   {infoCard.prePaidFee > 0 &&
                     `- Phí đã ứng: ${getValueWithComma(
                       infoCard.prePaidFee
-                    )} VND`}
+                    )} VND`}{" "}
+                  {infoCard.prePaidFeeReceiverCode &&
+                    `( ${infoCard.prePaidFeeReceiverCode} )`}
                 </InfoBankCard>
               </StyleContainer>
             </SearchContainer>

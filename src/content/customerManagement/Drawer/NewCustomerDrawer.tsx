@@ -124,7 +124,7 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
                   </TextHelper>
                 </StyleInputContainer>
                 <StyleInputContainer>
-                  <LabelComponent require={true}>Phần trăm phí</LabelComponent>
+                  <LabelComponent>Phần trăm phí</LabelComponent>
                   <TextFieldCustom
                     type={"text"}
                     {...register("percentageFee")}
@@ -141,14 +141,10 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
               </StyleContainer>
               <StyleContainer>
                 <StyleInputContainer>
-                  <LabelComponent require={true}>
-                    Số căn cước công dân
-                  </LabelComponent>
+                  <LabelComponent>Số căn cước công dân</LabelComponent>
                   <TextFieldCustom
                     type={"text"}
-                    {...register("nationalId", {
-                      required: "Số CCCD là bắt buộc",
-                    })}
+                    {...register("nationalId")}
                     onChange={(e: any) => {
                       setValue(
                         "nationalId",
@@ -156,21 +152,10 @@ const NewCustomerDrawer = (props: NewPosDrawerProps) => {
                       );
                     }}
                   />
-                  <TextHelper>
-                    {errors?.nationalId && errors.nationalId.message}
-                  </TextHelper>
                 </StyleInputContainer>
                 <StyleInputContainer>
-                  <LabelComponent require={true}>Địa chỉ</LabelComponent>
-                  <TextFieldCustom
-                    type={"text"}
-                    {...register("address", {
-                      required: "Địa chỉ là bắt buộc",
-                    })}
-                  />
-                  <TextHelper>
-                    {errors?.address && errors.address.message}
-                  </TextHelper>
+                  <LabelComponent>Địa chỉ</LabelComponent>
+                  <TextFieldCustom type={"text"} {...register("address")} />
                 </StyleInputContainer>
               </StyleContainer>
             </SearchContainer>

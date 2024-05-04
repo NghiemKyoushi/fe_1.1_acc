@@ -199,4 +199,5 @@ export interface InfoCard {
   bank: string;
   accountNumber: string;
   prePaidFee: number;
+  prePaidFeeReceiverCode: string;
 }
