@@ -275,40 +275,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           billcode: "",
           check: "",
         },
-        {
-          id: "",
-          pos: {
-            key: "",
-            values: "",
-          },
-          posId: {
-            key: "",
-            values: "",
-          },
-          money: "",
-          typeOfCard: "",
-          fee: "",
-          feeafterpay: 0,
-          billcode: "",
-          check: "",
-        },
-        {
-          id: "",
-          pos: {
-            key: "",
-            values: "",
-          },
-          posId: {
-            key: "",
-            values: "",
-          },
-          money: "",
-          typeOfCard: "",
-          fee: "",
-          feeafterpay: 0,
-          billcode: "",
-          check: "",
-        },
       ],
       invoicesCalculate: [
         {
@@ -428,6 +394,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           key: watch("branchIds").key,
           values: watch("branchIds").values,
         };
+        setImageId("");
         reset();
         setValue("branchIds", branch);
       })
