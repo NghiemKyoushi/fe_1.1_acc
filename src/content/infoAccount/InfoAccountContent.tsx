@@ -43,10 +43,10 @@ function InfoAccountContent() {
       fetchDetailEmp(employeeId).then((res: any) => {
         const rowInfo = res.data;
         let arrBranchId: any[] = [];
-        const branchFormat = rowInfo?.branches.map((item: any) => {
+        const branchFormat = rowInfo?.branchManagementScopes.map((item: any) => {
           return {
-            value: item?.name,
-            key: item?.id,
+            value: item?.branch.name,
+            key: item?.branch.id,
           };
         });
         reset({
@@ -70,7 +70,7 @@ function InfoAccountContent() {
   }, [employeeId]);
   const getDataCustomerFromApi = (value: string) => {};
   const getValueBranch = (value: string) => {};
-  
+
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>THÔNG TIN TÀI KHOẢN</h3>
@@ -203,7 +203,6 @@ function InfoAccountContent() {
           </StyleContainer>
         </div>
       </form>
-     
     </Dashboard>
   );
 }

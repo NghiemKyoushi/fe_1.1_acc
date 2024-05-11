@@ -648,6 +648,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         });
         reset();
         setImagePath("");
+        setImageId("");
         handleCloseDrawer();
         handleSearch();
       })

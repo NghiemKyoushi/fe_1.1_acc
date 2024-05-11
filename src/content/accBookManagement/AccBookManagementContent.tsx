@@ -785,5 +785,5 @@ const StyleFilterContainer = styled.div`
   justify-content: center;
   align-items: center;
   gap: 1px;
-  width: 30%;
+  width: 45%;
 `;
