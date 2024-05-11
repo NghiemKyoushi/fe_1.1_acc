@@ -672,8 +672,8 @@ export const AccBookManagementContent = () => {
           justifyContent: "space-between",
         }}
       >
-        <StyleFilterContainer>
-          <StyleTitleSearch>Số dư hiện tại</StyleTitleSearch>
+        <StyleFilterContainer2>
+          <StyleTitleSearch2>Số dư hiện tại</StyleTitleSearch2>
           <TextFieldCustom
             type={"text"}
             variantshow="outlined"
@@ -682,7 +682,7 @@ export const AccBookManagementContent = () => {
             {...register("accountBalance")}
             iconend={<p style={{ width: 24 }}>VND</p>}
           />
-        </StyleFilterContainer>
+        </StyleFilterContainer2>
         <div
           style={{
             margin: "7px 0px",
@@ -774,12 +774,22 @@ export const AccBookManagementContent = () => {
 export default AccBookManagementContent;
 
 const StyleTitleSearch = styled.p`
+  font-size: 12px;
+  font-weight: 400px;
+  margin: 0.5px;
+`;
+const StyleTitleSearch2 = styled.p`
   font-size: 16px;
   font-weight: bold;
   width: 200px;
   margin: 0.5px;
 `;
 const StyleFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 3px 3px;
+`;
+const StyleFilterContainer2 = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
