@@ -27,6 +27,7 @@ import {
   getValueWithComma,
 } from "@/utils";
 import _ from "lodash";
+import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -134,10 +135,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
-      branch: {
-        key: "",
-        values: "",
-      },
+      branch: [],
       isAllBranch: false,
     },
   });
@@ -169,11 +167,21 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const gettoDate = new Date(toCreatedDate);
     const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
 
+    let codeBranch = "";
+    if (branch.length > 0) {
+      branch.map((item: { key: string }, index) => {
+        if (branch.length === index + 1) {
+          codeBranch = codeBranch + item?.key;
+        } else {
+          codeBranch = codeBranch + item?.key + ",";
+        }
+      });
+    }
     const bodySend = {
       ...searchCondition,
       entryCode: entryCode,
       transactionTypes: transactionTypes.key,
-      branchCodes: branch.key,
+      branchCodes: codeBranch,
       fromTransactionTotal:
         fromTransactionTotal === "0" || fromTransactionTotal === "0"
           ? ""
@@ -212,10 +220,13 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         (item: { branch: { code: any; name: any } }) => {
           return {
             key: item?.branch?.code,
-            values: item?.branch?.name,
+            value: item?.branch?.name,
           };
         }
       );
+      console.log('====================================');
+      console.log('branch',branch);
+      console.log('====================================');
       setBranch(branch);
       let arr: { key: string; value: any }[] = [];
       sortBranch.map(
@@ -228,10 +239,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           });
         }
       );
-      setValue("branch", {
-        key: arr[0]?.key,
-        values: arr[0]?.value,
-      });
+      setValue("branch", arr as never[]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branchesCodeList]);
@@ -281,7 +289,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           </StyleInputContainer>
           <StyleInputContainer>
             <LabelComponent require={true}>Chi nhánh</LabelComponent>
-            <SelectSearchComponent
+            <AutoCompleteMultiple
               control={control}
               props={{
                 name: "branch",
@@ -302,7 +310,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                 control={control}
                 render={({ field }) => (
                   <Checkbox
-                    disabled={watch("branch").key !== "" ? false : true}
+                    disabled={watch("branch").length !== 0 ? false : true}
                     checked={watch("isAllBranch")}
                     {...field}
                   />

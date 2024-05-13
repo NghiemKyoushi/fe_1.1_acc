@@ -110,7 +110,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const bodySend = {
       ...searchCondition,
       accountNumber: accountNumber,
-      customerName: customerName.values,
+      customerName: customerName.values.split(" - ")[0],
       fromPaymentDueDate: fromPaymentDueDate,
       toPaymentDueDate: toPaymentDueDate,
     };
