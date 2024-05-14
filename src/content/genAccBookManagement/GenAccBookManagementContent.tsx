@@ -420,6 +420,27 @@ export const GenAccBookManagementContent = () => {
         }),
       },
       {
+        headerName: "Số dư",
+        field: "remainingBalance",
+        width: 149,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        cellClassName: (params: GridCellParams) => {
+          if (params.row.entryCode !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
+        },
+        valueGetter: ({ row }) => {
+          if (row?.remainingBalance) {
+            return getValueWithComma(row?.remainingBalance);
+          }
+          return "";
+        },
+      },
+      {
         headerName: "Thu",
         field: "intake",
         width: 149,
@@ -511,27 +532,6 @@ export const GenAccBookManagementContent = () => {
           }
           if (row.entryCode === "TOTAL") {
             return row.repayment;
-          }
-          return "";
-        },
-      },
-      {
-        headerName: "Số dư",
-        field: "remainingBalance",
-        width: 149,
-        headerAlign: "center",
-        align: "center",
-        sortable: false,
-        filterable: false,
-        cellClassName: (params: GridCellParams) => {
-          if (params.row.entryCode !== "TOTAL") {
-            return "";
-          }
-          return "super-app-theme--cell";
-        },
-        valueGetter: ({ row }) => {
-          if (row?.remainingBalance) {
-            return getValueWithComma(row?.remainingBalance);
           }
           return "";
         },

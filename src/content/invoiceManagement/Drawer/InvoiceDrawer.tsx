@@ -609,7 +609,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   (+watch("percentageFee") / 100);
             }
           }
-          return feeafterpay;
+          return  getValueWithComma(feeafterpay);
         },
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
           if (params.row.check !== "TOTAL") {
