@@ -841,7 +841,6 @@ export default function InvoiceManagementContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const onPageChange = (pageNumber: number) => {
-    console.log("pageNumber", pageNumber);
     const searchPage = {
       ...searchCondition,
       page: pageNumber,

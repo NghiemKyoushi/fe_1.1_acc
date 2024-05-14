@@ -224,9 +224,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           };
         }
       );
-      console.log('====================================');
-      console.log('branch',branch);
-      console.log('====================================');
       setBranch(branch);
       let arr: { key: string; value: any }[] = [];
       sortBranch.map(
