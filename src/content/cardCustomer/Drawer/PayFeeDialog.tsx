@@ -56,6 +56,13 @@ export const PayFeeDialogComponent = (props: InsertBookDialogProps) => {
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
+  useEffect(() => {
+    if (!openDialog) {
+      setValue("formConfirm.prePaidFee", 0);
+      setValue("formConfirm.branchIds", 0);
+      setImageId("");
+    }
+  }, [openDialog]);
   const getDataCustomerFromApi = (value: string) => {};
   return (
     <CustomizedDialogs
@@ -64,7 +71,9 @@ export const PayFeeDialogComponent = (props: InsertBookDialogProps) => {
       confirm={true}
       titleConfirmButton="Xác nhận"
       title={"Cập nhật phí đã ứng"}
-      handleClickClose={handleClickClose}
+      handleClickClose={() => {
+        handleClickClose();
+      }}
       handleClickConfirm={handleClickConfirm}
     >
       <div className="app">
