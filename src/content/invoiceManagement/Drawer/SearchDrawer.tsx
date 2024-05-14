@@ -278,7 +278,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toCreatedDate: toDate.toISOString(),
       customerCardId: cardCustomer.key,
       employeeId: "",
-      customerName: customerName.values,
+      customerName: customerName.values.split(" - ")[0],
       receiptStatusList:
         watch("cardCustomer.key") !== "" && isSearchCardTrading === true
           ? "COMPLETED,LOANED"

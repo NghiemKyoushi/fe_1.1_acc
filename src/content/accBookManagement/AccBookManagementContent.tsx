@@ -573,6 +573,27 @@ export const AccBookManagementContent = () => {
         },
       },
       {
+        headerName: "Số dư",
+        field: "remainingBalance",
+        width: 149,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        cellClassName: (params: GridCellParams) => {
+          if (params.row.entryCode !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
+        },
+        valueGetter: ({ row }) => {
+          if (row?.remainingBalance) {
+            return getValueWithComma(row?.remainingBalance);
+          }
+          return "";
+        },
+      },
+      {
         headerName: "Thao Tác",
         field: "actions",
         headerAlign: "center",

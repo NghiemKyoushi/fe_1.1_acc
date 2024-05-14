@@ -650,7 +650,7 @@ export default function InvoiceManagementContent() {
       width: 130,
       headerAlign: "center",
       align: "center",
-      hide: true,
+      hide: role === ROLE.ADMIN ? false : true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
@@ -841,10 +841,12 @@ export default function InvoiceManagementContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const onPageChange = (pageNumber: number) => {
+    console.log("pageNumber", pageNumber);
     const searchPage = {
       ...searchCondition,
       page: pageNumber,
     };
+    setSearchCondition({ ...searchPage });
     dispatch(fetchInvoice(searchPage));
   };
   const onPageSizeChange = (pageSize: number) => {
@@ -852,6 +854,7 @@ export default function InvoiceManagementContent() {
       ...searchCondition,
       pageSize: pageSize,
     };
+    setSearchCondition({ ...searchPage });
     dispatch(fetchInvoice(searchPage));
   };
 
