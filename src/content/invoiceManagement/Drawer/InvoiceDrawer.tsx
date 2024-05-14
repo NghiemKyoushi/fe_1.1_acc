@@ -823,7 +823,10 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         widthDrawer={718}
         isOpen={isOpen}
         title="Tạo Hóa đơn"
-        handleClose={handleCloseDrawer}
+        handleClose={() => {
+          setValue("usingCardPrePayFee", false);
+          handleCloseDrawer();
+        }}
       >
         <form
           style={{ padding: 16 }}

@@ -864,7 +864,7 @@ export default function InvoiceManagementContent() {
         sorter: sortModel[0].field,
         sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
       };
-      // setSearchCondition(sortPage);
+      // setSearchCondition({...sortPage});
       dispatch(fetchInvoice(sortPage));
     }
   };
