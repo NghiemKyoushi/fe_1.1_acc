@@ -609,7 +609,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   (+watch("percentageFee") / 100);
             }
           }
-          return  getValueWithComma(feeafterpay);
+          return getValueWithComma(feeafterpay);
         },
         cellClassName: (params: GridCellParams<InvoiceCreate>) => {
           if (params.row.check !== "TOTAL") {
@@ -974,72 +974,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 />
               </Box>
             </StyleDataGrid>
-            <StyleDataGrid2>
-              <label style={{ fontSize: 16, fontWeight: "bold" }}>
-                Cân đối kế toán
-              </label>
-              <TableDataComponent
-                columns={columnsOther}
-                dataInfo={invoicesCalculateField}
-                disableFilter={true}
-                isPage={true}
-                rowCount={100}
-                getRowId={getRowId}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  // gridTemplateColumns: "repeat(2, 1fr)",
-                  flexDirection: "column",
-                  marginTop: -30,
-                }}
-              >
-                <StyleCheckBoxTex>
-                  <Controller
-                    name="usingCardPrePayFee"
-                    control={control}
-                    render={({ field }) => <Checkbox {...field} />}
-                  />
-                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
-                    Sử dụng phí đã ứng của thẻ
-                  </Typography>
-                </StyleCheckBoxTex>
-                <StyleCheckBoxTex>
-                  <Controller
-                    name="acceptExceededFee"
-                    control={control}
-                    render={({ field }) => (
-                      <Checkbox
-                        disabled={
-                          watch("usingCardPrePayFee") === true &&
-                          infoCard.prePaidFee <=
-                            +watch("invoicesCalculate")[0].intake
-                            ? false
-                            : true
-                        }
-                        {...field}
-                      />
-                    )}
-                  />
-                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
-                    Xác nhận thu đủ phần thiếu của phí đã ứng
-                  </Typography>
-                </StyleCheckBoxTex>
-              </div>
-              {/* <div style={{ width: "60%" }}>
-                <Typography style={{ fontWeight: "bold" }}>Ghi chú</Typography>
-                <TextareaComponent
-                  control={control}
-                  valueInput={""}
-                  name={"note"}
-                  label={"Ghi chú"}
-                  width={"100"}
-                  type={""}
-                  disable={false}
-                />
-              </div> */}
-            </StyleDataGrid2>
-            <ContainerSum>
+            <StyleInputContainer2>
               <StyleInputContainer>
                 <label style={{ fontSize: 17, fontWeight: "bold" }}>
                   TỔNG TIỀN SAU PHÍ
@@ -1056,10 +991,80 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   }
                 />
               </StyleInputContainer>
-              <StyleInputContainer>
-                <ImageUpload handleGetFile={handleGetFile} filePath="" />
-              </StyleInputContainer>
-            </ContainerSum>
+            </StyleInputContainer2>
+
+            <StyleDataGrid2>
+              <label style={{ fontSize: 16, fontWeight: "bold" }}>
+                Cân đối kế toán
+              </label>
+              <TableDataComponent
+                columns={columnsOther}
+                dataInfo={invoicesCalculateField}
+                disableFilter={true}
+                isPage={true}
+                rowCount={100}
+                getRowId={getRowId}
+              />
+
+              <ContainerSum>
+                <div
+                  style={{
+                    display: "flex",
+                    // gridTemplateColumns: "repeat(2, 1fr)",
+                    flexDirection: "column",
+                  }}
+                >
+                  <StyleCheckBoxTex>
+                    <Controller
+                      name="usingCardPrePayFee"
+                      control={control}
+                      render={({ field }) => <Checkbox {...field} />}
+                    />
+                    <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                      Sử dụng phí đã ứng của thẻ
+                    </Typography>
+                  </StyleCheckBoxTex>
+                  <StyleCheckBoxTex>
+                    <Controller
+                      name="acceptExceededFee"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          disabled={
+                            watch("usingCardPrePayFee") === true &&
+                            infoCard.prePaidFee <=
+                              +watch("invoicesCalculate")[0].intake
+                              ? false
+                              : true
+                          }
+                          {...field}
+                        />
+                      )}
+                    />
+                    <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                      Xác nhận thu đủ phần thiếu của phí đã ứng
+                    </Typography>
+                  </StyleCheckBoxTex>
+                </div>
+                <StyleInputContainer>
+                  <ImageUpload handleGetFile={handleGetFile} filePath="" />
+                </StyleInputContainer>
+              </ContainerSum>
+
+              {/* <div style={{ width: "60%" }}>
+                <Typography style={{ fontWeight: "bold" }}>Ghi chú</Typography>
+                <TextareaComponent
+                  control={control}
+                  valueInput={""}
+                  name={"note"}
+                  label={"Ghi chú"}
+                  width={"100"}
+                  type={""}
+                  disable={false}
+                />
+              </div> */}
+            </StyleDataGrid2>
+
             <Box
               sx={{
                 justifyContent: "flex-end",
@@ -1092,7 +1097,16 @@ const StyleInputContainer = styled.div`
   align-items: flex-start;
   gap: 4px;
 `;
-
+const StyleInputContainer2 = styled.div`
+  padding: 0px 16px;
+  max-width: 250px;
+  display: flex;
+  margin-top: -15px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+`;
 const StyleContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -1104,11 +1118,10 @@ const SearchContainer = styled.div`
   gap: 64px;
 `;
 const ContainerSum = styled.div`
+  margin-top: -15px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0px 16px;
-  margin-top: -50px;
 `;
 const InfoBankCard = styled.div`
   display: flex;
@@ -1124,7 +1137,6 @@ const StyleDataGrid = styled.div`
   padding: 0px 16px;
 `;
 const StyleDataGrid2 = styled.div`
-  margin-top: -15px;
   width: 683px;
   padding: 0px 16px;
 `;

@@ -930,6 +930,24 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 )}
               </Box>
             </StyleDataGrid>
+            <StyleInputContainer2>
+              <label style={{ fontSize: 17, fontWeight: "bold" }}>
+                TỔNG TIỀN SAU PHÍ - SHIP
+              </label>
+              <TextFieldCustom
+                iconend={<p style={{ width: 24 }}>VND</p>}
+                type={"text"}
+                disable="true"
+                value={
+                  _.isNumber(totalfee)
+                    ? getValueWithComma(
+                        +totalfee -
+                          +watch("shipmentFee").toString().replace(/,/g, "")
+                      ).toString()
+                    : "0"
+                }
+              />
+            </StyleInputContainer2>
             <StyleDataGrid2>
               <label style={{ fontSize: 16, fontWeight: "bold" }}>
                 Cân đối kế toán
@@ -942,51 +960,59 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 rowCount={100}
                 getRowId={getRowId}
               />
-              <div
-                style={{
-                  display: "flex",
-                  // gridTemplateColumns: "repeat(2, 1fr)",
-                  flexDirection: "column",
-                  marginTop: -30,
-                }}
-              >
-                <StyleCheckBoxTex>
-                  <Controller
-                    control={control}
-                    name={`usingCardPrePayFee`}
-                    defaultValue={false}
-                    render={({ field: { onChange, value } }) => (
-                      <Checkbox checked={value} onChange={onChange} />
-                    )}
-                  />
+              <ContainerSum>
+                <div
+                  style={{
+                    display: "flex",
+                    // gridTemplateColumns: "repeat(2, 1fr)",
+                    flexDirection: "column",
+                  }}
+                >
+                  <StyleCheckBoxTex>
+                    <Controller
+                      control={control}
+                      name={`usingCardPrePayFee`}
+                      defaultValue={false}
+                      render={({ field: { onChange, value } }) => (
+                        <Checkbox checked={value} onChange={onChange} />
+                      )}
+                    />
 
-                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
-                    Sử dụng phí đã ứng của thẻ
-                  </Typography>
-                </StyleCheckBoxTex>
-                <StyleCheckBoxTex>
-                  <Controller
-                    name="acceptExceededFee"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <Checkbox
-                        disabled={
-                          watch("usingCardPrePayFee") === true &&
-                          rowInfo.customerCard.prePaidFee <
-                            +watch("invoicesCalculate")[0].intake
-                            ? false
-                            : true
-                        }
-                        checked={value}
-                        onChange={onChange}
-                      />
-                    )}
+                    <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                      Sử dụng phí đã ứng của thẻ
+                    </Typography>
+                  </StyleCheckBoxTex>
+                  <StyleCheckBoxTex>
+                    <Controller
+                      name="acceptExceededFee"
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <Checkbox
+                          disabled={
+                            watch("usingCardPrePayFee") === true &&
+                            rowInfo.customerCard.prePaidFee <
+                              +watch("invoicesCalculate")[0].intake
+                              ? false
+                              : true
+                          }
+                          checked={value}
+                          onChange={onChange}
+                        />
+                      )}
+                    />
+                    <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
+                      Xác nhận thu đủ phần thiếu của phí đã ứng
+                    </Typography>
+                  </StyleCheckBoxTex>
+                </div>
+                <StyleInputContainer>
+                  <ImageUpload
+                    handleGetFile={handleGetFile}
+                    filePath={imagePath}
                   />
-                  <Typography sx={{ fontStyle: "italic", fontSize: 14 }}>
-                    Xác nhận thu đủ phần thiếu của phí đã ứng
-                  </Typography>
-                </StyleCheckBoxTex>
-              </div>
+                </StyleInputContainer>
+              </ContainerSum>
+
               {/* <div style={{ width: "60%" }}>
                 <TextareaComponent
                   control={control}
@@ -999,31 +1025,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 />
               </div> */}
             </StyleDataGrid2>
-            <ContainerSum>
-              <StyleInputContainer>
-                <label style={{ fontSize: 17, fontWeight: "bold" }}>
-                  TỔNG TIỀN SAU PHÍ
-                </label>
-                <TextFieldCustom
-                  type={"text"}
-                  disable="true"
-                  value={
-                    _.isNumber(totalfee)
-                      ? getValueWithComma(
-                          +totalfee -
-                            +watch("shipmentFee").toString().replace(/,/g, "")
-                        ).toString()
-                      : "0"
-                  }
-                />
-              </StyleInputContainer>
-              <StyleInputContainer>
-                <ImageUpload
-                  handleGetFile={handleGetFile}
-                  filePath={imagePath}
-                />
-              </StyleInputContainer>
-            </ContainerSum>
+
             <Box
               sx={{
                 justifyContent: "flex-end",
@@ -1059,6 +1061,17 @@ const StyleInputContainer = styled.div`
   gap: 4px;
 `;
 
+const StyleInputContainer2 = styled.div`
+  padding: 0px 16px;
+  max-width: 250px;
+  display: flex;
+  margin-top: -15px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+`;
+
 const StyleContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -1070,11 +1083,10 @@ const SearchContainer = styled.div`
   gap: 64px;
 `;
 const ContainerSum = styled.div`
+  margin-top: -15px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0px 16px;
-  margin-top: -30px;
 `;
 const InfoBankCard = styled.div`
   display: flex;
@@ -1091,7 +1103,6 @@ const StyleDataGrid = styled.div`
   padding: 0px 16px;
 `;
 const StyleDataGrid2 = styled.div`
-  margin-top: -15px;
   width: 683px;
   padding: 0px 16px;
 `;

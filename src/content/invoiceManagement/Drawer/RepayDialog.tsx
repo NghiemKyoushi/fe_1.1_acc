@@ -46,16 +46,33 @@ export const RepayDialogComponent = (props: InsertBookDialogProps) => {
             disable={false}
           />
         </StyleInputContainer>
-
-        <StyleInputContainer>
-          <LabelComponent require={true}>Số tiền</LabelComponent>
-          <InputNumber
-            InputWidth="100%"
-            name={`formRepay.repaidAmount`}
-            control={control}
-            type={true}
-          />
-        </StyleInputContainer>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 30,
+            marginTop: 10,
+          }}
+        >
+          <StyleInputContainer>
+            <LabelComponent require={true}>Số tiền</LabelComponent>
+            <InputNumber
+              InputWidth="100%"
+              name={`formRepay.repaidAmount`}
+              control={control}
+              type={true}
+            />
+          </StyleInputContainer>
+          <StyleInputContainer>
+            <LabelComponent require={true}>Công nợ</LabelComponent>
+            <InputNumber
+              InputWidth="100%"
+              name={`formRepay.loan`}
+              control={control}
+              type={true}
+            />
+          </StyleInputContainer>
+        </div>
       </div>
       <div style={{ marginTop: 20 }}>
         <ImageUpload handleGetFile={handleGetFile} filePath="" />

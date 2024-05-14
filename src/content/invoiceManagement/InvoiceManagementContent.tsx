@@ -219,6 +219,7 @@ export default function InvoiceManagementContent() {
           receiptId: "",
           explanation: "",
           repaidAmount: 0,
+          loan: 0,
         },
         noteInfo: "",
       },
@@ -267,11 +268,13 @@ export default function InvoiceManagementContent() {
     setValue("formConfirm.explanation", "");
     setValue("formConfirm.receiptId", "");
     setValue("formConfirm.repaidAmount", 0);
+    setValue("formRepay.loan", 0);
     setIsOpenRepay(false);
   };
 
-  const handleOpenRepay = (id: string) => {
+  const handleOpenRepay = (id: string, loan: number) => {
     setReceiptsId(id);
+    setValue("formRepay.loan", loan);
     setIsOpenRepay(true);
   };
 
@@ -816,7 +819,10 @@ export default function InvoiceManagementContent() {
             row.code !== "TOTAL" &&
             row.code !== null ? (
               // row.receiptStatusEnum === "COMPLETED"
-              <IconButton color="info" onClick={() => handleOpenRepay(row.id)}>
+              <IconButton
+                color="info"
+                onClick={() => handleOpenRepay(row.id, row.loan)}
+              >
                 <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
               </IconButton>
             ) : (
