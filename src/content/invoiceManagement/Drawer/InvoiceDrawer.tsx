@@ -976,20 +976,24 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             </StyleDataGrid>
             <StyleInputContainer2>
               <StyleInputContainer>
-                <label style={{ fontSize: 17, fontWeight: "bold" }}>
-                  TỔNG TIỀN SAU PHÍ
+                <label
+                  style={{ fontSize: 17, fontWeight: "bold", width: "100%" }}
+                >
+                  TỔNG TIỀN SAU PHÍ - SHIP
                 </label>
-                <TextFieldCustom
-                  type={"text"}
-                  disable="true"
-                  value={
-                    _.isNumber(totalfee)
-                      ? getValueWithComma(
-                          +totalfee - +watch("shipmentFee").replace(/,/g, "")
-                        ).toString()
-                      : "0"
-                  }
-                />
+                <div style={{ maxWidth: 250 }}>
+                  <TextFieldCustom
+                    type={"text"}
+                    disable="true"
+                    value={
+                      _.isNumber(totalfee)
+                        ? getValueWithComma(
+                            +totalfee - +watch("shipmentFee").replace(/,/g, "")
+                          ).toString()
+                        : "0"
+                    }
+                  />
+                </div>
               </StyleInputContainer>
             </StyleInputContainer2>
 
@@ -1099,7 +1103,6 @@ const StyleInputContainer = styled.div`
 `;
 const StyleInputContainer2 = styled.div`
   padding: 0px 16px;
-  max-width: 250px;
   display: flex;
   margin-top: -15px;
   flex-direction: column;
