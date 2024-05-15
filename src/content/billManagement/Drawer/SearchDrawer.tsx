@@ -169,7 +169,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toCreatedDate: toDate.toISOString(),
       posCode: posCode?.values,
       code: code,
-      fromMoneyAmount: fromMoneyAmount === 0 ? "" : fromMoneyAmount,
+      fromMoneyAmount: +fromMoneyAmount === 0 ? "" : fromMoneyAmount,
       toMoneyAmount: toMoneyAmount === 0 ? "" : toMoneyAmount,
       fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
       toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
