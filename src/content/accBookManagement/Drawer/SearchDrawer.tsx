@@ -95,7 +95,7 @@ const offsetInMinutes = previous.getTimezoneOffset();
 previous.setMinutes(previous.getMinutes() - offsetInMinutes);
 const dateNext = new Date();
 const nextDay = new Date(dateNext.getTime());
-nextDay.setDate(dateNext.getDate() + 1);
+nextDay.setDate(dateNext.getDate());
 const offsetInMinutes2 = nextDay.getTimezoneOffset();
 nextDay.setMinutes(nextDay.getMinutes() - offsetInMinutes2);
 
@@ -165,7 +165,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
 
     const gettoDate = new Date(toCreatedDate);
-    const toDate = new Date(gettoDate.setDate(gettoDate.getDate() + 1));
+    const toDate = new Date(gettoDate.setDate(gettoDate.getDate()));
 
     let codeBranch = "";
     if (branch.length > 0) {
