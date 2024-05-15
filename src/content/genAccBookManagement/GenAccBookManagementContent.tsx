@@ -8,8 +8,6 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { useSelector } from "react-redux";
 import { RootState } from "@/reducers/rootReducer";
-
-import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import {
@@ -40,7 +38,7 @@ import { enqueueSnackbar } from "notistack";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { useForm } from "react-hook-form";
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
-import SelectSearchComponent from "@/components/common/AutoComplete";
+// import SelectSearchComponent from "@/components/common/AutoComplete";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
@@ -103,10 +101,7 @@ export const GenAccBookManagementContent = () => {
         fromCreatedDate: formatDate(previous.getTime()),
         toCreatedDate: getDateOfPresent(),
         entryCode: "",
-        entryType: {
-          key: "",
-          values: "",
-        },
+        entryType: "",
         accountBalance: "",
         noteInfo: "",
       },
@@ -143,10 +138,10 @@ export const GenAccBookManagementContent = () => {
   const handleSearch = () => {
     const { fromCreatedDate, toCreatedDate, entryCode, entryType } =
       getValues();
-    let arr: any[] = [];
-    if (entryType.key) {
-      arr.push(entryType.key);
-    }
+    // let arr: any[] = [];
+    // if (entryType.key) {
+    //   arr.push(entryType.key);
+    // }
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
     fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
@@ -162,7 +157,7 @@ export const GenAccBookManagementContent = () => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       entryCode: entryCode,
-      entryType: arr,
+      entryType: entryType,
     };
     setSearchCondition(bodySend);
     dispatch(fetchGenAccBook(bodySend));
@@ -381,19 +376,12 @@ export const GenAccBookManagementContent = () => {
               <>
                 <StyleFilterContainer>
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
-                  <SelectSearchComponent
-                    control={control}
-                    props={{
-                      name: "entryType",
-                      placeHoder: "",
-                      results: accEntryType,
-                      label: "",
-                      variantType: "standard",
-                      type: "text",
-                      setValue: setValue,
-                      labelWidth: "100",
-                      getData: getDataCustomerFromApi,
-                    }}
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("entryType", { required: true })}
                   />
                 </StyleFilterContainer>
                 <div
