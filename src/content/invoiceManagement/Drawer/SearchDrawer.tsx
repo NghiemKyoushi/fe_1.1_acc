@@ -211,6 +211,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         }
       });
     }
+
     // const fromDate = new Date(fromCreatedDate);
     // const toDate = new Date(toCreatedDate);
     const fromDate = new Date(fromCreatedDate);
@@ -225,7 +226,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     const bodySend = {
       ...searchCondition,
       receiptCode: receiptCode,
-      branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+      branchCodes: codeBranch,
       fromTransactionTotal:
         fromTransactionTotal === "" || fromTransactionTotal === "0"
           ? ""
@@ -284,10 +285,9 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           ? "COMPLETED,LOANED"
           : null,
     };
-
-    handleChangeSearch(bodySend);
     dispatch(fetchInvoice(bodySend));
     dispatch(fetchSumInvoice(bodySend));
+    handleChangeSearch(bodySend);
   };
   useEffect(() => {
     if (watch("customerName")?.key) {

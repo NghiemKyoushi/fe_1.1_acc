@@ -95,7 +95,8 @@ const InvoiceManagementReducers = (
           payout: action.payload.totalPayout,
           loan: action.payload.totalLoan,
           repayment: action.payload.totalRepayment,
-          transactionTotal: action.payload.total - action.payload.totalShipmentFee,
+          transactionTotal:
+            action.payload.total - action.payload.totalShipmentFee,
           calculatedProfit: action.payload.totalCalculatedProfit,
           estimatedProfit: action.payload.totalEstimatedProfit,
           customerCardId: "",

@@ -113,11 +113,11 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       ...searchCondition,
       entryCode: entryCode,
       transactionTypes: transactionTypes.key,
-      fromTransactionTotal:
+      fromMoneyAmount:
         fromTransactionTotal === "0" || fromTransactionTotal === "0"
           ? ""
           : _.toNumber(fromTransactionTotal.toString().replaceAll(",", "")),
-      toTransactionTotal:
+      toMoneyAmount:
         toTransactionTotal === "0" || toTransactionTotal === "0"
           ? ""
           : _.toNumber(toTransactionTotal.toString().replaceAll(",", "")),

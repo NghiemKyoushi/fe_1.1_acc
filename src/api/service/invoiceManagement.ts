@@ -6,18 +6,10 @@ import {
 } from "@/models/InvoiceManagement";
 import { fetchInvoiceInfoPrams } from "./type";
 
-export const fetchInvoiceInfo = (body: fetchInvoiceInfoPrams) => {
-  const { receiptStatusList, ...otherParams } = body;
-  const params = new URLSearchParams(
-    otherParams as unknown as Record<string, string>
-  );
-
-  if (receiptStatusList) {
-    receiptStatusList.forEach((status) => {
-      params.append("receiptStatusList", status);
-    });
-  }
-  return authApi.get(`/api/receipts?${params.toString()}`);
+export const fetchInvoiceInfo = (param: fetchInvoiceInfoPrams) => {
+  return authApi.get(`/api/receipts`, {
+    params: param,
+  });
 };
 export const fetchInvoiceDetail = (id: string) => {
   return authApi.get(`/api/receipts/${id}`);

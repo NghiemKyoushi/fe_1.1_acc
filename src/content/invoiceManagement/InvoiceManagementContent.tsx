@@ -121,7 +121,6 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
   );
 };
 export default function InvoiceManagementContent() {
-  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const [isOpenDrawInvoice, setIsOpenDrawInvoice] = useState(false);
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
@@ -135,7 +134,6 @@ export default function InvoiceManagementContent() {
   const [receiptsIdNote, setReceiptsIdNote] = useState("");
 
   const [imageId, setImageId] = useState("");
-  const branchCodes = cookieSetting.get("branchCode");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
   const role = cookieSetting.get("roles");
   const userCode = cookieSetting.get("code");
