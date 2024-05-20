@@ -258,23 +258,6 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           billcode: "",
           check: "TOTAL",
         },
-        {
-          id: "",
-          pos: {
-            key: "",
-            values: "",
-          },
-          posId: {
-            key: "",
-            values: "",
-          },
-          money: "",
-          typeOfCard: "",
-          fee: "",
-          feeafterpay: 0,
-          billcode: "",
-          check: "",
-        },
       ],
       invoicesCalculate: [
         {
@@ -299,8 +282,11 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
     name: "invoicesCalculate",
   } as never);
   const onAdd = () => {
+    const generateUniqueId = () => {
+      return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  };
     const item = {
-      id: "",
+      id: generateUniqueId(),
       pos: {
         key: "",
         values: "",

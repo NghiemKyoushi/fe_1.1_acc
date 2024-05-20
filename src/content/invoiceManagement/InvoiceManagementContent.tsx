@@ -556,6 +556,41 @@ export default function InvoiceManagementContent() {
       filterable: false,
     },
     {
+      headerName: "Phí ship",
+      field: "shipmentFee",
+      width: 130,
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      filterable: false,
+      hide: true,
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+      valueGetter: (params: GridValueGetterParams) => {
+        return getValueWithComma(params.value);
+      },
+    },
+    {
+      headerName: "Người xác nhận",
+      field: "approverCode",
+      width: 130,
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      filterable: false,
+      hide: true,
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
+    },
+    {
       headerName: "Tổng giao dịch",
       field: "transactionTotal",
       width: 130,

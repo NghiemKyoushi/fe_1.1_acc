@@ -168,6 +168,7 @@ export interface ColReceiptList {
   branchId: string;
   branchName: string;
   note: string;
+  approverCode: string;
 }
 export interface RangeNumberFilterProps<
   TFieldValues extends FieldValues = FieldValues
