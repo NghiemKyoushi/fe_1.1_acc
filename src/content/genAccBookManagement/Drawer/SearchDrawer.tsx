@@ -114,11 +114,11 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       entryCode: entryCode,
       transactionTypes: transactionTypes.key,
       fromMoneyAmount:
-        fromTransactionTotal === "0" || fromTransactionTotal === "0"
+        fromTransactionTotal === "" || fromTransactionTotal === "0"
           ? ""
           : _.toNumber(fromTransactionTotal.toString().replaceAll(",", "")),
       toMoneyAmount:
-        toTransactionTotal === "0" || toTransactionTotal === "0"
+        toTransactionTotal === "" || toTransactionTotal === "0"
           ? ""
           : _.toNumber(toTransactionTotal.toString().replaceAll(",", "")),
       fromCreatedDate: fromDate.toISOString(),
