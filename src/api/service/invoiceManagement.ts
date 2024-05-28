@@ -61,7 +61,10 @@ export const conrimRepayInvoice = (reason: RepayConfirmParams) => {
   return authApi.put("/api/receipts/repayReceipt", reason);
 };
 
-export const deleteInvoice = (id: string) => {
+export const deleteInvoice = (id: string, note: string) => {
+  if (note !== "") {
+    return authApi.delete(`/api/receipts/${id}?explanation=${note}`);
+  }
   return authApi.delete(`/api/receipts/${id}`);
 };
 

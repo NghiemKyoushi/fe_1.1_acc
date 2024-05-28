@@ -10,7 +10,7 @@ interface InsertBookDialogProps {
   handleClickConfirm: () => void;
   control: Control<any>;
 }
-export const NoteDialogComponent = (props: InsertBookDialogProps) => {
+export const NoteDeleteDialogComponent = (props: InsertBookDialogProps) => {
   const { openDialog, handleClickClose, handleClickConfirm, control } = props;
 
   return (
@@ -29,7 +29,7 @@ export const NoteDialogComponent = (props: InsertBookDialogProps) => {
           <TextareaComponent
             control={control}
             valueInput={""}
-            name={"noteInfo"}
+            name={"noteDeleteInfo"}
             label={"Ghi chú"}
             width={""}
             type={""}

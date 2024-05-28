@@ -184,7 +184,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const branchId = cookieSetting.get("branchId");
   const employeeId = cookieSetting.get("employeeId");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
-
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isOpenCard, setIsOpenCard] = useState(false);
   const [infoCard, setInfoCard] = useState<InfoCard>({
     cardType: "",
@@ -284,7 +284,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const onAdd = () => {
     const generateUniqueId = () => {
       return Date.now().toString() + Math.random().toString(36).substr(2, 9);
-  };
+    };
     const item = {
       id: generateUniqueId(),
       pos: {
@@ -398,16 +398,20 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   const handleCloseAddCard = () => {
     setIsOpenCard(false);
   };
-  const handleGetFile = (file: Array<any>) => {
+  const handleGetFile = async (file: Array<any>) => {
     if (!file || file[0].size > 5 * 1024 * 1024) {
       enqueueSnackbar("File ảnh phải nhỏ hơn 5MB", { variant: "error" });
       return;
     }
+    await setIsLoadingImage(true);
     fetchSaveImage(imageId, file[0])
       .then((res) => {
+        setIsLoadingImage(false);
         setImageId(res.data);
       })
       .catch(function (error) {
+        setIsLoadingImage(false);
+
         enqueueSnackbar("Load ảnh thất bại", { variant: "error" });
       });
   };
@@ -810,8 +814,10 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         isOpen={isOpen}
         title="Tạo Hóa đơn"
         handleClose={() => {
-          setValue("usingCardPrePayFee", false);
-          handleCloseDrawer();
+          if (!isLoadingImage) {
+            setValue("usingCardPrePayFee", false);
+            handleCloseDrawer();
+          }
         }}
       >
         <form
@@ -1063,7 +1069,12 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              <Button size="small" variant="contained" type="submit">
+              <Button
+                disabled={isLoadingImage}
+                size="small"
+                variant="contained"
+                type="submit"
+              >
                 Lưu Hóa Đơn
               </Button>
             </Box>

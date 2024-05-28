@@ -174,6 +174,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         nationalId: "",
       },
       isSearchCardTrading: false,
+      onlyHaveShipmentFee: false,
+      onlyInDebtReceipt: false,
       branchIds: [],
     },
   });
@@ -200,6 +202,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       isSearchCardTrading,
       customerName,
       branchIds,
+      onlyHaveShipmentFee,
+      onlyInDebtReceipt,
     } = getValues();
     let codeBranch = "";
     if (branchIds.length > 0) {
@@ -284,6 +288,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         watch("cardCustomer.key") !== "" && isSearchCardTrading === true
           ? "COMPLETED,LOANED"
           : null,
+      onlyHaveShipmentFee: onlyHaveShipmentFee,
+      onlyInDebtReceipt: onlyInDebtReceipt,
     };
     dispatch(fetchInvoice(bodySend));
     dispatch(fetchSumInvoice(bodySend));
@@ -434,6 +440,32 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               Tra cứu giao dịch thẻ
             </Typography>
           </StyleCheckBoxTex>
+
+          <StyleCheckBoxTex>
+            <Controller
+              name="onlyHaveShipmentFee"
+              control={control}
+              render={({ field }) => (
+                <Checkbox checked={watch("onlyHaveShipmentFee")} {...field} />
+              )}
+            />
+            <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
+              Lọc các bill có phí ship
+            </Typography>
+          </StyleCheckBoxTex>
+          <StyleCheckBoxTex>
+            <Controller
+              name="onlyInDebtReceipt"
+              control={control}
+              render={({ field }) => (
+                <Checkbox checked={watch("onlyInDebtReceipt")} {...field} />
+              )}
+            />
+            <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
+              Lọc các hóa đơn còn nợ
+            </Typography>
+          </StyleCheckBoxTex>
+
           <StyleInputContainer>
             <LabelComponent require={true}>Tổng giao dịch</LabelComponent>
             <RangeNumberFilter

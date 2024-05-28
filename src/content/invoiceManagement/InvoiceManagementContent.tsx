@@ -60,6 +60,7 @@ import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { RepayDialogComponent } from "./Drawer/RepayDialog";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { NoteDialogComponent } from "./Drawer/NoteDialog";
+import { NoteDeleteDialogComponent } from "./Drawer/NoteDeleteDialog";
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -127,11 +128,13 @@ export default function InvoiceManagementContent() {
   const [isOpenViewDrawer, setIsOpenViewDrawer] = useState(false);
   const [isOpenRepay, setIsOpenRepay] = useState(false);
   const [isOpenNote, setIsOpenNote] = useState(false);
+  const [isOpenNoteDelete, setIsOpenNoteDelete] = useState(false);
 
   const [rowInfo, setRowInfo] = useState();
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [receiptsId, setReceiptsId] = useState("");
   const [receiptsIdNote, setReceiptsIdNote] = useState("");
+  const [receiptsIdNoteDelete, setReceiptsIdNoteDelete] = useState("");
 
   const [imageId, setImageId] = useState("");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
@@ -220,18 +223,42 @@ export default function InvoiceManagementContent() {
           loan: 0,
         },
         noteInfo: "",
+        noteDeleteInfo: "",
       },
     });
 
+  const handleCloseNoteDelete = () => {
+    setIsOpenNoteDelete(false);
+  };
+  const handleOpenNoteDelete = (id: string) => {
+    setReceiptsIdNoteDelete(id);
+    setIsOpenNoteDelete(true);
+  };
+  const handleClickConfirmNoteDelete = () => {
+    if (watch("noteDeleteInfo") === "") {
+      enqueueSnackbar("Vui lòng nhập diễn giải !", { variant: "warning" });
+      return;
+    }
+    deleteInvoice(receiptsId, watch("noteDeleteInfo"))
+      .then((res) => {
+        enqueueSnackbar("Xóa thành công!!", { variant: "success" });
+        handleCloseDeleteForm();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+      });
+  };
   const handleCloseDeleteForm = () => {
     setIsDeleteForm(false);
   };
   const handleOpenDeleteForm = (id: string) => {
     setReceiptsId(id);
+    setValue("noteDeleteInfo", "");
     setIsDeleteForm(true);
   };
   const handleConfirmDeleteForm = () => {
-    deleteInvoice(receiptsId)
+    deleteInvoice(receiptsId, "")
       .then((res) => {
         enqueueSnackbar("Xóa thành công!!", { variant: "success" });
         handleCloseDeleteForm();
@@ -305,6 +332,7 @@ export default function InvoiceManagementContent() {
     setValue("noteInfo", note);
     setIsOpenNote(true);
   };
+
   const handleClickConfirmNote = () => {
     const bodySend = {
       id: receiptsIdNote,
@@ -861,7 +889,18 @@ export default function InvoiceManagementContent() {
             ) : (
               <div></div>
             )}
-
+            {role === ROLE.ADMIN &&
+            row.code !== null &&
+            row.code !== "TOTAL" ? (
+              <IconButton
+                color="error"
+                onClick={() => handleOpenNoteDelete(row.id)}
+              >
+                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            ) : (
+              <div></div>
+            )}
             {row.code === null ? (
               <IconButton
                 color="error"
@@ -993,6 +1032,12 @@ export default function InvoiceManagementContent() {
             handleClickConfirm={handleClickConfirmNote}
             control={control}
             handleClickClose={handleCloseNote}
+          />
+          <NoteDeleteDialogComponent
+            openDialog={isOpenNoteDelete}
+            handleClickConfirm={handleClickConfirmNoteDelete}
+            control={control}
+            handleClickClose={handleCloseNoteDelete}
           />
         </form>
         <InvoiceDrawer
