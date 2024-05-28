@@ -228,6 +228,7 @@ export default function InvoiceManagementContent() {
     });
 
   const handleCloseNoteDelete = () => {
+    setValue("noteDeleteInfo", "");
     setIsOpenNoteDelete(false);
   };
   const handleOpenNoteDelete = (id: string) => {
@@ -239,14 +240,18 @@ export default function InvoiceManagementContent() {
       enqueueSnackbar("Vui lòng nhập diễn giải !", { variant: "warning" });
       return;
     }
-    deleteInvoice(receiptsId, watch("noteDeleteInfo"))
+    deleteInvoice(receiptsIdNoteDelete, watch("noteDeleteInfo"))
       .then((res) => {
         enqueueSnackbar("Xóa thành công!!", { variant: "success" });
-        handleCloseDeleteForm();
+        handleCloseNoteDelete();
         handleSearch();
       })
       .catch(function (error: any) {
-        enqueueSnackbar("Xóa thất bại", { variant: "error" });
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Xóa thất bại", { variant: "error" });
+        }
       });
   };
   const handleCloseDeleteForm = () => {
