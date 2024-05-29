@@ -59,7 +59,7 @@ export const initialPosSearch = {
   pageSize: 10,
   sorter: "createdDate",
   sortDirection: "DESC",
-  fromCreatedDate: previous.toISOString(),
+  fromCreatedDate: nextDay.toISOString(),
   toCreatedDate: nextDay.toISOString(),
 };
 export const AccBookManagementContent = () => {

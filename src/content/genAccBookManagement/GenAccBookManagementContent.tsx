@@ -60,7 +60,7 @@ export const initialPosSearch = {
   pageSize: 10,
   sorter: "createdDate",
   sortDirection: "DESC",
-  fromCreatedDate: previous.toISOString(),
+  fromCreatedDate: nextDay.toISOString(),
   toCreatedDate: nextDay.toISOString(),
 };
 export const GenAccBookManagementContent = () => {
@@ -98,7 +98,7 @@ export const GenAccBookManagementContent = () => {
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
-        fromCreatedDate: formatDate(previous.getTime()),
+        fromCreatedDate: getDateOfPresent(),
         toCreatedDate: getDateOfPresent(),
         entryCode: "",
         entryType: "",

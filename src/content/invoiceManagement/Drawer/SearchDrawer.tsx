@@ -149,7 +149,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   } = useForm({
     defaultValues: {
       codeInvoice: "",
-      fromCreatedDate: formatDate(previous.getTime()),
+      fromCreatedDate: getDateOfPresent(),
       toCreatedDate: getDateOfPresent(),
       fromTransactionTotal: "",
       toTransactionTotal: "",
@@ -291,9 +291,9 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       onlyHaveShipmentFee: onlyHaveShipmentFee,
       onlyInDebtReceipt: onlyInDebtReceipt,
     };
+    handleChangeSearch(bodySend);
     dispatch(fetchInvoice(bodySend));
     dispatch(fetchSumInvoice(bodySend));
-    handleChangeSearch(bodySend);
   };
   useEffect(() => {
     if (watch("customerName")?.key) {

@@ -77,7 +77,7 @@ const initialInvoiceSearch = {
   pageSize: 10,
   sorter: "createdDate",
   sortDirection: "DESC",
-  fromCreatedDate: previous.toISOString(),
+  fromCreatedDate: nextDay.toISOString(),
   toCreatedDate: nextDay.toISOString(),
   branchCodes: "",
 };
@@ -207,7 +207,7 @@ export default function InvoiceManagementContent() {
         toIntake: 0,
         toLoan: 0,
         toPayout: 0,
-        fromCreatedDate: formatDate(previous.getTime()),
+        fromCreatedDate: getDateOfPresent(),
         toCreatedDate: getDateOfPresent(),
         toRepayment: 0,
         formConfirm: {
@@ -226,7 +226,6 @@ export default function InvoiceManagementContent() {
         noteDeleteInfo: "",
       },
     });
-
   const handleCloseNoteDelete = () => {
     setValue("noteDeleteInfo", "");
     setIsOpenNoteDelete(false);
@@ -945,9 +944,11 @@ export default function InvoiceManagementContent() {
       const sortPage = {
         ...searchCondition,
         sorter: sortModel[0].field,
-        sortDirection: sortModel[0]?.sort?.toString().toUpperCase(),
+        sortDirection: sortModel[0]?.sort
+          ? sortModel[0]?.sort?.toString().toUpperCase()
+          : "",
       };
-      // setSearchCondition({...sortPage});
+      setSearchCondition(sortPage);
       dispatch(fetchInvoice(sortPage));
     }
   };

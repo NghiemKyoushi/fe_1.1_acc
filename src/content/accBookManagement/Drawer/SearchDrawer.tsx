@@ -125,7 +125,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
   } = useForm({
     defaultValues: {
       codeInvoice: "",
-      fromCreatedDate: formatDate(previous.getTime()),
+      fromCreatedDate: getDateOfPresent(),
       toCreatedDate: getDateOfPresent(),
       fromTransactionTotal: "",
       toTransactionTotal: "",
@@ -149,7 +149,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromCreatedDate,
       toCreatedDate,
       entryCode,
-      entryType,
       toTransactionTotal,
       fromTransactionTotal,
       transactionTypes,
@@ -160,12 +159,18 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     if (transactionTypes.key !== "") {
       arr.push(transactionTypes.key);
     }
+    console.log("fromCreatedDate", fromCreatedDate);
+    console.log("toCreatedDate", toCreatedDate);
+    //
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
     fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
 
     const gettoDate = new Date(toCreatedDate);
     const toDate = new Date(gettoDate.setDate(gettoDate.getDate()));
+
+    const offsetInMinutes2 = toDate.getTimezoneOffset();
+    toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
 
     let codeBranch = "";
     if (branch.length > 0) {

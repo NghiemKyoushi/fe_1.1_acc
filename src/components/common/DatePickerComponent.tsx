@@ -26,9 +26,9 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     previous.setDate(date.getDate() - 30);
     const [state, setState] = useState({
       displayCalendar: false,
-      inputValue: `${formatDate(previous)}-${getDateOfPresent()}`,
+      inputValue: `${getDateOfPresent()}-${getDateOfPresent()}`,
       anchorEl: null,
-      fromDate: new Date(previous),
+      fromDate: new Date(),
       toDate: new Date(),
     });
     const onAdornmentClick = (e: any) => {
