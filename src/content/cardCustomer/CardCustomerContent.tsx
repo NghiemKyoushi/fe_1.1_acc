@@ -526,7 +526,6 @@ export default function CardCustomerContent() {
           >
             Tìm kiếm
           </Button>
-          {/* <DateRangePicker/> */}
         </Box>
         <form style={{ width: "100%", padding: "0px 16px" }}>
           <TableDataComponent

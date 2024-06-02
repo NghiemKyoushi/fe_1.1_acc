@@ -100,6 +100,8 @@ export const GenAccBookManagementContent = () => {
       defaultValues: {
         fromCreatedDate: getDateOfPresent(),
         toCreatedDate: getDateOfPresent(),
+        fromMoneyAmount: undefined,
+        toMoneyAmount: undefined,
         entryCode: "",
         entryType: "",
         accountBalance: "",
@@ -279,6 +281,8 @@ export const GenAccBookManagementContent = () => {
                   setvalue={setValue}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
+                  fromdateValue={watch("fromCreatedDate")}
+                  todateValue={watch("toCreatedDate")}
                 />
                 <div
                   style={{
@@ -582,6 +586,21 @@ export const GenAccBookManagementContent = () => {
     [accEntryType]
   );
   const handleChangeSearch = (value: any) => {
+    reset({
+      ...value,
+      entryCode: value.entryCode,
+      branchCodes: value.codeBranch,
+      fromMoneyAmount:
+        value.fromTransactionTotal === "" || value.fromTransactionTotal === "0"
+          ? ""
+          : _.toNumber(value.fromTransactionTotal),
+      toMoneyAmount:
+        value.toTransactionTotal === "" || value.toTransactionTotal === "0"
+          ? ""
+          : _.toNumber(value.toTransactionTotal),
+      fromCreatedDate: value.fromCreatedDate,
+      toCreatedDate: value.toCreatedDate,
+    });
     setSearchCondition(value);
   };
   const handleSortModelChange = (sortModel: GridSortModel) => {

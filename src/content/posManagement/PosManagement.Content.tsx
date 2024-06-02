@@ -344,7 +344,6 @@ export default function PosManagementContent() {
         >
           Thêm Pos
         </Button>
-        {/* <DateRangePicker/> */}
       </Box>
       <form style={{ width: "100%" }}>
         <TableDataComponent

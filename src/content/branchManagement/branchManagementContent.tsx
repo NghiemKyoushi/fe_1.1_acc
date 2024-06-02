@@ -187,7 +187,6 @@ export const BranchManagementContent = () => {
         >
           Tạo chi nhánh
         </Button>
-        {/* <DateRangePicker/> */}
       </Box>
       <form style={{ width: "100%" }}>
         <StyleDataGrid>

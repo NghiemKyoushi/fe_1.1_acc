@@ -159,8 +159,6 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     if (transactionTypes.key !== "") {
       arr.push(transactionTypes.key);
     }
-    console.log("fromCreatedDate", fromCreatedDate);
-    console.log("toCreatedDate", toCreatedDate);
     //
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
@@ -262,6 +260,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               watch={watch}
               fromdatename={"fromCreatedDate"}
               todatename={"toCreatedDate"}
+              fromdateValue={watch("fromCreatedDate")}
+              todateValue={watch("toCreatedDate")}
             />
           </StyleInputContainer>
           <StyleInputContainer style={{ maxWidth: 273 }}>

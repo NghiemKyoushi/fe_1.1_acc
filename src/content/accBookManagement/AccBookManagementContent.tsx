@@ -43,6 +43,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { fetchDetailEmp } from "@/api/service/empManagementApis";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { NoteDialogComponent } from "../invoiceManagement/Drawer/NoteDialog";
+import _ from "lodash";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -123,10 +124,10 @@ export const AccBookManagementContent = () => {
         fromCreatedDate: formatDate(previous.getTime()),
         toCreatedDate: getDateOfPresent(),
         entryCode: "",
-        entryType: {
-          key: "",
-          values: "",
-        },
+        branchCodes: "",
+        fromMoneyAmount: "",
+        toMoneyAmount: "",
+        entryType: "",
         branch: {
           key: "",
           values: "",
@@ -217,10 +218,6 @@ export const AccBookManagementContent = () => {
     const { fromCreatedDate, toCreatedDate, entryCode, entryType } =
       getValues();
     let arr: any[] = [];
-    if (entryType.key) {
-      arr.push(entryType.key);
-    }
-
     // let fromDate, gettoDate;
     const fromDate = new Date(fromCreatedDate);
     const offsetInMinutes = fromDate.getTimezoneOffset();
@@ -237,7 +234,7 @@ export const AccBookManagementContent = () => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       entryCode: entryCode,
-      entryType: arr,
+      entryType: entryType,
     };
     setSearchCondition(bodySend);
     dispatch(fetchAccBook(bodySend));
@@ -330,6 +327,8 @@ export const AccBookManagementContent = () => {
                   watch={watch}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
+                  fromdateValue={watch("fromCreatedDate")}
+                  todateValue={watch("toCreatedDate")}
                 />
                 <div
                   style={{
@@ -438,19 +437,12 @@ export const AccBookManagementContent = () => {
               <>
                 <StyleFilterContainer>
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
-                  <SelectSearchComponent
-                    control={control}
-                    props={{
-                      name: "entryType",
-                      placeHoder: "",
-                      results: accEntryType,
-                      label: "",
-                      variantType: "standard",
-                      type: "text",
-                      setValue: setValue,
-                      labelWidth: "100",
-                      getData: getDataCustomerFromApi,
-                    }}
+                  <TextFieldCustom
+                    type={"text"}
+                    variantshow="standard"
+                    textholder="Lọc giá trị"
+                    focus={"true"}
+                    {...register("entryType")}
                   />
                 </StyleFilterContainer>
                 <div
@@ -475,6 +467,49 @@ export const AccBookManagementContent = () => {
           value: "input",
           label: "input",
         }),
+        // filterOperators: Operators({
+        //   inputComponent: () => {
+        //     return (
+        //       <>
+        //         <StyleFilterContainer>
+        //           <StyleTitleSearch>Giá trị</StyleTitleSearch>
+        //           <SelectSearchComponent
+        //             control={control}
+        //             props={{
+        //               name: "entryType",
+        //               placeHoder: "",
+        //               results: accEntryType,
+        //               label: "",
+        //               variantType: "standard",
+        //               type: "text",
+        //               setValue: setValue,
+        //               labelWidth: "100",
+        //               getData: getDataCustomerFromApi,
+        //             }}
+        //           />
+        //         </StyleFilterContainer>
+        //         <div
+        //           style={{
+        //             display: "flex",
+        //             flexDirection: "row",
+        //             justifyContent: "flex-end",
+        //             marginTop: 2,
+        //           }}
+        //         >
+        //           <Button
+        //             onClick={handleSearch}
+        //             size="small"
+        //             style={{ width: 81 }}
+        //           >
+        //             xác nhận
+        //           </Button>
+        //         </div>
+        //       </>
+        //     );
+        //   },
+        //   value: "input",
+        //   label: "input",
+        // }),
       },
       {
         headerName: "Số dư",
@@ -656,6 +691,21 @@ export const AccBookManagementContent = () => {
     [accEntryType]
   );
   const handleChangeSearch = (value: any) => {
+    reset({
+      ...value,
+      entryCode: value.entryCode,
+      branchCodes: value.codeBranch,
+      fromMoneyAmount:
+        value.fromTransactionTotal === "" || value.fromTransactionTotal === "0"
+          ? ""
+          : _.toNumber(value.fromTransactionTotal),
+      toMoneyAmount:
+        value.toTransactionTotal === "" || value.toTransactionTotal === "0"
+          ? ""
+          : _.toNumber(value.toTransactionTotal),
+      fromCreatedDate: value.fromCreatedDate,
+      toCreatedDate: value.toCreatedDate,
+    });
     setSearchCondition(value);
   };
   const handleSortModelChange = (sortModel: GridSortModel) => {

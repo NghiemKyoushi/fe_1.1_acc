@@ -369,6 +369,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               setvalue={setValue}
               fromdatename={"fromCreatedDate"}
               todatename={"toCreatedDate"}
+              fromdateValue={watch("fromCreatedDate")}
+              todateValue={watch("toCreatedDate")}
             />
           </StyleInputContainer>
           <StyleInputContainer style={{ maxWidth: 240 }}>

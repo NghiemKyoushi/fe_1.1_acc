@@ -263,6 +263,8 @@ export const BillManagementContent = () => {
                   watch={watch}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
+                  fromdateValue={watch("fromCreatedDate")}
+                  todateValue={watch("toCreatedDate")}
                 />
                 <div
                   style={{

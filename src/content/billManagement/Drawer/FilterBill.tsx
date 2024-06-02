@@ -276,6 +276,8 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
                   setvalue={setValue}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
+                  fromdateValue={watch("fromCreatedDate")}
+                  todateValue={watch("toCreatedDate")}
                 />
                 <div
                   style={{
@@ -461,6 +463,8 @@ export const FilterBill = (props: NEmpManagementDrawerProps) => {
                   setvalue={setValue}
                   fromdatename={"fromCreatedDate"}
                   todatename={"toCreatedDate"}
+                  fromdateValue={watch("fromCreatedDate")}
+                  todateValue={watch("toCreatedDate")}
                 />
               </StyleInputContainer>
 

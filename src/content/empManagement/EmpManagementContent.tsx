@@ -349,7 +349,6 @@ export const EmpManagementContent = () => {
         >
           Tạo nhân viên
         </Button>
-        {/* <DateRangePicker/> */}
       </Box>
       <form style={{ width: "100%" }}>
         <TableDataComponent

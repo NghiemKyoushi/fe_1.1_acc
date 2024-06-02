@@ -16,17 +16,20 @@ export interface DateRangePickerProps {
   setvalue: UseFormSetValue<any>;
   // inputValue: string;
   watch?: UseFormWatch<any>;
+  fromdateValue?: any;
+  todateValue?: any;
 }
 export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
   (props, ref) => {
-    const { fromdatename, todatename, setvalue } = props;
-    const dateFormat = "DD/MM/YYYY";
+    const { fromdatename, todatename, setvalue, fromdateValue, todateValue } =
+      props;
+    const dateFormat = "YYYY-MM-DD";
     const date = new Date();
     const previous = new Date(date.getTime());
     previous.setDate(date.getDate() - 30);
     const [state, setState] = useState({
       displayCalendar: false,
-      inputValue: `${getDateOfPresent()}-${getDateOfPresent()}`,
+      inputValue: `${formatDate(fromdateValue)}-${formatDate(todateValue)}`,
       anchorEl: null,
       fromDate: new Date(),
       toDate: new Date(),

@@ -467,8 +467,32 @@ export default function InvoiceManagementContent() {
     setOpenApprovingDialog(false);
   };
   const handleChangeSearch = (value: any) => {
+    reset({
+      ...value,
+      fromTransactionTotal:
+        value?.fromTransactionTotal === 0
+          ? ""
+          : _.toNumber(value?.fromTransactionTotal.toString().replace(",", "")),
+      toTransactionTotal:
+        value?.toTransactionTotal === 0
+          ? ""
+          : _.toNumber(value?.toTransactionTotal.toString().replace(",", "")),
+      fromIntake: value?.fromIntake === 0 ? "" : +value?.fromIntake,
+      fromEstimatedProfit:
+        value?.fromEstimatedProfit === 0 ? "" : +value?.fromEstimatedProfit,
+      fromLoan: value?.fromLoan === 0 ? "" : +value?.fromLoan,
+      fromPayout: value?.fromPayout === 0 ? "" : +value?.fromPayout,
+      fromRepayment: value?.fromRepayment === 0 ? "" : +value?.fromRepayment,
+      toEstimatedProfit:
+        value?.toEstimatedProfit === 0 ? "" : +value?.toEstimatedProfit,
+      toIntake: value?.toIntake === 0 ? "" : +value?.toIntake,
+      toLoan: value?.toLoan === 0 ? "" : +value?.toLoan,
+      toPayout: value?.toPayout === 0 ? "" : +value?.toPayout,
+      toRepayment: value?.toRepayment === 0 ? "" : +value?.toRepayment,
+    });
     setSearchCondition(value);
   };
+
   const columns: GridColDef<ColReceiptList>[] = [
     {
       headerName: "Ngày Tạo",
@@ -489,6 +513,8 @@ export default function InvoiceManagementContent() {
                 setvalue={setValue}
                 fromdatename={"fromCreatedDate"}
                 todatename={"toCreatedDate"}
+                fromdateValue={watch("fromCreatedDate")}
+                todateValue={watch("toCreatedDate")}
               />
               <div
                 style={{
