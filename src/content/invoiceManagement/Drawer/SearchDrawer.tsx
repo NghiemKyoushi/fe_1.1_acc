@@ -443,18 +443,20 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             </Typography>
           </StyleCheckBoxTex>
 
-          <StyleCheckBoxTex>
-            <Controller
-              name="onlyHaveShipmentFee"
-              control={control}
-              render={({ field }) => (
-                <Checkbox checked={watch("onlyHaveShipmentFee")} {...field} />
-              )}
-            />
-            <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
-              Lọc các bill có phí ship
-            </Typography>
-          </StyleCheckBoxTex>
+          {(role === ROLE.ADMIN || role === ROLE.SUBMANAGER) && (
+            <StyleCheckBoxTex>
+              <Controller
+                name="onlyHaveShipmentFee"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox checked={watch("onlyHaveShipmentFee")} {...field} />
+                )}
+              />
+              <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
+                Lọc các bill có phí ship
+              </Typography>
+            </StyleCheckBoxTex>
+          )}
           <StyleCheckBoxTex>
             <Controller
               name="onlyInDebtReceipt"

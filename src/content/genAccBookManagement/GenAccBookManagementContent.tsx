@@ -497,10 +497,10 @@ export const GenAccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "LOAN") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.loan;
+            return getValueWithComma(row.loan);
           }
           return "";
         },
@@ -521,10 +521,10 @@ export const GenAccBookManagementContent = () => {
         },
         valueGetter: ({ row }) => {
           if (row.transactionType === "REPAYMENT") {
-            return row.moneyAmount;
+            return getValueWithComma(row.moneyAmount);
           }
           if (row.entryCode === "TOTAL") {
-            return row.repayment;
+            return getValueWithComma(row.repayment);
           }
           return "";
         },
