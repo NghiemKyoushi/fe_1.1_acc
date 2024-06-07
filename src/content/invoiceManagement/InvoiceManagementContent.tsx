@@ -908,7 +908,9 @@ export default function InvoiceManagementContent() {
             )}
             {+row.loan > +row.repayment &&
             row.code !== "TOTAL" &&
-            row.code !== null ? (
+            row.code !== null &&
+            role !== ROLE.EMPLOYEE &&
+            role !== ROLE.VIEWER ? (
               // row.receiptStatusEnum === "COMPLETED"
               <IconButton
                 color="info"

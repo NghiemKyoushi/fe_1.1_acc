@@ -128,7 +128,10 @@ export default function CardCustomerContent() {
       branchId: formConfirm.branchIds.key,
       customerCardId: formConfirm.customerCardId,
       imageId: formConfirm.imageId,
-      prePaidFee: formConfirm.prePaidFee === "" ? 0 : +formConfirm.prePaidFee.toString().replaceAll(",", ""),
+      prePaidFee:
+        formConfirm.prePaidFee === ""
+          ? 0
+          : +formConfirm.prePaidFee.toString().replaceAll(",", ""),
     };
     updatePayFeeCustomer(bodyUpdate)
       .then((res) => {
@@ -396,7 +399,7 @@ export default function CardCustomerContent() {
         width: 150,
         renderCell: ({ row }) => {
           return (
-            <>
+            <div>
               <IconButton
                 color="info"
                 onClick={() => handleOpenModalEdit(row.id)}
@@ -412,7 +415,7 @@ export default function CardCustomerContent() {
                 </IconButton>
               )}
 
-              {role === ROLE.EMPLOYEE ? null : (
+              {role === ROLE.ADMIN && (
                 <Tooltip title="Cập nhật phí" placement="top">
                   <IconButton
                     onClick={() => handleOpenPayFeeDialog(row.id)}
@@ -422,7 +425,7 @@ export default function CardCustomerContent() {
                   </IconButton>
                 </Tooltip>
               )}
-            </>
+            </div>
           );
         },
       },
