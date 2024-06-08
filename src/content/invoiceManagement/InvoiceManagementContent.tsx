@@ -885,7 +885,9 @@ export default function InvoiceManagementContent() {
             ) : (
               <div></div>
             )}
-            {row.code === null && role !== ROLE.EMPLOYEE ? (
+            {row.code === null &&
+            role !== ROLE.EMPLOYEE &&
+            role !== ROLE.VIEWER ? (
               <IconButton
                 color="success"
                 onClick={() => handleOpenApproveDialog(row.id)}
