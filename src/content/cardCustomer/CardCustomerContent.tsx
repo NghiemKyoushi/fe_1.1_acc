@@ -415,7 +415,7 @@ export default function CardCustomerContent() {
                 </IconButton>
               )}
 
-              {role === ROLE.ADMIN && (
+              {(role === ROLE.ADMIN || role === ROLE.SUBMANAGER) && (
                 <Tooltip title="Cập nhật phí" placement="top">
                   <IconButton
                     onClick={() => handleOpenPayFeeDialog(row.id)}

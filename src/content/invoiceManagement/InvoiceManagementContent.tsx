@@ -5,6 +5,7 @@ import { Operators } from "@/components/common/DataGrid";
 import {
   GridCellParams,
   GridColDef,
+  GridRowParams,
   GridSortModel,
   GridValueGetterParams,
 } from "@mui/x-data-grid";
@@ -61,6 +62,8 @@ import { RepayDialogComponent } from "./Drawer/RepayDialog";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { NoteDialogComponent } from "./Drawer/NoteDialog";
 import { NoteDeleteDialogComponent } from "./Drawer/NoteDeleteDialog";
+import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
+
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -135,6 +138,10 @@ export default function InvoiceManagementContent() {
   const [receiptsId, setReceiptsId] = useState("");
   const [receiptsIdNote, setReceiptsIdNote] = useState("");
   const [receiptsIdNoteDelete, setReceiptsIdNoteDelete] = useState("");
+  const [listOfSelection, setListOfSelection] = useState<
+    Array<string | number>
+  >([]);
+  const [rowData, setRowData] = useState<ColReceiptList[]>([]);
 
   const [imageId, setImageId] = useState("");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
@@ -949,6 +956,10 @@ export default function InvoiceManagementContent() {
         );
       },
     },
+    {
+      ...GRID_CHECKBOX_SELECTION_COL_DEF,
+      width: 100,
+    },
   ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
@@ -1000,6 +1011,61 @@ export default function InvoiceManagementContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [listOfInvoice, sumInvoiceRow]
   );
+  useMemo(() => {
+    setRowData([sumInvoiceRow, ...listOfInvoice]);
+  }, [sumInvoiceRow, listOfInvoice]);
+  const handleGetListOfSelect = (value: Array<string | number>) => {
+    let totalTransaction = 0;
+    let totalIntake = 0;
+    let totalPayout = 0;
+    let totalLoan = 0;
+    let totalRepayment = 0;
+    let totalEstimatedProfit = 0;
+    let totalCalculatedProfit = 0;
+    if (value.length > 0) {
+      rowData.map((row) => {
+        value.map((select) => {
+          if (row.id === select) {
+            totalTransaction += row.transactionTotal;
+            totalIntake += row.intake;
+            totalPayout += row.payout;
+            totalLoan += row.loan;
+            totalRepayment += row.repayment;
+            totalEstimatedProfit += row.estimatedProfit;
+            totalCalculatedProfit += row.calculatedProfit;
+          }
+        });
+      });
+    }
+
+    const shadowData = rowData.map((row) => {
+      if (row.code === "TOTAL") {
+        return {
+          ...row,
+          transactionTotal:
+            value.length > 0
+              ? totalTransaction
+              : sumInvoiceRow.transactionTotal,
+          intake: value.length > 0 ? totalIntake : sumInvoiceRow.intake,
+          payout: value.length > 0 ? totalPayout : sumInvoiceRow.payout,
+          loan: value.length > 0 ? totalLoan : sumInvoiceRow.loan,
+          repayment:
+            value.length > 0 ? totalRepayment : sumInvoiceRow.repayment,
+          estimatedProfit:
+            value.length > 0
+              ? totalEstimatedProfit
+              : sumInvoiceRow.estimatedProfit,
+          calculatedProfit:
+            value.length > 0
+              ? totalCalculatedProfit
+              : sumInvoiceRow.calculatedProfit,
+        };
+      }
+      return row;
+    });
+    setRowData([...shadowData]);
+    setListOfSelection(value);
+  };
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ HÓA ĐƠN</h3>
@@ -1042,9 +1108,10 @@ export default function InvoiceManagementContent() {
             <TableDataComponent
               columns={dynamicColumns}
               dataInfo={
-                listOfInvoice.length !== 0
-                  ? [sumInvoiceRow, ...listOfInvoice]
-                  : []
+                rowData
+                // listOfInvoice.length !== 0
+                //   ? [sumInvoiceRow, ...listOfInvoice]
+                //   : []
               }
               onPageChange={onPageChange}
               onPageSizeChange={onPageSizeChange}
@@ -1054,6 +1121,15 @@ export default function InvoiceManagementContent() {
               handleSortModelChange={handleSortModelChange}
               loading={isLoading}
               getRowId={getRowId}
+              checkboxSelection={true}
+              handleGetListOfSelect={handleGetListOfSelect}
+              selectionModel={listOfSelection}
+              isRowSelectable={(params: GridRowParams) => {
+                if (params.row.code === "TOTAL") {
+                  return false;
+                }
+                return true;
+              }}
             />
           </Box>
           <ApproveDialogComponent

@@ -571,8 +571,3 @@ const StyleFilterContainer = styled.div`
   flex-direction: column;
   padding: 3px 3px;
 `;
-const StyleRangeFilter = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 3px 3px;
-`;
