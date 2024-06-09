@@ -35,6 +35,9 @@ import { enqueueSnackbar } from "notistack";
 import { fetchConfirmFilterBill } from "@/api/service/billManagement";
 import { fetchSaveImage } from "@/api/service/invoiceManagement";
 import SearchDrawer from "./Drawer/SearchDrawer";
+import ChangePosFee from "./Drawer/ChangePos";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import ViewPosFeeDrawer from "./Drawer/EditPosFeeDrawer";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -57,6 +60,8 @@ export const initialPosSearch = {
 
 export const BillManagementContent = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenPosFeeModal, setIsOpenPosFeeModal] = useState(false);
+  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isOpenSearchDrawer, setIsOpenSearchDrawer] = useState(false);
   const [rowData, setRowData] = useState<ColBillInfo[]>([]);
@@ -64,6 +69,12 @@ export const BillManagementContent = () => {
     Array<string | number>
   >([]);
   const [imageId, setImageId] = useState("");
+  const [rowInfo, setRowInfo] = useState({
+    idBill: "",
+    posFee: "",
+    posId: "",
+    percen: "",
+  });
 
   const listOfBills = useSelector(
     (state: RootState) => state.billManagement.billsList
@@ -97,6 +108,12 @@ export const BillManagementContent = () => {
   };
   const handleOpenSearchDrawer = () => {
     setIsOpenSearchDrawer(true);
+  };
+  const handleOpenPosFeeModal = () => {
+    setIsOpenPosFeeModal(true);
+  };
+  const handleClosePosFeeModal = () => {
+    setIsOpenPosFeeModal(false);
   };
   const handleOpenModal = () => {
     setIsOpenModal(true);
@@ -240,6 +257,23 @@ export const BillManagementContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchCondition]);
 
+  const handleOpenModalEdit = (
+    idBill: string,
+    posFee: string,
+    posId: string,
+    percen: string
+  ) => {
+    setRowInfo({
+      idBill,
+      posFee,
+      posId,
+      percen,
+    });
+    setIsOpenModalEdit(true);
+  };
+  const handleCloseModalEdit = () => {
+    setIsOpenModalEdit(false);
+  };
   const columns: GridColDef<ColBillInfo>[] = useMemo(
     () => [
       {
@@ -435,6 +469,37 @@ export const BillManagementContent = () => {
         ...GRID_CHECKBOX_SELECTION_COL_DEF,
         width: 100,
       },
+      {
+        headerName: "Thao Tác",
+        field: "actions",
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        width: 90,
+        renderCell: ({ row }) => {
+          return (
+            <div>
+              {row.createdBy !== "TOTAL" && (
+                <IconButton
+                  color="info"
+                  onClick={() =>
+                    handleOpenModalEdit(
+                      row.id,
+                      row.posCode,
+                      row.posId,
+                      row.posFeeStamp
+                    )
+                  }
+                >
+                  <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              )}
+            </div>
+          );
+        },
+      },
     ],
     []
   );
@@ -465,13 +530,29 @@ export const BillManagementContent = () => {
           justifyContent: "space-between",
         }}
       >
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenModal()}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 10,
+          }}
         >
-          Tính toán khớp bill
-        </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenModal()}
+          >
+            Tính toán khớp bill
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            color="warning"
+            onClick={() => handleOpenPosFeeModal()}
+          >
+            Chỉnh sửa phí POS
+          </Button>
+        </div>
         <Button
           variant="contained"
           size="small"
@@ -547,11 +628,22 @@ export const BillManagementContent = () => {
         handleCloseDrawer={handleCloseModal}
         isOpen={isOpenModal}
       />
+      <ChangePosFee
+        handleSearchGeneral={handleSearch}
+        handleCloseDrawer={handleClosePosFeeModal}
+        isOpen={isOpenPosFeeModal}
+      />
       <SearchDrawer
         handleCloseDrawer={handleCloseSearchDrawer}
         isOpen={isOpenSearchDrawer}
         searchCondition={searchCondition}
         handleChangeSearch={handleChangeSearch}
+      />
+      <ViewPosFeeDrawer
+        isOpen={isOpenModalEdit}
+        handleCloseDrawer={handleCloseModalEdit}
+        rowInfo={rowInfo}
+        handleSearch={handleSearch}
       />
     </Dashboard>
   );

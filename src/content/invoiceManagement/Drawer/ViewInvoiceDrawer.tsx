@@ -607,7 +607,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           }
         }
         receiptBills.push({
-          billId: "",
+          billId: item?.id,
           posId: item?.posId?.key,
           moneyAmount: +item?.money,
           fee: restOfFee,

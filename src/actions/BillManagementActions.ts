@@ -4,6 +4,9 @@ import {
   FETCH_BILL_SUCCESS,
   FETCH_FILTER_BILL,
   FETCH_FILTER_BILL_FAILURE,
+  FETCH_FILTER_BILL_POS_FEE,
+  FETCH_FILTER_BILL_POS_FEE_FAILURE,
+  FETCH_FILTER_BILL_POS_FEE_SUCCESS,
   FETCH_FILTER_BILL_SUCCESS,
   FETCH_SUM_BILL,
   FETCH_SUM_BILL_FAILURE,
@@ -50,3 +53,18 @@ export const fetchFilterBillsFailure = (payload: any) => ({
   type: FETCH_FILTER_BILL_FAILURE,
   payload,
 });
+
+export const fetchFilterBillsPosFee = (payload: any) => ({
+  type: FETCH_FILTER_BILL_POS_FEE,
+  payload,
+});
+export const fetchFilterBillsPosFeeSuccess = (payload: any) => ({
+  type: FETCH_FILTER_BILL_POS_FEE_SUCCESS,
+  payload,
+});
+
+export const fetchFilterBillsPosFeeFailure = (payload: any) => ({
+  type: FETCH_FILTER_BILL_POS_FEE_FAILURE,
+  payload,
+});
+

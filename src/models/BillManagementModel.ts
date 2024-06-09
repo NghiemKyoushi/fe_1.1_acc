@@ -89,3 +89,13 @@ export interface MatchBills {
   explanation: string;
   imageId: string;
 }
+
+export interface PosFeeSearch {
+  posId: string;
+  fromCreatedDate: string;
+  toCreatedDate: string;
+}
+export interface PosFeeUpdate {
+  billIds: Array<string | number>;
+  posFeeStamp: number;
+}

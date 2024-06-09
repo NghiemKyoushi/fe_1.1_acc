@@ -3,7 +3,11 @@ import {
   AccountingBookSearchParams,
   CreateEntryParams,
 } from "@/models/AccountingBookModel";
-import { MatchBills } from "@/models/BillManagementModel";
+import {
+  MatchBills,
+  PosFeeSearch,
+  PosFeeUpdate,
+} from "@/models/BillManagementModel";
 export const fetchBill = (param: AccountingBookSearchParams) => {
   return authApi.get("/api/bills", {
     params: param,
@@ -24,6 +28,20 @@ export const fetchConfirmFilterBill = (body: MatchBills) => {
   return authApi.put("/api/bills/matchBill", body);
 };
 
+export const fetchListModifyPosFee = (param: PosFeeSearch) => {
+  return authApi.get("/api/bills/modifyPosFee", {
+    params: param,
+  });
+};
+export const fetchUpdatePosFee = (body: PosFeeUpdate) => {
+  return authApi.put("/api/bills/modifyPosFee", body);
+};
+export const fetchUpdateRowPosFee = (
+  idBill: string,
+  body: { posId: string; posFeeStamp: number }
+) => {
+  return authApi.put(`/api/bills/${idBill}`, body);
+};
 // export const createNewEntry = (body: CreateEntryParams) => {
 //   return authApi.post("/api/branch-account-entry", body);
 // };

@@ -4,6 +4,9 @@ import {
   FETCH_BILL_SUCCESS,
   FETCH_FILTER_BILL,
   FETCH_FILTER_BILL_FAILURE,
+  FETCH_FILTER_BILL_POS_FEE,
+  FETCH_FILTER_BILL_POS_FEE_FAILURE,
+  FETCH_FILTER_BILL_POS_FEE_SUCCESS,
   FETCH_FILTER_BILL_SUCCESS,
   FETCH_SUM_BILL,
   FETCH_SUM_BILL_FAILURE,
@@ -14,6 +17,7 @@ const initialState = {
   isLoading: false,
   billsList: [],
   filterBill: [],
+  filterBillPosFee: [],
   totalSumRow: {
     createdBy: "",
     createdDate: "",
@@ -112,6 +116,23 @@ const BillManagementReducers = (
       };
 
     case FETCH_FILTER_BILL_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case FETCH_FILTER_BILL_POS_FEE:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case FETCH_FILTER_BILL_POS_FEE_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        filterBillPosFee: action.payload,
+        error: null,
+      };
+    case FETCH_FILTER_BILL_POS_FEE_FAILURE:
       return {
         ...state,
         isLoading: false,

@@ -20,10 +20,8 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { fetchPosManagement } from "@/actions/PosManagementActions";
 import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import FullScreenLoader from "@/components/common/FullScreenLoader";
 import { fetchListCardCustomer } from "@/actions/CardCustomerActions";
 import {
   ColCustomerCard,

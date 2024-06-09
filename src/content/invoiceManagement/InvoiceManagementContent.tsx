@@ -63,7 +63,7 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import { NoteDialogComponent } from "./Drawer/NoteDialog";
 import { NoteDeleteDialogComponent } from "./Drawer/NoteDeleteDialog";
 import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
-
+import ArticleIcon from "@mui/icons-material/Article";
 const date = new Date();
 const previous = new Date(date.getTime());
 previous.setDate(date.getDate() - 30);
@@ -1084,13 +1084,24 @@ export default function InvoiceManagementContent() {
           >
             Thêm Hóa Đơn
           </Button>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenSearchDrawer()}
-          >
-            Tìm kiếm
-          </Button>
+          <div>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenSearchDrawer()}
+            >
+              Tìm kiếm
+            </Button>{" "}
+            {/* <Button
+              variant="contained"
+              color="success"
+              size="small"
+              onClick={() => handleOpenSearchDrawer()}
+              startIcon={<ArticleIcon />}
+            >
+              Tải xuống
+            </Button> */}
+          </div>
         </Box>
         <form style={{ width: "100%" }}>
           <Box
