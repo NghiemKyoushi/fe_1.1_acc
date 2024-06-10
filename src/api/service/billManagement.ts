@@ -49,3 +49,12 @@ export const fetchUpdateRowPosFee = (
 // export const confirmNewEntry = (entryId: string) => {
 //   return authApi.put(`/api/branch-account-entry/confirm-entry/${entryId}`);
 // };
+export const downLoadExcelBill = (param: AccountingBookSearchParams) => {
+  return authApi.get("/api/bills/export", {
+    params: param,
+  });
+};
+
+export const fetchUpdateNoterBill = (body: { id: string; note: string }) => {
+  return authApi.put("/api/bills/note", body);
+};

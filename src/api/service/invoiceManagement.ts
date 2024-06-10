@@ -62,8 +62,7 @@ export const conrimRepayInvoice = (reason: RepayConfirmParams) => {
 };
 
 export const deleteInvoice = (id: string, note: string) => {
-    return authApi.delete(`/api/receipts/${id}?explanation=${note}`);
-  
+  return authApi.delete(`/api/receipts/${id}?explanation=${note}`);
 };
 
 export const saveDatatoServerApis = () => {
@@ -72,4 +71,8 @@ export const saveDatatoServerApis = () => {
 
 export const conrimEditNoteInvoice = (reason: { id: string; note: string }) => {
   return authApi.put("/api/receipts/note", reason);
+};
+
+export const downLoadExcelReceipt = (param: fetchInvoiceInfoPrams) => {
+  return authApi.get("/api/receipts/export", { params: params });
 };

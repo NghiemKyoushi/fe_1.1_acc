@@ -21,7 +21,7 @@ import {
   getDateOfPresent,
   getValueWithComma,
 } from "@/utils";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 
 import { DateRangePicker } from "@/components/common/DatePickerComponent";
 import { useForm } from "react-hook-form";
@@ -32,12 +32,18 @@ import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
 import FilterBill from "./Drawer/FilterBill";
 import { ConfirmBillsDialogComponent } from "./Drawer/ConfirmBills";
 import { enqueueSnackbar } from "notistack";
-import { fetchConfirmFilterBill } from "@/api/service/billManagement";
+import {
+  downLoadExcelBill,
+  fetchConfirmFilterBill,
+  fetchUpdateNoterBill,
+} from "@/api/service/billManagement";
 import { fetchSaveImage } from "@/api/service/invoiceManagement";
 import SearchDrawer from "./Drawer/SearchDrawer";
 import ChangePosFee from "./Drawer/ChangePos";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ViewPosFeeDrawer from "./Drawer/EditPosFeeDrawer";
+import ArticleIcon from "@mui/icons-material/Article";
+import { NoteDialogComponent } from "../invoiceManagement/Drawer/NoteDialog";
 
 const date = new Date();
 const previous = new Date(date.getTime());
@@ -75,6 +81,8 @@ export const BillManagementContent = () => {
     posId: "",
     percen: "",
   });
+  const [isOpenNote, setIsOpenNote] = useState(false);
+  const [billIdNote, setBillIdNote] = useState("");
 
   const listOfBills = useSelector(
     (state: RootState) => state.billManagement.billsList
@@ -100,6 +108,7 @@ export const BillManagementContent = () => {
         explanation: "",
         billId: "",
         code: "",
+        noteInfo: "",
       },
     });
   const dispatch = useDispatch();
@@ -190,6 +199,33 @@ export const BillManagementContent = () => {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
           enqueueSnackbar("Khớp bill thất bại", { variant: "error" });
+        }
+      });
+  };
+  const handleCloseNote = () => {
+    setIsOpenNote(false);
+  };
+  const handleOpenNote = (id: string, note: string) => {
+    setBillIdNote(id);
+    setValue("noteInfo", note);
+    setIsOpenNote(true);
+  };
+  const handleClickConfirmNote = () => {
+    const bodySend = {
+      id: billIdNote,
+      note: watch("noteInfo"),
+    };
+    fetchUpdateNoterBill(bodySend)
+      .then((res) => {
+        enqueueSnackbar("Tạo/Sửa ghi chú thành công", { variant: "success" });
+        handleCloseNote();
+        handleSearch();
+      })
+      .catch(function (error: any) {
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tạo/Sửa ghi chú thất bại", { variant: "error" });
         }
       });
   };
@@ -367,9 +403,34 @@ export const BillManagementContent = () => {
         }),
       },
       {
+        headerName: "Mã hóa đơn",
+        field: "receiptCode",
+        width: 165,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return params.value;
+        },
+      },
+      {
+        headerName: "Ghi chú",
+        field: "note",
+        width: 165,
+        headerAlign: "center",
+        align: "center",
+        hide: true,
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return params.value;
+        },
+      },
+      {
         headerName: "POS",
         field: "posCode",
-        width: 165,
+        width: 125,
         headerAlign: "center",
         align: "center",
         valueGetter: ({ row }) => {
@@ -396,7 +457,7 @@ export const BillManagementContent = () => {
       {
         headerName: "%Phí",
         field: "posFeeStamp",
-        width: 160,
+        width: 80,
         headerAlign: "center",
         align: "center",
         sortable: false,
@@ -481,6 +542,18 @@ export const BillManagementContent = () => {
         renderCell: ({ row }) => {
           return (
             <div>
+              {row.createdBy !== "TOTAL" ? (
+                // <Tooltip title={row.note} placement="top">
+                <IconButton
+                  color={row.note !== null ? "error" : "inherit"}
+                  onClick={() => handleOpenNote(row.id, row.note)}
+                >
+                  <EditNoteIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              ) : (
+                // </Tooltip>
+                <div></div>
+              )}
               {row.createdBy !== "TOTAL" && (
                 <IconButton
                   color="info"
@@ -519,6 +592,44 @@ export const BillManagementContent = () => {
   const getRowId = (row: any) => {
     return row.id;
   };
+  const downloadFileExcel = () => {
+    const { fromCreatedDate, toCreatedDate, entryCode, entryType, code } =
+      getValues();
+    const fromDate = new Date(fromCreatedDate);
+    const offsetInMinutes = fromDate.getTimezoneOffset();
+    fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
+
+    const gettoDate = new Date(toCreatedDate);
+    const toDate = new Date(gettoDate.setDate(gettoDate.getDate()));
+
+    const offsetInMinutes2 = toDate.getTimezoneOffset();
+    toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
+    const params = {
+      ...searchCondition,
+      fromCreatedDate: fromDate.toISOString(),
+      toCreatedDate: toDate.toISOString(),
+      entryType: entryType,
+      code: code,
+    };
+    downLoadExcelBill(params)
+      .then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "bills.csv"); // Replace with the desired file name
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        enqueueSnackbar("Tải file xuống thành công", { variant: "success" });
+      })
+      .catch(function (error) {
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tải file xuống thất bại", { variant: "error" });
+        }
+      });
+  };
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ BILL </h3>
@@ -553,13 +664,30 @@ export const BillManagementContent = () => {
             Chỉnh sửa phí POS
           </Button>
         </div>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenSearchDrawer()}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 10,
+          }}
         >
-          Tìm kiếm
-        </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenSearchDrawer()}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            size="small"
+            onClick={() => downloadFileExcel()}
+            startIcon={<ArticleIcon />}
+          >
+            Tải xuống
+          </Button>
+        </div>
       </Box>
       <form style={{ width: "100%" }}>
         <Box
@@ -644,6 +772,12 @@ export const BillManagementContent = () => {
         handleCloseDrawer={handleCloseModalEdit}
         rowInfo={rowInfo}
         handleSearch={handleSearch}
+      />
+      <NoteDialogComponent
+        openDialog={isOpenNote}
+        handleClickConfirm={handleClickConfirmNote}
+        control={control}
+        handleClickClose={handleCloseNote}
       />
     </Dashboard>
   );

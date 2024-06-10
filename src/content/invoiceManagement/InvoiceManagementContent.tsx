@@ -48,6 +48,7 @@ import {
   conrimInvoice,
   conrimRepayInvoice,
   deleteInvoice,
+  downLoadExcelReceipt,
   fetchInvoiceDetail,
   fetchInvoiceSumTotal,
   fetchSaveImage,
@@ -813,7 +814,6 @@ export default function InvoiceManagementContent() {
       headerAlign: "center",
       align: "center",
       width: 140,
-      hide: true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
@@ -844,6 +844,7 @@ export default function InvoiceManagementContent() {
       headerAlign: "center",
       align: "center",
       width: 140,
+      hide: true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
@@ -1066,6 +1067,80 @@ export default function InvoiceManagementContent() {
     setRowData([...shadowData]);
     setListOfSelection(value);
   };
+  const downloadFileExcel = () => {
+    const {
+      fromEstimatedProfit,
+      toEstimatedProfit,
+      fromIntake,
+      toIntake,
+      fromLoan,
+      toLoan,
+      fromPayout,
+      toPayout,
+      fromRepayment,
+      toRepayment,
+      fromTransactionTotal,
+      toTransactionTotal,
+      receiptCode,
+      fromCreatedDate,
+      toCreatedDate,
+    } = getValues();
+
+    const fromDate = new Date(fromCreatedDate);
+    const offsetInMinutes = fromDate.getTimezoneOffset();
+    fromDate.setMinutes(fromDate.getMinutes() - offsetInMinutes);
+
+    const gettoDate = new Date(toCreatedDate);
+    const toDate = new Date(gettoDate.setDate(gettoDate.getDate()));
+
+    const offsetInMinutes2 = toDate.getTimezoneOffset();
+    toDate.setMinutes(toDate.getMinutes() - offsetInMinutes2);
+
+    const params = {
+      ...searchCondition,
+      receiptCode: receiptCode,
+      fromTransactionTotal:
+        fromTransactionTotal === 0
+          ? ""
+          : _.toNumber(fromTransactionTotal.toString().replace(",", "")),
+      toTransactionTotal:
+        toTransactionTotal === 0
+          ? ""
+          : _.toNumber(toTransactionTotal.toString().replace(",", "")),
+      fromIntake: fromIntake === 0 ? "" : +fromIntake,
+      fromEstimatedProfit:
+        fromEstimatedProfit === 0 ? "" : +fromEstimatedProfit,
+      fromLoan: fromLoan === 0 ? "" : +fromLoan,
+      fromPayout: fromPayout === 0 ? "" : +fromPayout,
+      fromRepayment: fromRepayment === 0 ? "" : +fromRepayment,
+      toEstimatedProfit: toEstimatedProfit === 0 ? "" : +toEstimatedProfit,
+      toIntake: toIntake === 0 ? "" : +toIntake,
+      toLoan: toLoan === 0 ? "" : +toLoan,
+      toPayout: toPayout === 0 ? "" : +toPayout,
+      toRepayment: toRepayment === 0 ? "" : +toRepayment,
+      employeeId: "",
+      fromCreatedDate: fromDate.toISOString(),
+      toCreatedDate: toDate.toISOString(),
+    };
+    downLoadExcelReceipt(params)
+      .then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "hoadon.csv"); // Replace with the desired file name
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        enqueueSnackbar("Tải file xuống thành công", { variant: "success" });
+      })
+      .catch(function (error) {
+        if (error.response.data.errors?.length > 0) {
+          enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
+        } else {
+          enqueueSnackbar("Tải file xuống thất bại", { variant: "error" });
+        }
+      });
+  };
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ HÓA ĐƠN</h3>
@@ -1084,23 +1159,29 @@ export default function InvoiceManagementContent() {
           >
             Thêm Hóa Đơn
           </Button>
-          <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
             <Button
               variant="contained"
               size="small"
               onClick={() => handleOpenSearchDrawer()}
             >
               Tìm kiếm
-            </Button>{" "}
-            {/* <Button
+            </Button>
+            <Button
               variant="contained"
               color="success"
               size="small"
-              onClick={() => handleOpenSearchDrawer()}
+              onClick={() => downloadFileExcel()}
               startIcon={<ArticleIcon />}
             >
               Tải xuống
-            </Button> */}
+            </Button>
           </div>
         </Box>
         <form style={{ width: "100%" }}>
