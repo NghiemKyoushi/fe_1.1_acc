@@ -74,5 +74,5 @@ export const conrimEditNoteInvoice = (reason: { id: string; note: string }) => {
 };
 
 export const downLoadExcelReceipt = (param: fetchInvoiceInfoPrams) => {
-  return authApi.get("/api/receipts/export", { params: params });
+  return authApi.get("/api/receipts/export", { params: param });
 };
