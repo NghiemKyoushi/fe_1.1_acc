@@ -83,7 +83,7 @@ export const BillManagementContent = () => {
   });
   const [isOpenNote, setIsOpenNote] = useState(false);
   const [billIdNote, setBillIdNote] = useState("");
-
+  const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const listOfBills = useSelector(
     (state: RootState) => state.billManagement.billsList
   );
@@ -405,7 +405,7 @@ export const BillManagementContent = () => {
       {
         headerName: "Mã hóa đơn",
         field: "receiptCode",
-        width: 165,
+        width: 185,
         headerAlign: "center",
         align: "center",
         sortable: false,
@@ -545,7 +545,7 @@ export const BillManagementContent = () => {
               {row.createdBy !== "TOTAL" ? (
                 // <Tooltip title={row.note} placement="top">
                 <IconButton
-                  color={row.note !== null ? "error" : "inherit"}
+                  style={{ color: row.note !== null ? "red" : "#d7d3d3" }}
                   onClick={() => handleOpenNote(row.id, row.note)}
                 >
                   <EditNoteIcon sx={{ fontSize: 20 }} />
@@ -592,7 +592,8 @@ export const BillManagementContent = () => {
   const getRowId = (row: any) => {
     return row.id;
   };
-  const downloadFileExcel = () => {
+  const downloadFileExcel = async () => {
+    await setIsLoadingDownload(true);
     const { fromCreatedDate, toCreatedDate, entryCode, entryType, code } =
       getValues();
     const fromDate = new Date(fromCreatedDate);
@@ -620,9 +621,11 @@ export const BillManagementContent = () => {
         document.body.appendChild(link);
         link.click();
         link.remove();
+        setIsLoadingDownload(false);
         enqueueSnackbar("Tải file xuống thành công", { variant: "success" });
       })
       .catch(function (error) {
+        setIsLoadingDownload(false);
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
@@ -633,7 +636,6 @@ export const BillManagementContent = () => {
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ BILL </h3>
-
       <Box
         sx={{
           margin: "7px 0px",
@@ -710,7 +712,7 @@ export const BillManagementContent = () => {
             pageSize={pagination?.size}
             rowCount={pagination?.totalElements}
             handleSortModelChange={handleSortModelChange}
-            loading={isLoading}
+            loading={isLoading || isLoadingDownload ? true : false}
             getRowId={getRowId}
             checkboxSelection={true}
             selectionModel={listOfSelection}

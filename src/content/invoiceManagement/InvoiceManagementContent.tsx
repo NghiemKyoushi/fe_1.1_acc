@@ -143,6 +143,7 @@ export default function InvoiceManagementContent() {
     Array<string | number>
   >([]);
   const [rowData, setRowData] = useState<ColReceiptList[]>([]);
+  const [isLoadingDownload, setIsLoadingDownload] = useState(false);
 
   const [imageId, setImageId] = useState("");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
@@ -550,7 +551,7 @@ export default function InvoiceManagementContent() {
     {
       headerName: "Mã Hóa Đơn",
       field: "code",
-      width: 165,
+      width: 185,
       headerAlign: "center",
       align: "left",
       valueGetter: ({ row }) => {
@@ -1067,7 +1068,8 @@ export default function InvoiceManagementContent() {
     setRowData([...shadowData]);
     setListOfSelection(value);
   };
-  const downloadFileExcel = () => {
+  const downloadFileExcel = async () => {
+    await setIsLoadingDownload(true);
     const {
       fromEstimatedProfit,
       toEstimatedProfit,
@@ -1131,9 +1133,11 @@ export default function InvoiceManagementContent() {
         document.body.appendChild(link);
         link.click();
         link.remove();
+        setIsLoadingDownload(false);
         enqueueSnackbar("Tải file xuống thành công", { variant: "success" });
       })
       .catch(function (error) {
+        setIsLoadingDownload(false);
         if (error.response.data.errors?.length > 0) {
           enqueueSnackbar(error.response.data.errors[0], { variant: "error" });
         } else {
@@ -1211,7 +1215,7 @@ export default function InvoiceManagementContent() {
               pageSize={pagination?.size}
               rowCount={pagination?.totalElements}
               handleSortModelChange={handleSortModelChange}
-              loading={isLoading}
+              loading={isLoading || isLoadingDownload ? true : false}
               getRowId={getRowId}
               checkboxSelection={true}
               handleGetListOfSelect={handleGetListOfSelect}
