@@ -433,6 +433,7 @@ export const BillManagementContent = () => {
         width: 125,
         headerAlign: "center",
         align: "center",
+        filterable: false,
         valueGetter: ({ row }) => {
           return row.posCode;
         },
@@ -577,6 +578,22 @@ export const BillManagementContent = () => {
     []
   );
   const handleChangeSearch = (value: any) => {
+    console.log("====================================");
+    console.log("value.posCode", value.posCode);
+    console.log("====================================");
+    reset({
+      ...value,
+      fromCreatedDate: value.fromCreatedDate,
+      toCreatedDate: value.toCreatedDate,
+      posCode: value.posCode,
+      code: value.code,
+      fromMoneyAmount: value.fromMoneyAmount,
+      toMoneyAmount: value.toMoneyAmount,
+      fromEstimatedProfit: value.fromEstimatedProfit,
+      toEstimatedProfit: value.toEstimatedProfit,
+      onlyConfirmedBillsWithoutReturnFromBank:
+        value.onlyConfirmedBillsWithoutReturnFromBank,
+    });
     setSearchCondition(value);
   };
   const handleSortModelChange = (sortModel: GridSortModel) => {
