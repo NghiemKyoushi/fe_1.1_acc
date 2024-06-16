@@ -641,10 +641,11 @@ export default function InvoiceManagementContent() {
         return getValueWithComma(params.value);
       },
     },
+    
     {
-      headerName: "Người xác nhận",
-      field: "approverCode",
-      width: 130,
+      headerName: "Tên khách",
+      field: "customerName",
+      width: 200,
       headerAlign: "center",
       align: "center",
       sortable: false,
@@ -885,7 +886,7 @@ export default function InvoiceManagementContent() {
             {row.code !== "TOTAL" ? (
               <Tooltip title={row.note} placement="top">
                 <IconButton
-                  color="error"
+                  style={{ color: row.note !== null ? "red" : "#d7d3d3" }}
                   onClick={() => handleOpenNote(row.id, row.note)}
                 >
                   <EditNoteIcon sx={{ fontSize: 20 }} />

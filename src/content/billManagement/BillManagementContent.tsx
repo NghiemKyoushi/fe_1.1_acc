@@ -578,9 +578,6 @@ export const BillManagementContent = () => {
     []
   );
   const handleChangeSearch = (value: any) => {
-    console.log("====================================");
-    console.log("value.posCode", value.posCode);
-    console.log("====================================");
     reset({
       ...value,
       fromCreatedDate: value.fromCreatedDate,
@@ -634,7 +631,7 @@ export const BillManagementContent = () => {
         const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "bills.csv"); // Replace with the desired file name
+        link.setAttribute("download", "bills.csv");
         document.body.appendChild(link);
         link.click();
         link.remove();
