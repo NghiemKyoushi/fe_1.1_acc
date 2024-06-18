@@ -110,7 +110,6 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       totalBill: "",
     },
   });
-  const role = cookieSetting.get("roles");
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -144,6 +143,13 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   const handleCloseAddCard = () => {
     setIsOpenCard(false);
   };
+
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   useEffect(() => {
     if (rowInfo) {
       if (rowInfo?.imageId !== "") {
@@ -872,7 +878,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                       getData: handleGetCard,
                     }}
                   />
-                  {rowInfo?.code === null && (
+                  {rowInfo?.code === null && role !== ROLE.VIEWER && (
                     <StyleButtonSpan>
                       <Button
                         variant="contained"
@@ -1038,7 +1044,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              {rowInfo?.code === null && (
+              {rowInfo?.code === null && role !== ROLE.VIEWER && (
                 <Button size="small" variant="contained" type="submit">
                   Cập nhật
                 </Button>

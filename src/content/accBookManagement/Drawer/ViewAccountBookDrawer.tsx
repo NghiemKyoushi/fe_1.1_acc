@@ -20,6 +20,7 @@ import { TextFieldCustom } from "@/components/common/Textfield";
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
 import {
+  ROLE,
   cookieSetting,
   getDateOfPresent,
   getValueWithComma,
@@ -53,7 +54,12 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   const [imagePath, setImagePath] = useState("");
   const [imageId, setImageId] = useState("");
   const [branch, setBranch] = useState("");
+  const [Role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
@@ -267,7 +273,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           <div style={{ marginTop: 20 }}>
             <ImageUpload handleGetFile={handleGetFile} filePath={imagePath} />
           </div>
-          {rowInfo?.entryCode === null && (
+          {rowInfo?.entryCode === null && Role !== ROLE.VIEWER && (
             <Button
               style={{ position: "fixed", bottom: 50, right: 32 }}
               variant="contained"

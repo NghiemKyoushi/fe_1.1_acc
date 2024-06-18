@@ -11,6 +11,7 @@ import { RootState } from "@/reducers/rootReducer";
 import { useDispatch } from "react-redux";
 import { ColAccountBook } from "@/models/AccountingBookModel";
 import {
+  ROLE,
   cookieSetting,
   formatDate,
   formatDateTime,
@@ -77,7 +78,12 @@ export const GenAccBookManagementContent = () => {
   const employeeId = cookieSetting.get("employeeId");
   const [receiptsIdNote, setReceiptsIdNote] = useState("");
   const [isOpenNote, setIsOpenNote] = useState(false);
+  const [role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const listOfGenAccBook = useSelector(
     (state: RootState) => state.genAccBookManagement.genAccBookList
   );
@@ -540,43 +546,62 @@ export const GenAccBookManagementContent = () => {
         renderCell: ({ row }) => {
           return (
             <>
-              {row.entryCode !== "TOTAL" && (
-                <>
-                  <Tooltip title={row.note} placement="top">
+              {role !== ROLE.VIEWER ? (
+                <div>
+                  {row.entryCode !== "TOTAL" && (
+                    <div>
+                      <Tooltip title={row.note} placement="top">
+                        <IconButton
+                          color="error"
+                          onClick={() => handleOpenNote(row.id, row.note)}
+                        >
+                          <EditNoteIcon sx={{ fontSize: 20 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <IconButton
+                        color="success"
+                        onClick={() => handleOpenConfirmForm(row.id)}
+                      >
+                        {row.entryCode === null && (
+                          <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
+                        )}{" "}
+                      </IconButton>
+                      <IconButton
+                        color="info"
+                        onClick={() => handleOpenViewDrawer(row.id)}
+                      >
+                        {row.entryCode === null ? (
+                          <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                        ) : (
+                          <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                        )}
+                      </IconButton>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleOpenDeleteForm(row.id)}
+                      >
+                        {row.entryCode === null && (
+                          <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                        )}
+                      </IconButton>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {row.entryCode !== "TOTAL" && (
                     <IconButton
-                      color="error"
-                      onClick={() => handleOpenNote(row.id, row.note)}
+                      color="info"
+                      onClick={() => handleOpenViewDrawer(row.id)}
                     >
-                      <EditNoteIcon sx={{ fontSize: 20 }} />
+                      {row.entryCode === null ? (
+                        <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                      ) : (
+                        <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                      )}
                     </IconButton>
-                  </Tooltip>
-                  <IconButton
-                    color="success"
-                    onClick={() => handleOpenConfirmForm(row.id)}
-                  >
-                    {row.entryCode === null && (
-                      <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
-                    )}{" "}
-                  </IconButton>
-                  <IconButton
-                    color="info"
-                    onClick={() => handleOpenViewDrawer(row.id)}
-                  >
-                    {row.entryCode === null ? (
-                      <EditOutlinedIcon sx={{ fontSize: 20 }} />
-                    ) : (
-                      <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
-                    )}
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleOpenDeleteForm(row.id)}
-                  >
-                    {row.entryCode === null && (
-                      <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-                    )}
-                  </IconButton>
-                </>
+                  )}
+                </div>
               )}
             </>
           );
@@ -650,13 +675,15 @@ export const GenAccBookManagementContent = () => {
           }}
         >
           <div>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => handleOpenModal()}
-            >
-              Tạo bút toán
-            </Button>
+            {role !== ROLE.VIEWER && (
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => handleOpenModal()}
+              >
+                Tạo bút toán
+              </Button>
+            )}
           </div>
           <div>
             <Button

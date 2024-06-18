@@ -917,13 +917,15 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                     }}
                   />
                   <StyleButtonSpan>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      onClick={handleOpenAddCard}
-                    >
-                      Thêm Thẻ
-                    </Button>
+                    {role !== ROLE.VIEWER && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleOpenAddCard}
+                      >
+                        Thêm Thẻ
+                      </Button>
+                    )}
                   </StyleButtonSpan>
                 </StyleInputContainer>
                 <InfoBankCard style={{ minWidth: 300 }}>
@@ -1069,14 +1071,16 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              <Button
-                disabled={isLoadingImage}
-                size="small"
-                variant="contained"
-                type="submit"
-              >
-                Lưu Hóa Đơn
-              </Button>
+              {role !== ROLE.VIEWER && (
+                <Button
+                  disabled={isLoadingImage}
+                  size="small"
+                  variant="contained"
+                  type="submit"
+                >
+                  Lưu Hóa Đơn
+                </Button>
+              )}
             </Box>
           </PageContent>
         </form>

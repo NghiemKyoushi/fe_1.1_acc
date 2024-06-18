@@ -16,6 +16,8 @@ import { RootState } from "@/reducers/rootReducer";
 import { fetchEmp } from "@/actions/EmpManagementAactions";
 import { useDispatch } from "react-redux";
 import {
+  ROLE,
+  cookieSetting,
   formatDate,
   formatDateTime,
   getDateOfPresent,
@@ -97,7 +99,12 @@ export const BillManagementContent = () => {
     (state: RootState) => state.billManagement.isLoading
   );
   const [searchCondition, setSearchCondition] = useState<any>(initialPosSearch);
+  const [role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const { register, handleSubmit, getValues, setValue, watch, reset, control } =
     useForm({
       defaultValues: {
@@ -664,21 +671,25 @@ export const BillManagementContent = () => {
             gap: 10,
           }}
         >
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenModal()}
-          >
-            Tính toán khớp bill
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            color="warning"
-            onClick={() => handleOpenPosFeeModal()}
-          >
-            Chỉnh sửa phí POS
-          </Button>
+          {role !== ROLE.VIEWER && (
+            <div>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => handleOpenModal()}
+              >
+                Tính toán khớp bill
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
+                color="warning"
+                onClick={() => handleOpenPosFeeModal()}
+              >
+                Chỉnh sửa phí POS
+              </Button>
+            </div>
+          )}
         </div>
         <div
           style={{
@@ -758,14 +769,16 @@ export const BillManagementContent = () => {
           padding: "0px 16px 8px 16px",
         }}
       >
-        <Button
-          size="small"
-          variant="contained"
-          type="submit"
-          onClick={handleOpenConfirmBillDialog}
-        >
-          Xác nhận khớp bill
-        </Button>
+        {role !== ROLE.VIEWER && (
+          <Button
+            size="small"
+            variant="contained"
+            type="submit"
+            onClick={handleOpenConfirmBillDialog}
+          >
+            Xác nhận khớp bill
+          </Button>
+        )}
       </Box>
       <FilterBill
         handleSearchGeneral={handleSearch}

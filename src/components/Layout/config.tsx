@@ -22,7 +22,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
+    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER", "VIEWER"],
   },
   {
     title: "Sổ thu chi quản lý",
@@ -33,7 +33,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN", "SUB-MANAGER"],
+    roles: ["ADMIN", "SUB-MANAGER","VIEWER"],
   },
   {
     title: "Sổ kế toán tổng hợp",
@@ -44,7 +44,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN"],
+    roles: ["ADMIN","VIEWER"],
   },
   {
     title: "Quản lý bill",
@@ -55,7 +55,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN"],
+    roles: ["ADMIN","VIEWER"],
   },
   {
     title: "Quản lý pos",
@@ -65,7 +65,7 @@ export const items = [
         <CallToActionOutlinedIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN"],
+    roles: ["ADMIN","VIEWER"],
   },
   {
     title: "Quản lý chi nhánh",
@@ -75,7 +75,7 @@ export const items = [
         <AccountTreeOutlinedIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN"],
+    roles: ["ADMIN","VIEWER"],
   },
   {
     title: "Quản lý nhân viên",
@@ -85,7 +85,7 @@ export const items = [
         <ManageAccountsOutlinedIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN"],
+    roles: ["ADMIN","VIEWER"],
   },
   {
     title: "Quản lý khách hàng",
@@ -95,7 +95,7 @@ export const items = [
         <ContactMailOutlinedIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
+    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER","VIEWER"],
   },
   {
     title: "Quản lý thẻ khách",
@@ -105,7 +105,7 @@ export const items = [
         <DescriptionIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
+    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER","VIEWER"],
   },
   {
     title: "Thông tin tài khoản",
@@ -115,7 +115,7 @@ export const items = [
         <AccountBoxOutlinedIcon />
       </SvgIcon>
     ),
-    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER"],
+    roles: ["ADMIN", "EMPLOYEE", "SUB-MANAGER","VIEWER"],
   },
   {
     title: "Cài đặt",

@@ -1,6 +1,6 @@
 "use client";
 import Dashboard from "@/components/Layout";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Operators } from "@/components/common/DataGrid";
 import {
   GridCellParams,
@@ -147,9 +147,13 @@ export default function InvoiceManagementContent() {
 
   const [imageId, setImageId] = useState("");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
-  const role = cookieSetting.get("roles");
   const userCode = cookieSetting.get("code");
+  const [role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const listOfInvoice = useSelector(
     (state: RootState) => state.invoiceManagement.listOfInvoice
   );
@@ -641,7 +645,7 @@ export default function InvoiceManagementContent() {
         return getValueWithComma(params.value);
       },
     },
-    
+
     {
       headerName: "Tên khách",
       field: "customerName",
@@ -882,80 +886,97 @@ export default function InvoiceManagementContent() {
       width: 190,
       renderCell: ({ row }) => {
         return (
-          <>
-            {row.code !== "TOTAL" ? (
-              <Tooltip title={row.note} placement="top">
-                <IconButton
-                  style={{ color: row.note !== null ? "red" : "#d7d3d3" }}
-                  onClick={() => handleOpenNote(row.id, row.note)}
-                >
-                  <EditNoteIcon sx={{ fontSize: 20 }} />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <div></div>
-            )}
-            {row.code === null &&
-            role !== ROLE.EMPLOYEE &&
-            role !== ROLE.VIEWER ? (
-              <IconButton
-                color="success"
-                onClick={() => handleOpenApproveDialog(row.id)}
-              >
-                <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-            ) : (
-              <div></div>
-            )}
+          <React.Fragment>
+            {role !== ROLE.VIEWER ? (
+              <>
+                {row.code !== "TOTAL" ? (
+                  <Tooltip title={row.note} placement="top">
+                    <IconButton
+                      style={{ color: row.note !== null ? "red" : "#d7d3d3" }}
+                      onClick={() => handleOpenNote(row.id, row.note)}
+                    >
+                      <EditNoteIcon sx={{ fontSize: 20 }} />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <div></div>
+                )}
+                {row.code === null &&
+                role !== ROLE.EMPLOYEE &&
+                role !== ROLE.VIEWER ? (
+                  <IconButton
+                    color="success"
+                    onClick={() => handleOpenApproveDialog(row.id)}
+                  >
+                    <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                ) : (
+                  <div></div>
+                )}
 
-            {row.code !== "TOTAL" ? (
-              <IconButton
-                color="info"
-                onClick={() => handleOpenViewDrawer(row.id)}
-              >
-                <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+                {row.code !== "TOTAL" ? (
+                  <IconButton
+                    color="info"
+                    onClick={() => handleOpenViewDrawer(row.id)}
+                  >
+                    <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                ) : (
+                  <div></div>
+                )}
+                {+row.loan > +row.repayment &&
+                row.code !== "TOTAL" &&
+                row.code !== null &&
+                role !== ROLE.EMPLOYEE &&
+                role !== ROLE.VIEWER ? (
+                  // row.receiptStatusEnum === "COMPLETED"
+                  <IconButton
+                    color="info"
+                    onClick={() => handleOpenRepay(row.id, row.loan)}
+                  >
+                    <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                ) : (
+                  <div></div>
+                )}
+                {role === ROLE.ADMIN &&
+                row.code !== null &&
+                row.code !== "TOTAL" ? (
+                  <IconButton
+                    color="error"
+                    onClick={() => handleOpenNoteDelete(row.id)}
+                  >
+                    <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                ) : (
+                  <div></div>
+                )}
+                {row.code === null ? (
+                  <IconButton
+                    color="error"
+                    onClick={() => handleOpenDeleteForm(row.id)}
+                  >
+                    <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                ) : (
+                  <div></div>
+                )}
+              </>
             ) : (
-              <div></div>
+              <div>
+                {row.code !== "TOTAL" ? (
+                  <IconButton
+                    color="info"
+                    onClick={() => handleOpenViewDrawer(row.id)}
+                  >
+                    <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                ) : (
+                  <div></div>
+                )}
+              </div>
             )}
-            {+row.loan > +row.repayment &&
-            row.code !== "TOTAL" &&
-            row.code !== null &&
-            role !== ROLE.EMPLOYEE &&
-            role !== ROLE.VIEWER ? (
-              // row.receiptStatusEnum === "COMPLETED"
-              <IconButton
-                color="info"
-                onClick={() => handleOpenRepay(row.id, row.loan)}
-              >
-                <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-            ) : (
-              <div></div>
-            )}
-            {role === ROLE.ADMIN &&
-            row.code !== null &&
-            row.code !== "TOTAL" ? (
-              <IconButton
-                color="error"
-                onClick={() => handleOpenNoteDelete(row.id)}
-              >
-                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-            ) : (
-              <div></div>
-            )}
-            {row.code === null ? (
-              <IconButton
-                color="error"
-                onClick={() => handleOpenDeleteForm(row.id)}
-              >
-                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-            ) : (
-              <div></div>
-            )}
-          </>
+          </React.Fragment>
         );
       },
     },
@@ -1157,13 +1178,18 @@ export default function InvoiceManagementContent() {
             justifyContent: "space-between",
           }}
         >
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenInvoiceDraw()}
-          >
-            Thêm Hóa Đơn
-          </Button>
+          <div>
+            {role !== ROLE.VIEWER ? (
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => handleOpenInvoiceDraw()}
+              >
+                Thêm Hóa Đơn
+              </Button>
+            ) : null}
+          </div>
+
           <div
             style={{
               display: "flex",

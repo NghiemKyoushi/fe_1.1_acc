@@ -639,48 +639,69 @@ export const AccBookManagementContent = () => {
         renderCell: ({ row }) => {
           return (
             <>
-              {row.entryCode !== "TOTAL" ? (
-                <Tooltip title={row.note} placement="top">
-                  <IconButton
-                    color="error"
-                    onClick={() => handleOpenNote(row.id, row.note)}
-                  >
-                    <EditNoteIcon sx={{ fontSize: 20 }} />
-                  </IconButton>
-                </Tooltip>
-              ) : (
-                <div></div>
-              )}
-              {row.entryCode !== "TOTAL" && (
-                <>
-                  {row.entryCode === null && (
-                    <IconButton
-                      color="success"
-                      onClick={() => handleOpenConfirmForm(row.id)}
-                    >
-                      <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
-                    </IconButton>
+              {role !== ROLE.VIEWER ? (
+                <div>
+                  {row.entryCode !== "TOTAL" ? (
+                    <Tooltip title={row.note} placement="top">
+                      <IconButton
+                        color="error"
+                        onClick={() => handleOpenNote(row.id, row.note)}
+                      >
+                        <EditNoteIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <div></div>
                   )}
-                  <IconButton
-                    color="info"
-                    onClick={() => handleOpenViewDrawer(row.id)}
-                  >
-                    {row.entryCode === null ? (
-                      <EditOutlinedIcon sx={{ fontSize: 20 }} />
-                    ) : (
-                      <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
-                    )}
-                  </IconButton>
+                  {row.entryCode !== "TOTAL" && (
+                    <>
+                      {row.entryCode === null && (
+                        <IconButton
+                          color="success"
+                          onClick={() => handleOpenConfirmForm(row.id)}
+                        >
+                          <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
+                        </IconButton>
+                      )}
+                      <IconButton
+                        color="info"
+                        onClick={() => handleOpenViewDrawer(row.id)}
+                      >
+                        {row.entryCode === null ? (
+                          <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                        ) : (
+                          <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                        )}
+                      </IconButton>
 
-                  {row.entryCode === null && (
-                    <IconButton
-                      color="error"
-                      onClick={() => handleOpenDeleteForm(row.id)}
-                    >
-                      <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-                    </IconButton>
+                      {row.entryCode === null && (
+                        <IconButton
+                          color="error"
+                          onClick={() => handleOpenDeleteForm(row.id)}
+                        >
+                          <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                        </IconButton>
+                      )}
+                    </>
                   )}
-                </>
+                </div>
+              ) : (
+                <div>
+                  {row.entryCode !== "TOTAL" ? (
+                    <IconButton
+                      color="info"
+                      onClick={() => handleOpenViewDrawer(row.id)}
+                    >
+                      {row.entryCode === null ? (
+                        <EditOutlinedIcon sx={{ fontSize: 20 }} />
+                      ) : (
+                        <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
+                      )}
+                    </IconButton>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
               )}
             </>
           );

@@ -23,6 +23,7 @@ import { AccEntryDetail } from "@/content/accBookManagement/Drawer/NewAccountBoo
 import { NewUserPrarams, valueForm } from "@/models/EmpManagement";
 import { RootState } from "@/reducers/rootReducer";
 import {
+  ROLE,
   cookieSetting,
   getDateOfPresent,
   getValueWithComma,
@@ -54,7 +55,12 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
   const [roles, setRoles] = useState([]);
   const [imagePath, setImagePath] = useState("");
   const [accEntryList, setAccEntryList] = useState<Array<AccEntryDetail>>([]);
+  const [role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const accEntryType = useSelector(
     (state: RootState) => state.accEntryType.accEntryTypeList
   );
@@ -280,7 +286,7 @@ export const ViewAccountBookDrawer = (props: ViewAccountBookProps) => {
           <div style={{ marginTop: 20 }}>
             <ImageUpload handleGetFile={handleGetFile} filePath={imagePath} />
           </div>
-          {rowInfo?.entryCode === null && (
+          {rowInfo?.entryCode === null && role !== ROLE.VIEWER && (
             <Button
               style={{ position: "fixed", bottom: 50, right: 32 }}
               variant="contained"
