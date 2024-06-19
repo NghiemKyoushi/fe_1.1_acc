@@ -188,18 +188,18 @@ export default function InvoiceManagementContent() {
       );
       setSearchCondition({
         ...searchCondition,
-        branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+        branchCodes: role !== ROLE.ADMIN ? codeBranch : "",
       });
       dispatch(
         fetchInvoice({
           ...searchCondition,
-          branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+          branchCodes: role !== ROLE.ADMIN ? codeBranch : "",
         })
       );
       dispatch(
         fetchSumInvoice({
           ...searchCondition,
-          branchCodes: role === ROLE.ADMIN ? codeBranch : "",
+          branchCodes: role !== ROLE.ADMIN ? codeBranch : "",
         })
       );
     }

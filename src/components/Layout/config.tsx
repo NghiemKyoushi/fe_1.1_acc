@@ -33,7 +33,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN", "SUB-MANAGER","VIEWER"],
+    roles: ["ADMIN", "SUB-MANAGER"],
   },
   {
     title: "Sổ kế toán tổng hợp",
@@ -44,7 +44,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN","VIEWER"],
+    roles: ["ADMIN",],
   },
   {
     title: "Quản lý bill",
@@ -55,7 +55,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN","VIEWER"],
+    roles: ["ADMIN"],
   },
   {
     title: "Quản lý pos",
