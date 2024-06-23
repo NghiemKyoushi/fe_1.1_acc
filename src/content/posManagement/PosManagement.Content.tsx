@@ -1,6 +1,6 @@
 import Dashboard from "@/components/Layout";
 import TableDataComponent, { Operators } from "@/components/common/DataGrid";
-import { formatDateTime } from "@/utils";
+import { ROLE, cookieSetting, formatDateTime } from "@/utils";
 import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -37,6 +37,12 @@ export default function PosManagementContent() {
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [posIds, setPosIds] = useState("");
 
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const listOfPos = useSelector(
     (state: RootState) => state.posManagement.posList
   );
@@ -263,12 +269,14 @@ export default function PosManagementContent() {
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
               </IconButton>
-              <IconButton
-                onClick={() => handleOpenDeleteForm(row.id)}
-                color="error"
-              >
-                <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
-              </IconButton>
+              {role !== ROLE.VIEWER && (
+                <IconButton
+                  onClick={() => handleOpenDeleteForm(row.id)}
+                  color="error"
+                >
+                  <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              )}
             </>
           );
         },
@@ -337,13 +345,15 @@ export default function PosManagementContent() {
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ POS</h3>
 
       <Box sx={{ margin: "7px 16px" }}>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenModal()}
-        >
-          Thêm Pos
-        </Button>
+        {role !== ROLE.VIEWER && (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenModal()}
+          >
+            Thêm Pos
+          </Button>
+        )}
       </Box>
       <form style={{ width: "100%" }}>
         <TableDataComponent

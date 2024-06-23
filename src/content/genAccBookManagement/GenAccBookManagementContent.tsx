@@ -552,7 +552,7 @@ export const GenAccBookManagementContent = () => {
                     <div>
                       <Tooltip title={row.note} placement="top">
                         <IconButton
-                          color="error"
+                          style={{ color: row.note !== null ? "red" : "#d7d3d3" }}
                           onClick={() => handleOpenNote(row.id, row.note)}
                         >
                           <EditNoteIcon sx={{ fontSize: 20 }} />

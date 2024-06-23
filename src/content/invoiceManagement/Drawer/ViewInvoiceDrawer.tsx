@@ -470,6 +470,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         width: 120,
         headerAlign: "left",
         sortable: false,
+        hide: role === ROLE.VIEWER ? true : false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.check !== "TOTAL") {
             return "";
@@ -516,7 +517,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [role]
   );
   const columnsOther: GridColDef[] = useMemo(
     () => [
@@ -905,7 +906,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             </SearchContainer>
 
             <StyleDataGrid>
-              {rowInfo?.code === null && (
+              {rowInfo?.code === null && role !== ROLE.VIEWER && (
                 <Button variant="contained" size="small" onClick={onAdd}>
                   Thêm bill
                 </Button>

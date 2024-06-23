@@ -16,7 +16,13 @@ import {
   NewUserPrarams,
   valueForm,
 } from "@/models/EmpManagement";
-import { getDateOfPresent, getValueWithComma, handleKeyPress } from "@/utils";
+import {
+  ROLE,
+  cookieSetting,
+  getDateOfPresent,
+  getValueWithComma,
+  handleKeyPress,
+} from "@/utils";
 import { Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
@@ -38,6 +44,12 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
   const [roles, setRoles] = useState([]);
   const [isOpenChangePassDrawer, setIsOpenChangePassDrawer] = useState(false);
 
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const { register, handleSubmit, setValue, getValues, watch, reset, control } =
     useForm<valueForm>({
       defaultValues: useMemo(() => {
@@ -357,14 +369,17 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
               </StyleInputContainer>
             </StyleContainer>
           </SearchContainer>
-          <Button
-            style={{ position: "fixed", bottom: 50, right: 32 }}
-            variant="contained"
-            size="medium"
-            onClick={() => handleCreateUser()}
-          >
-            Xác nhận
-          </Button>
+          {role !== ROLE.VIEWER && (
+            <Button
+              style={{ position: "fixed", bottom: 50, right: 32 }}
+              variant="contained"
+              size="medium"
+              onClick={() => handleCreateUser()}
+            >
+              Xác nhận
+            </Button>
+          )}
+
           <ChangePassword
             handleClickClose={handleCloseChangePassDrawer}
             openDialog={isOpenChangePassDrawer}

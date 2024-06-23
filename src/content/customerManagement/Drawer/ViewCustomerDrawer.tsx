@@ -23,7 +23,12 @@ import {
   createNewCustomer,
   updateCustomer,
 } from "@/api/service/customerManagerApis";
-import { getValueWithComma, handleKeyPress } from "@/utils";
+import {
+  ROLE,
+  cookieSetting,
+  getValueWithComma,
+  handleKeyPress,
+} from "@/utils";
 import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import _ from "lodash";
 
@@ -56,7 +61,12 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
     },
   });
   const dispatch = useDispatch();
+  const [role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   useEffect(() => {
     if (rowInfo) {
       reset({
@@ -201,15 +211,16 @@ const ViewCustomerDrawer = (props: NewPosDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              {" "}
-              <Button
-                style={{ marginTop: 30 }}
-                variant="contained"
-                size="small"
-                type="submit"
-              >
-                Cập nhật
-              </Button>
+              {role !== ROLE.VIEWER && (
+                <Button
+                  style={{ marginTop: 30 }}
+                  variant="contained"
+                  size="small"
+                  type="submit"
+                >
+                  Cập nhật
+                </Button>
+              )}
             </Box>
           </PageContent>
         </form>

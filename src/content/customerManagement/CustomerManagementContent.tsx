@@ -39,6 +39,12 @@ export default function CustomerManagementContent() {
   const [customerId, setCustomerId] = useState("");
   const [isDeleteForm, setIsDeleteForm] = useState(false);
 
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.getCustomer
   );
@@ -48,7 +54,6 @@ export default function CustomerManagementContent() {
   const isLoading = useSelector(
     (state: RootState) => state.customerManagament.isLoading
   );
-  const role = cookieSetting.get("roles");
 
   const handleOpenModal = () => {
     setIsOpenModal(true);
@@ -315,13 +320,15 @@ export default function CustomerManagementContent() {
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ KHÁCH HÀNG</h3>
       <>
         <Box sx={{ margin: "7px 0px" }}>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenModal()}
-          >
-            Thêm khách hàng
-          </Button>
+          {role !== ROLE.VIEWER && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenModal()}
+            >
+              Thêm khách hàng
+            </Button>
+          )}
         </Box>
         <form style={{ width: "100%" }}>
           <TableDataComponent

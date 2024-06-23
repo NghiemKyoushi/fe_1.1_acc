@@ -27,6 +27,7 @@ import {
 import ViewBranchDrawer from "./Drawer/ViewBranchDrawer";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
+import { ROLE, cookieSetting } from "@/utils";
 
 export const initialPosSearch = {
   page: 0,
@@ -41,6 +42,12 @@ export const BranchManagementContent = () => {
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [branchId, setBranchId] = useState("");
 
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const listOfBranch = useSelector(
     (state: RootState) => state.branchManaement.branchList
   );
@@ -179,14 +186,17 @@ export const BranchManagementContent = () => {
   return (
     <Dashboard>
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ CHI NHÁNH</h3>
+
       <Box sx={{ margin: "7px 16px" }}>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenModal()}
-        >
-          Tạo chi nhánh
-        </Button>
+        {role !== ROLE.VIEWER && (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenModal()}
+          >
+            Tạo chi nhánh
+          </Button>
+        )}
       </Box>
       <form style={{ width: "100%" }}>
         <StyleDataGrid>

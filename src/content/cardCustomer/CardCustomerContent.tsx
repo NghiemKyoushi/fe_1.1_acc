@@ -69,7 +69,12 @@ export default function CardCustomerContent() {
   const isLoading = useSelector(
     (state: RootState) => state.cardCustomer.isLoading
   );
-  const role = cookieSetting.get("roles");
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const handleOpenModalEdit = (id: string) => {
     getDetailCardCustomer(id).then((res) => {
       setRowInfo(res.data);
@@ -513,13 +518,16 @@ export default function CardCustomerContent() {
             marginBottom: 3,
           }}
         >
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenAddCard()}
-          >
-            Thêm thẻ khách
-          </Button>
+          {role !== ROLE.VIEWER && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenAddCard()}
+            >
+              Thêm thẻ khách
+            </Button>
+          )}
+
           <Button
             variant="contained"
             size="small"

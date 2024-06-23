@@ -705,15 +705,17 @@ export const BillManagementContent = () => {
           >
             Tìm kiếm
           </Button>
-          <Button
-            variant="contained"
-            color="success"
-            size="small"
-            onClick={() => downloadFileExcel()}
-            startIcon={<ArticleIcon />}
-          >
-            Tải xuống
-          </Button>
+          {role === ROLE.ADMIN && (
+            <Button
+              variant="contained"
+              color="success"
+              size="small"
+              onClick={() => downloadFileExcel()}
+              startIcon={<ArticleIcon />}
+            >
+              Tải xuống
+            </Button>
+          )}
         </div>
       </Box>
       <form style={{ width: "100%" }}>

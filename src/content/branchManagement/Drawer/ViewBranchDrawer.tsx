@@ -14,10 +14,10 @@ import { TextFieldCustom } from "@/components/common/Textfield";
 import { BranchParamSend } from "@/models/BranchManagementModel";
 import { NewCardType, NewCardTypeFrorm } from "@/models/CardCustomerModel";
 import { RootState } from "@/reducers/rootReducer";
-import { handleKeyPress } from "@/utils";
+import { ROLE, cookieSetting, handleKeyPress } from "@/utils";
 import { Box, Button } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -48,6 +48,12 @@ const ViewBranchDrawer = (props: NewCardCustomerProps) => {
     (state: RootState) => state.cardCustomer.cardList
   );
   const dispatch = useDispatch();
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
 
   useEffect(() => {
     if (rowInfo) {
@@ -55,11 +61,11 @@ const ViewBranchDrawer = (props: NewCardCustomerProps) => {
         name: rowInfo.name,
         code: rowInfo.code,
         phoneNumber: rowInfo.phoneNumber,
-      //   accountNumber: rowInfo.accountNumber,
-      //   bank: rowInfo.bank,
+        //   accountNumber: rowInfo.accountNumber,
+        //   bank: rowInfo.bank,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowInfo]);
   const handleCreateCard = () => {
     const { name, code, phoneNumber } = getValues();
@@ -96,7 +102,11 @@ const ViewBranchDrawer = (props: NewCardCustomerProps) => {
       handleClose={handleCloseDrawer}
     >
       <PageContent>
-        <form onKeyPress={handleKeyPress} key={"newCustomerCard"} onSubmit={handleSubmit(handleCreateCard)}>
+        <form
+          onKeyPress={handleKeyPress}
+          key={"newCustomerCard"}
+          onSubmit={handleSubmit(handleCreateCard)}
+        >
           <StyleInputContainer>
             <LabelComponent require={true}>Tên chi nhánh</LabelComponent>
             <TextFieldCustom
@@ -140,9 +150,11 @@ const ViewBranchDrawer = (props: NewCardCustomerProps) => {
               padding: "0px 16px 8px 16px",
             }}
           >
-            <Button size="small" variant="contained" type="submit">
-              Cập nhật
-            </Button>
+            {role !== ROLE.VIEWER && (
+              <Button size="small" variant="contained" type="submit">
+                Cập nhật
+              </Button>
+            )}
           </Box>
         </form>
       </PageContent>

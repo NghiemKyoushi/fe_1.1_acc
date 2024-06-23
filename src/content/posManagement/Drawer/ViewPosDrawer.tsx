@@ -30,7 +30,7 @@ import TextareaComponent from "@/components/common/TextAreaAutoSize";
 import AutoCompleteMultiple from "@/components/common/AutoCompleteMultiple";
 import { fetchBranch } from "@/api/service/invoiceManagement";
 import SelectSearchComponent from "@/components/common/AutoComplete";
-import { getValueWithComma } from "@/utils";
+import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 
 export interface NewPosDrawerProps {
   isOpen: boolean;
@@ -42,7 +42,12 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
   const { isOpen, handleCloseDrawer, searchCondition, rowInfo } = props;
   const [listOfCard, setListOfCard] = useState<ColCardType[]>([]);
   const [branchList, setBranchList] = useState([]);
+  const [role, setRole] = useState<string | undefined>("");
 
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const {
     register,
     handleSubmit,
@@ -270,7 +275,9 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                     onChange={(e: any) => {
                       setValue(
                         "maxBillAmount",
-                        getValueWithComma(e.target.value.trim().replaceAll(/[^0-9.]/g, ""))
+                        getValueWithComma(
+                          e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                        )
                       );
                     }}
                   />
@@ -355,15 +362,16 @@ const ViewPosDrawer = (props: NewPosDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              {" "}
-              <Button
-                style={{ marginTop: 30 }}
-                variant="contained"
-                size="small"
-                type="submit"
-              >
-                Cập nhật
-              </Button>
+              {role !== ROLE.VIEWER && (
+                <Button
+                  style={{ marginTop: 30 }}
+                  variant="contained"
+                  size="small"
+                  type="submit"
+                >
+                  Cập nhật
+                </Button>
+              )}
             </Box>
           </PageContent>
         </form>

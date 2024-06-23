@@ -27,7 +27,7 @@ import {
 } from "@/api/service/empManagementApis";
 import { TextFieldCustom } from "@/components/common/Textfield";
 import { useForm } from "react-hook-form";
-import { getValueWithComma } from "@/utils";
+import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import { DialogDeleteComponent } from "@/components/dialogDelete/DialogDelete";
 import { enqueueSnackbar } from "notistack";
 
@@ -43,6 +43,13 @@ export const EmpManagementContent = () => {
   const [rowInfo, setRowInfo] = useState();
   const [isDeleteForm, setIsDeleteForm] = useState(false);
   const [entryId, setEntryId] = useState("");
+
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
 
   const listOfEmp = useSelector(
     (state: RootState) => state.empManagement.empList
@@ -342,13 +349,15 @@ export const EmpManagementContent = () => {
       <h3 style={{ textAlign: "left" }}>QUẢN LÝ NHÂN VIÊN</h3>
 
       <Box sx={{ margin: "7px 16px" }}>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleOpenModal()}
-        >
-          Tạo nhân viên
-        </Button>
+        {role !== ROLE.VIEWER && (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenModal()}
+          >
+            Tạo nhân viên
+          </Button>
+        )}
       </Box>
       <form style={{ width: "100%" }}>
         <TableDataComponent

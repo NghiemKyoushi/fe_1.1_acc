@@ -44,7 +44,7 @@ export const items = [
       </SvgIcon>
     ),
     disabled: false,
-    roles: ["ADMIN",],
+    roles: ["ADMIN"],
   },
   {
     title: "Quản lý bill",

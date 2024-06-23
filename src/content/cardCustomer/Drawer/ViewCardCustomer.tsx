@@ -51,7 +51,12 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
         note: "",
       },
     });
-  const role = cookieSetting.get("roles");
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   const listOfCustomer = useSelector(
     (state: RootState) => state.customerManagament.customerList
   );
@@ -305,9 +310,11 @@ const ViewCardCustomer = (props: NewCardCustomerProps) => {
             padding: "0px 16px 8px 16px",
           }}
         >
-          <Button size="small" variant="contained" type="submit">
-            Cập nhật
-          </Button>
+          {role !== ROLE.VIEWER && (
+            <Button size="small" variant="contained" type="submit">
+              Cập nhật
+            </Button>
+          )}
         </Box>
       </form>
     </DrawerCustom>
