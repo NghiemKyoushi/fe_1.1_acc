@@ -626,6 +626,18 @@ export default function InvoiceManagementContent() {
       sortable: false,
       filterable: false,
     },
+
+    {
+      headerName: "Người xác nhận",
+      field: "approverCode",
+      headerClassName: "super-app-theme--header",
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      filterable: false,
+      hide: true,
+      width: 190,
+    },
     {
       headerName: "Phí ship",
       field: "shipmentFee",
