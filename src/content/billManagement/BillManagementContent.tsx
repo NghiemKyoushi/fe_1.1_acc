@@ -668,7 +668,6 @@ export const BillManagementContent = () => {
           style={{
             display: "flex",
             flexDirection: "row",
-            gap: 10,
           }}
         >
           {role !== ROLE.VIEWER && (
@@ -681,6 +680,7 @@ export const BillManagementContent = () => {
                 Tính toán khớp bill
               </Button>
               <Button
+                style={{ marginLeft: 10 }}
                 variant="contained"
                 size="small"
                 color="warning"

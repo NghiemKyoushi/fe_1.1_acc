@@ -314,9 +314,13 @@ export default function InvoiceManagementContent() {
     setIsOpenRepay(false);
   };
 
-  const handleOpenRepay = (id: string, loan: number) => {
+  const handleOpenRepay = (id: string, loan: number, repayment: number) => {
     setReceiptsId(id);
-    setValue("formRepay.loan", loan);
+    if (loan - repayment > 0 || loan - repayment === 0) {
+      setValue("formRepay.loan", loan - repayment);
+    } else {
+      setValue("formRepay.loan", 0);
+    }
     setIsOpenRepay(true);
   };
 
@@ -944,7 +948,9 @@ export default function InvoiceManagementContent() {
                   // row.receiptStatusEnum === "COMPLETED"
                   <IconButton
                     color="info"
-                    onClick={() => handleOpenRepay(row.id, row.loan)}
+                    onClick={() =>
+                      handleOpenRepay(row.id, row.loan, row.repayment)
+                    }
                   >
                     <CurrencyExchangeIcon sx={{ fontSize: 20 }} />
                   </IconButton>
@@ -1035,6 +1041,9 @@ export default function InvoiceManagementContent() {
   const dynamicColumns = useMemo(
     () =>
       columns.filter((item) => {
+        if (item.field === "estimatedProfit" && role === ROLE.VIEWER) {
+          return true;
+        }
         if (
           (item.field === "calculatedProfit" ||
             item.field === "estimatedProfit") &&
@@ -1042,6 +1051,7 @@ export default function InvoiceManagementContent() {
         ) {
           return false;
         }
+
         return true;
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -64,7 +64,7 @@ export const RepayDialogComponent = (props: InsertBookDialogProps) => {
             />
           </StyleInputContainer>
           <StyleInputContainer>
-            <LabelComponent require={true}>Công nợ</LabelComponent>
+            <LabelComponent require={true}>Dư nợ</LabelComponent>
             <InputNumber
               InputWidth="100%"
               name={`formRepay.loan`}

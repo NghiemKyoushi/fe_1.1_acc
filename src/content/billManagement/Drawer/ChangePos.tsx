@@ -495,15 +495,6 @@ export const ChangePosFee = (props: NEmpManagementDrawerProps) => {
               checkboxSelection={true}
               selectionModel={listOfSelection}
               handleGetListOfSelect={handleGetListOfSelect}
-              isRowSelectable={(params: GridRowParams) => {
-                if (
-                  params.row.returnedTime !== null ||
-                  params.row.createdBy === "TOTAL"
-                ) {
-                  return false;
-                }
-                return true;
-              }}
             />
           </Box>
           <Box

@@ -121,10 +121,15 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     (state: RootState) => state.customerManagament.customerList
   );
   const [branchList, setBranchList] = useState([]);
-  const role = cookieSetting.get("roles");
   const branchesCodeList = cookieSetting.get("branchesCodeList");
   const branchId = cookieSetting.get("branchId");
 
+  const [role, setRole] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setRole(cookieSetting.get("roles"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookieSetting.get("roles")]);
   // useMemo(() => {
   //   if (listOfCardCustomer) {
   //     const listArr: any = [];
@@ -457,6 +462,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               </Typography>
             </StyleCheckBoxTex>
           )}
+
           <StyleCheckBoxTex>
             <Controller
               name="onlyInDebtReceipt"
@@ -470,56 +476,61 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             </Typography>
           </StyleCheckBoxTex>
 
-          <StyleInputContainer>
-            <LabelComponent require={true}>Tổng giao dịch</LabelComponent>
-            <RangeNumberFilter
-              setvalue={setValue}
-              handleSearch={handleSearch}
-              register={register}
-              fromNumberName="fromTransactionTotal"
-              toNumberName="toTransactionTotal"
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Thu</LabelComponent>
-            <RangeNumberFilter
-              setvalue={setValue}
-              handleSearch={handleSearch}
-              register={register}
-              fromNumberName="fromIntake"
-              toNumberName="toIntake"
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Chi</LabelComponent>
-            <RangeNumberFilter
-              setvalue={setValue}
-              handleSearch={handleSearch}
-              register={register}
-              fromNumberName="fromPayout"
-              toNumberName="toPayout"
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Công nợ</LabelComponent>
-            <RangeNumberFilter
-              setvalue={setValue}
-              handleSearch={handleSearch}
-              register={register}
-              fromNumberName="fromLoan"
-              toNumberName="toLoan"
-            />
-          </StyleInputContainer>
-          <StyleInputContainer>
-            <LabelComponent require={true}>Thu nợ</LabelComponent>
-            <RangeNumberFilter
-              setvalue={setValue}
-              handleSearch={handleSearch}
-              register={register}
-              fromNumberName="fromRepayment"
-              toNumberName="torePayment"
-            />
-          </StyleInputContainer>
+          {role !== ROLE.VIEWER && (
+            <>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Tổng giao dịch</LabelComponent>
+                <RangeNumberFilter
+                  setvalue={setValue}
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName="fromTransactionTotal"
+                  toNumberName="toTransactionTotal"
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Thu</LabelComponent>
+                <RangeNumberFilter
+                  setvalue={setValue}
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName="fromIntake"
+                  toNumberName="toIntake"
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Chi</LabelComponent>
+                <RangeNumberFilter
+                  setvalue={setValue}
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName="fromPayout"
+                  toNumberName="toPayout"
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Công nợ</LabelComponent>
+                <RangeNumberFilter
+                  setvalue={setValue}
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName="fromLoan"
+                  toNumberName="toLoan"
+                />
+              </StyleInputContainer>
+              <StyleInputContainer>
+                <LabelComponent require={true}>Thu nợ</LabelComponent>
+                <RangeNumberFilter
+                  setvalue={setValue}
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName="fromRepayment"
+                  toNumberName="torePayment"
+                />
+              </StyleInputContainer>
+            </>
+          )}
+
           <div>
             <Button
               style={{ marginTop: 20 }}
