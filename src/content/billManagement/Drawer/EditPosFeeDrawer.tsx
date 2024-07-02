@@ -143,7 +143,7 @@ const ViewPosFeeDrawer = (props: NewPosDrawerProps) => {
       <DrawerCustom
         widthDrawer={340}
         isOpen={isOpen}
-        title="Xem/Cập nhật pos"
+        title="Cập nhật Bill"
         handleClose={handleCloseDrawer}
       >
         <form
