@@ -463,21 +463,20 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             </StyleCheckBoxTex>
           )}
 
-          <StyleCheckBoxTex>
-            <Controller
-              name="onlyInDebtReceipt"
-              control={control}
-              render={({ field }) => (
-                <Checkbox checked={watch("onlyInDebtReceipt")} {...field} />
-              )}
-            />
-            <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
-              Lọc các hóa đơn còn nợ
-            </Typography>
-          </StyleCheckBoxTex>
-
           {role !== ROLE.VIEWER && (
             <>
+              <StyleCheckBoxTex>
+                <Controller
+                  name="onlyInDebtReceipt"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox checked={watch("onlyInDebtReceipt")} {...field} />
+                  )}
+                />
+                <Typography sx={{ fontStyle: "italic", fontSize: 16 }}>
+                  Lọc các hóa đơn còn nợ
+                </Typography>
+              </StyleCheckBoxTex>
               <StyleInputContainer>
                 <LabelComponent require={true}>Tổng giao dịch</LabelComponent>
                 <RangeNumberFilter

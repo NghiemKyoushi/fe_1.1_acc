@@ -283,15 +283,17 @@ export const ViewEmpManagementDrawer = (props: NEmpManagementDrawerProps) => {
                 />
               </StyleInputContainer>
               <StyleInputContainer>
-                <Button
-                  style={{ width: 218 }}
-                  variant="contained"
-                  size="small"
-                  color="warning"
-                  onClick={() => handleOpenChangePassDrawer()}
-                >
-                  Đổi mật khẩu
-                </Button>
+                {role !== ROLE.VIEWER && (
+                  <Button
+                    style={{ width: 218 }}
+                    variant="contained"
+                    size="small"
+                    color="warning"
+                    onClick={() => handleOpenChangePassDrawer()}
+                  >
+                    Đổi mật khẩu
+                  </Button>
+                )}
               </StyleInputContainer>
             </StyleContainer>
             <StyleContainer>
