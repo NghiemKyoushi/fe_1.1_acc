@@ -19,7 +19,8 @@ import { fetchInvoice, fetchPos } from "@/actions/InvoiceManagementActions";
 import { fetchAccBook, fetchSumAccBook } from "@/actions/AccBookActions";
 import { useEffect, useState } from "react";
 import { fetchBills, fetchSumBills } from "@/actions/BillManagementActions";
-import { handleKeyPress } from "@/utils";
+import { getValueWithComma, handleKeyPress } from "@/utils";
+import _ from "lodash";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -52,7 +53,9 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
             onChange={(e: any) => {
               setvalue(
                 fromNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                getValueWithComma(
+                  e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                )
               );
             }}
           />
@@ -67,7 +70,9 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
             onChange={(e: any) => {
               setvalue(
                 toNumberName,
-                e.target.value.trim().replaceAll(/[^0-9]/g, "")
+                getValueWithComma(
+                  e.target.value.trim().replaceAll(/[^0-9.]/g, "")
+                )
               );
             }}
           />
@@ -116,12 +121,12 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
-      fromMoneyAmount: 0,
-      toMoneyAmount: 0,
+      fromMoneyAmount: "",
+      toMoneyAmount: "",
       fromFee: 0,
       toFee: 0,
-      fromEstimatedProfit: 0,
-      toEstimatedProfit: 0,
+      fromEstimatedProfit: "",
+      toEstimatedProfit: "",
       onlyConfirmedBillsWithoutReturnFromBank: false,
     },
   });
@@ -169,10 +174,22 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       toCreatedDate: toDate.toISOString(),
       posCode: posCode?.values,
       code: code,
-      fromMoneyAmount: +fromMoneyAmount === 0 ? "" : fromMoneyAmount,
-      toMoneyAmount: toMoneyAmount === 0 ? "" : toMoneyAmount,
-      fromEstimatedProfit: fromEstimatedProfit === 0 ? "" : fromEstimatedProfit,
-      toEstimatedProfit: toEstimatedProfit === 0 ? "" : toEstimatedProfit,
+      fromMoneyAmount:
+        fromMoneyAmount === "" || fromMoneyAmount === "0"
+          ? ""
+          : _.toNumber(fromMoneyAmount.toString().replaceAll(",", "")),
+      toMoneyAmount:
+        toMoneyAmount === "" || toMoneyAmount === "0"
+          ? ""
+          : _.toNumber(toMoneyAmount.toString().replaceAll(",", "")),
+      fromEstimatedProfit:
+        fromEstimatedProfit === "" || fromEstimatedProfit === "0"
+          ? ""
+          : _.toNumber(fromEstimatedProfit.toString().replaceAll(",", "")),
+      toEstimatedProfit:
+        toEstimatedProfit === "" || toEstimatedProfit === "0"
+          ? ""
+          : _.toNumber(toEstimatedProfit.toString().replaceAll(",", "")),
       onlyConfirmedBillsWithoutReturnFromBank:
         onlyConfirmedBillsWithoutReturnFromBank ? true : "",
     };
