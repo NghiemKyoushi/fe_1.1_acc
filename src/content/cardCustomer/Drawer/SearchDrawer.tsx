@@ -22,6 +22,7 @@ import { handleKeyPress } from "@/utils";
 import { fetchSearchCustomer } from "@/actions/CustomerManagerAction";
 import { fetchListCardCustomer } from "@/actions/CardCustomerActions";
 import { RangeNumberFilter } from "@/content/invoiceManagement/Drawer/SearchDrawer";
+import _ from "lodash";
 
 export interface SearchDrawerProps {
   isOpen: boolean;
@@ -78,6 +79,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       },
       fromPaymentDueDate: "",
       toPaymentDueDate: "",
+      fromPrePaidFee: "",
+      toPrePaidFee: "",
     },
   });
   const getDataCustomerFromApi = (value: string) => {
@@ -106,13 +109,29 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       customerName,
       fromPaymentDueDate,
       toPaymentDueDate,
+      fromPrePaidFee,
+      toPrePaidFee,
     } = getValues();
     const bodySend = {
       ...searchCondition,
       accountNumber: accountNumber,
       customerName: customerName.values.split(" - ")[0],
-      fromPaymentDueDate: fromPaymentDueDate,
-      toPaymentDueDate: toPaymentDueDate,
+      fromPaymentDueDate:
+        fromPaymentDueDate === "" || fromPaymentDueDate === "0"
+          ? ""
+          : _.toNumber(fromPaymentDueDate.toString().replaceAll(",", "")),
+      toPaymentDueDate:
+        toPaymentDueDate === "" || toPaymentDueDate === "0"
+          ? ""
+          : _.toNumber(toPaymentDueDate.toString().replaceAll(",", "")),
+      fromPrePaidFee:
+        fromPrePaidFee === "" || fromPrePaidFee === "0"
+          ? ""
+          : _.toNumber(fromPrePaidFee.toString().replaceAll(",", "")),
+      toPrePaidFee:
+        toPrePaidFee === "" || toPrePaidFee === "0"
+          ? ""
+          : _.toNumber(toPrePaidFee.toString().replaceAll(",", "")),
     };
     handleChangeSearch(bodySend);
     dispatch(fetchListCardCustomer(bodySend));
@@ -121,7 +140,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     <DrawerCustom
       widthDrawer={320}
       isOpen={isOpen}
-      title="Tìm kiếm nâng cao"
+      title='Tìm kiếm nâng cao'
       handleClose={handleCloseDrawer}
     >
       <form
@@ -149,7 +168,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           <StyleInputContainer>
             <LabelComponent>Số thẻ</LabelComponent>
             <TextFieldCustom
-              textholder="Tìm theo số thẻ"
+              textholder='Tìm theo số thẻ'
               {...register("accountNumber")}
               onChange={(e: any) => {
                 setValue(
@@ -165,17 +184,28 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               setvalue={setValue}
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromPaymentDueDate"
-              toNumberName="toPaymentDueDate"
+              fromNumberName='fromPaymentDueDate'
+              toNumberName='toPaymentDueDate'
+            />
+          </StyleInputContainer>
+
+          <StyleInputContainer>
+            <LabelComponent>Phí ứng trước</LabelComponent>
+            <RangeNumberFilter
+              setvalue={setValue}
+              handleSearch={handleSearch}
+              register={register}
+              fromNumberName='fromPrePaidFee'
+              toNumberName='toPrePaidFee'
             />
           </StyleInputContainer>
 
           <div>
             <Button
               style={{ marginTop: 20 }}
-              variant="contained"
-              size="small"
-              type="submit"
+              variant='contained'
+              size='small'
+              type='submit'
             >
               Tìm kiếm
             </Button>

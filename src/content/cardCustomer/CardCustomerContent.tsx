@@ -162,6 +162,8 @@ export default function CardCustomerContent() {
         name: "",
         fromPaymentDueDate: "",
         toPaymentDueDate: "",
+        fromPrePaidFee: "",
+        toPrePaidFee: "",
         formConfirm: {
           customerCardId: "",
           imageId: "",
@@ -190,6 +192,7 @@ export default function CardCustomerContent() {
           bank: item.bank,
           paymentLimit: item.paymentLimit,
           paymentDueDate: item.paymentDueDate,
+          prePaidFee: item.prePaidFee,
           createdDate: item.createdDate,
           customerName: item.customer.name,
           lastModifiedBy: item.lastModifiedBy,
@@ -229,8 +232,8 @@ export default function CardCustomerContent() {
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
                   <TextFieldCustom
                     type={"text"}
-                    variantshow="standard"
-                    textholder="Lọc giá trị"
+                    variantshow='standard'
+                    textholder='Lọc giá trị'
                     focus={"true"}
                     {...register("customerName")}
                   />
@@ -245,7 +248,7 @@ export default function CardCustomerContent() {
                 >
                   <Button
                     onClick={handleSearch}
-                    size="small"
+                    size='small'
                     style={{ width: 81 }}
                   >
                     xác nhận
@@ -273,8 +276,8 @@ export default function CardCustomerContent() {
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
                   <TextFieldCustom
                     type={"text"}
-                    variantshow="standard"
-                    textholder="Lọc giá trị"
+                    variantshow='standard'
+                    textholder='Lọc giá trị'
                     focus={"true"}
                     {...register("name")}
                   />
@@ -289,7 +292,7 @@ export default function CardCustomerContent() {
                 >
                   <Button
                     onClick={handleSearch}
-                    size="small"
+                    size='small'
                     style={{ width: 81 }}
                   >
                     xác nhận
@@ -354,8 +357,37 @@ export default function CardCustomerContent() {
                 <RangeNumberFilter
                   handleSearch={handleSearch}
                   register={register}
-                  fromNumberName="fromPaymentDueDate"
-                  toNumberName="toPaymentDueDate"
+                  fromNumberName='fromPaymentDueDate'
+                  toNumberName='toPaymentDueDate'
+                />
+              </>
+            );
+          },
+          value: "input",
+          label: "input",
+        }),
+      },
+      {
+        headerName: "Phí ứng trước",
+        field: "prePaidFee",
+        width: 120,
+        headerClassName: "super-app-theme--header",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        // filterable: false,
+        valueGetter: ({ row }) => {
+          return getValueWithComma(row.prePaidFee);
+        },
+        filterOperators: Operators({
+          inputComponent: () => {
+            return (
+              <>
+                <RangeNumberFilter
+                  handleSearch={handleSearch}
+                  register={register}
+                  fromNumberName='fromPrePaidFee'
+                  toNumberName='toPrePaidFee'
                 />
               </>
             );
@@ -404,7 +436,7 @@ export default function CardCustomerContent() {
           return (
             <div>
               <IconButton
-                color="info"
+                color='info'
                 onClick={() => handleOpenModalEdit(row.id)}
               >
                 <EditOutlinedIcon sx={{ fontSize: 20 }} />
@@ -412,17 +444,17 @@ export default function CardCustomerContent() {
               {role === ROLE.ADMIN && (
                 <IconButton
                   onClick={() => handleOpenDeleteForm(row.id)}
-                  color="error"
+                  color='error'
                 >
                   <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               )}
 
               {(role === ROLE.ADMIN || role === ROLE.SUBMANAGER) && (
-                <Tooltip title="Cập nhật phí" placement="top">
+                <Tooltip title='Cập nhật phí' placement='top'>
                   <IconButton
                     onClick={() => handleOpenPayFeeDialog(row.id)}
-                    color="secondary"
+                    color='secondary'
                   >
                     <UpdateIcon sx={{ fontSize: 20 }} />
                   </IconButton>
@@ -451,14 +483,22 @@ export default function CardCustomerContent() {
   }, [searchCondition]);
 
   const handleSearch = () => {
-    const { name, customerName, fromPaymentDueDate, toPaymentDueDate } =
-      getValues();
+    const {
+      name,
+      customerName,
+      fromPaymentDueDate,
+      toPaymentDueDate,
+      fromPrePaidFee,
+      toPrePaidFee,
+    } = getValues();
     const bodySend = {
       ...searchCondition,
       name: name,
       customerName: customerName,
       fromPaymentDueDate: fromPaymentDueDate,
       toPaymentDueDate: toPaymentDueDate,
+      fromPrePaidFee: fromPrePaidFee,
+      toPrePaidFee: toPrePaidFee,
     };
     setSearchCondition(bodySend);
     dispatch(fetchListCardCustomer(bodySend));
@@ -520,8 +560,8 @@ export default function CardCustomerContent() {
         >
           {role !== ROLE.VIEWER && (
             <Button
-              variant="contained"
-              size="small"
+              variant='contained'
+              size='small'
               onClick={() => handleOpenAddCard()}
             >
               Thêm thẻ khách
@@ -529,8 +569,8 @@ export default function CardCustomerContent() {
           )}
 
           <Button
-            variant="contained"
-            size="small"
+            variant='contained'
+            size='small'
             onClick={() => handleOpenSearchDrawer()}
           >
             Tìm kiếm

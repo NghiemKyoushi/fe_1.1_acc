@@ -62,6 +62,7 @@ export interface ColCustomerCard {
   bank: string;
   paymentLimit: number;
   paymentDueDate: string;
+  prePaidFee: number;
   createdDate: string;
   customer: customerType;
   lastModifiedBy: string;
@@ -75,6 +76,7 @@ export interface ColCustomerCardDetail {
   bank: string;
   paymentLimit: number;
   paymentDueDate: string;
+  prePaidFee: number;
   createdDate: string;
   customerName: string;
   lastModifiedBy: string;

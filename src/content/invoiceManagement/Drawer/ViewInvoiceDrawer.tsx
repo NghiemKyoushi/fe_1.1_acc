@@ -346,7 +346,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
             return (
               <>
                 <InputNumber
-                  InputWidth="100%"
+                  InputWidth='100%'
                   key={index}
                   name={`invoices.${index}.money`}
                   control={control}
@@ -470,7 +470,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         width: 120,
         headerAlign: "left",
         sortable: false,
-        hide: role === ROLE.VIEWER ? true : false,
+        hide: role === ROLE.VIEWER || role === ROLE.SUBMANAGER ? true : false,
         cellClassName: (params: GridCellParams) => {
           if (params.row.check !== "TOTAL") {
             return "";
@@ -506,7 +506,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           if (params.row.check !== "TOTAL" && params.row?.code === null) {
             return (
               <>
-                <IconButton color="error" onClick={() => remove(index)}>
+                <IconButton color='error' onClick={() => remove(index)}>
                   <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               </>
@@ -531,7 +531,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.intake`}
                 control={control}
@@ -550,7 +550,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.payout`}
                 control={control}
@@ -569,7 +569,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.loan`}
                 control={control}
@@ -588,7 +588,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.repayment`}
                 control={control}
@@ -771,7 +771,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
     <DrawerCustom
       widthDrawer={750}
       isOpen={isOpen}
-      title="Thông tin hóa đơn"
+      title='Thông tin hóa đơn'
       handleClose={handleCloseDrawer}
     >
       {rowInfo && (
@@ -882,8 +882,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   {rowInfo?.code === null && role !== ROLE.VIEWER && (
                     <StyleButtonSpan>
                       <Button
-                        variant="contained"
-                        size="small"
+                        variant='contained'
+                        size='small'
                         onClick={handleOpenAddCard}
                       >
                         Thêm Thẻ
@@ -907,7 +907,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
 
             <StyleDataGrid>
               {rowInfo?.code === null && role !== ROLE.VIEWER && (
-                <Button variant="contained" size="small" onClick={onAdd}>
+                <Button variant='contained' size='small' onClick={onAdd}>
                   Thêm bill
                 </Button>
               )}
@@ -947,7 +947,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 <TextFieldCustom
                   iconend={<p style={{ width: 24 }}>VND</p>}
                   type={"text"}
-                  disable="true"
+                  disable='true'
                   value={
                     _.isNumber(totalfee)
                       ? getValueWithComma(
@@ -995,7 +995,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                   </StyleCheckBoxTex>
                   <StyleCheckBoxTex>
                     <Controller
-                      name="acceptExceededFee"
+                      name='acceptExceededFee'
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <Checkbox
@@ -1046,7 +1046,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
               }}
             >
               {rowInfo?.code === null && role !== ROLE.VIEWER && (
-                <Button size="small" variant="contained" type="submit">
+                <Button size='small' variant='contained' type='submit'>
                   Cập nhật
                 </Button>
               )}

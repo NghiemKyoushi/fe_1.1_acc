@@ -72,8 +72,8 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
           <StyleTitleSearch>Từ</StyleTitleSearch>
           <TextFieldCustom
             type={"text"}
-            variantshow="outlined"
-            textholder="Lọc giá trị"
+            variantshow='outlined'
+            textholder='Lọc giá trị'
             {...register(fromNumberName)}
             onChange={(e: any) => {
               setvalue(
@@ -89,8 +89,8 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
           <StyleTitleSearch>Đến</StyleTitleSearch>
           <TextFieldCustom
             type={"text"}
-            variantshow="outlined"
-            textholder="Lọc giá trị"
+            variantshow='outlined'
+            textholder='Lọc giá trị'
             {...register(toNumberName)}
             onChange={(e: any) => {
               setvalue(
@@ -173,6 +173,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
         key: "",
         values: "",
       },
+      customerCardType: "",
       customerName: {
         key: "",
         values: "",
@@ -209,6 +210,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       branchIds,
       onlyHaveShipmentFee,
       onlyInDebtReceipt,
+      customerCardType,
     } = getValues();
     let codeBranch = "";
     if (branchIds.length > 0) {
@@ -287,6 +289,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
       customerCardId: cardCustomer.key,
+      customerCardType: customerCardType,
       employeeId: "",
       customerName: customerName.values.split(" - ")[0],
       receiptStatusList:
@@ -363,7 +366,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
     <DrawerCustom
       widthDrawer={450}
       isOpen={isOpen}
-      title="Tìm kiếm nâng cao"
+      title='Tìm kiếm nâng cao'
       handleClose={handleCloseDrawer}
     >
       <form onSubmit={handleSubmit(handleSearch)}>
@@ -431,9 +434,13 @@ const SearchDrawer = (props: SearchDrawerProps) => {
               }}
             />
           </StyleInputContainer>
+          <StyleInputContainer style={{ maxWidth: 240 }}>
+            <LabelComponent require={true}>Loại thẻ</LabelComponent>
+            <TextFieldCustom type={"text"} {...register("customerCardType")} />
+          </StyleInputContainer>
           <StyleCheckBoxTex>
             <Controller
-              name="isSearchCardTrading"
+              name='isSearchCardTrading'
               control={control}
               render={({ field }) => (
                 <Checkbox
@@ -451,7 +458,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           {(role === ROLE.ADMIN || role === ROLE.SUBMANAGER) && (
             <StyleCheckBoxTex>
               <Controller
-                name="onlyHaveShipmentFee"
+                name='onlyHaveShipmentFee'
                 control={control}
                 render={({ field }) => (
                   <Checkbox checked={watch("onlyHaveShipmentFee")} {...field} />
@@ -467,7 +474,7 @@ const SearchDrawer = (props: SearchDrawerProps) => {
             <>
               <StyleCheckBoxTex>
                 <Controller
-                  name="onlyInDebtReceipt"
+                  name='onlyInDebtReceipt'
                   control={control}
                   render={({ field }) => (
                     <Checkbox checked={watch("onlyInDebtReceipt")} {...field} />
@@ -483,8 +490,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                   setvalue={setValue}
                   handleSearch={handleSearch}
                   register={register}
-                  fromNumberName="fromTransactionTotal"
-                  toNumberName="toTransactionTotal"
+                  fromNumberName='fromTransactionTotal'
+                  toNumberName='toTransactionTotal'
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -493,8 +500,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                   setvalue={setValue}
                   handleSearch={handleSearch}
                   register={register}
-                  fromNumberName="fromIntake"
-                  toNumberName="toIntake"
+                  fromNumberName='fromIntake'
+                  toNumberName='toIntake'
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -503,8 +510,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                   setvalue={setValue}
                   handleSearch={handleSearch}
                   register={register}
-                  fromNumberName="fromPayout"
-                  toNumberName="toPayout"
+                  fromNumberName='fromPayout'
+                  toNumberName='toPayout'
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -513,8 +520,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                   setvalue={setValue}
                   handleSearch={handleSearch}
                   register={register}
-                  fromNumberName="fromLoan"
-                  toNumberName="toLoan"
+                  fromNumberName='fromLoan'
+                  toNumberName='toLoan'
                 />
               </StyleInputContainer>
               <StyleInputContainer>
@@ -523,8 +530,8 @@ const SearchDrawer = (props: SearchDrawerProps) => {
                   setvalue={setValue}
                   handleSearch={handleSearch}
                   register={register}
-                  fromNumberName="fromRepayment"
-                  toNumberName="torePayment"
+                  fromNumberName='fromRepayment'
+                  toNumberName='torePayment'
                 />
               </StyleInputContainer>
             </>
@@ -533,9 +540,9 @@ const SearchDrawer = (props: SearchDrawerProps) => {
           <div>
             <Button
               style={{ marginTop: 20 }}
-              variant="contained"
-              size="small"
-              type="submit"
+              variant='contained'
+              size='small'
+              type='submit'
             >
               Tìm kiếm
             </Button>

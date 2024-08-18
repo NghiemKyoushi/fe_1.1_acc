@@ -95,8 +95,8 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
           <StyleTitleSearch>Từ</StyleTitleSearch>
           <TextFieldCustom
             type={"number"}
-            variantshow="standard"
-            textholder="Lọc giá trị"
+            variantshow='standard'
+            textholder='Lọc giá trị'
             {...register(fromNumberName, { required: true })}
           />
         </StyleFilterContainer>
@@ -104,8 +104,8 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
           <StyleTitleSearch>Đến</StyleTitleSearch>
           <TextFieldCustom
             type={"number"}
-            variantshow="standard"
-            textholder="Lọc giá trị"
+            variantshow='standard'
+            textholder='Lọc giá trị'
             {...register(toNumberName, { required: true })}
           />
         </StyleFilterContainer>
@@ -118,7 +118,7 @@ export const RangeNumberFilter = (props: RangeNumberFilterProps) => {
           marginTop: 2,
         }}
       >
-        <Button size="small" onClick={handleSearch} style={{ width: 81 }}>
+        <Button size='small' onClick={handleSearch} style={{ width: 81 }}>
           xác nhận
         </Button>
       </div>
@@ -543,7 +543,7 @@ export default function InvoiceManagementContent() {
               >
                 <Button
                   onClick={handleSearch}
-                  size="small"
+                  size='small'
                   style={{ width: 81 }}
                 >
                   xác nhận
@@ -582,8 +582,8 @@ export default function InvoiceManagementContent() {
                 <StyleTitleSearch>Giá trị</StyleTitleSearch>
                 <TextFieldCustom
                   type={"text"}
-                  variantshow="standard"
-                  textholder="Lọc giá trị"
+                  variantshow='standard'
+                  textholder='Lọc giá trị'
                   focus={"true"}
                   {...register("receiptCode", { required: true })}
                 />
@@ -598,7 +598,7 @@ export default function InvoiceManagementContent() {
               >
                 <Button
                   onClick={handleSearch}
-                  size="small"
+                  size='small'
                   style={{ width: 81 }}
                 >
                   xác nhận
@@ -699,8 +699,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromTransactionTotal"
-              toNumberName="toTransactionTotal"
+              fromNumberName='fromTransactionTotal'
+              toNumberName='toTransactionTotal'
             />
           );
         },
@@ -729,8 +729,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromIntake"
-              toNumberName="toIntake"
+              fromNumberName='fromIntake'
+              toNumberName='toIntake'
             />
           );
         },
@@ -759,8 +759,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromPayout"
-              toNumberName="toPayout"
+              fromNumberName='fromPayout'
+              toNumberName='toPayout'
             />
           );
         },
@@ -790,8 +790,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromLoan"
-              toNumberName="toLoan"
+              fromNumberName='fromLoan'
+              toNumberName='toLoan'
             />
           );
         },
@@ -821,8 +821,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromRepayment"
-              toNumberName="torePayment"
+              fromNumberName='fromRepayment'
+              toNumberName='torePayment'
             />
           );
         },
@@ -851,8 +851,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromEstimatedProfit"
-              toNumberName="toEstimatedProfit"
+              fromNumberName='fromEstimatedProfit'
+              toNumberName='toEstimatedProfit'
             />
           );
         },
@@ -882,8 +882,8 @@ export default function InvoiceManagementContent() {
             <RangeNumberFilter
               handleSearch={handleSearch}
               register={register}
-              fromNumberName="fromCalculatedProfit"
-              toNumberName="toCalculatedProfit"
+              fromNumberName='fromCalculatedProfit'
+              toNumberName='toCalculatedProfit'
             />
           );
         },
@@ -906,7 +906,7 @@ export default function InvoiceManagementContent() {
             {role !== ROLE.VIEWER ? (
               <>
                 {row.code !== "TOTAL" ? (
-                  <Tooltip title={row.note} placement="top">
+                  <Tooltip title={row.note} placement='top'>
                     <IconButton
                       style={{ color: row.note !== null ? "red" : "#d7d3d3" }}
                       onClick={() => handleOpenNote(row.id, row.note)}
@@ -921,7 +921,7 @@ export default function InvoiceManagementContent() {
                 role !== ROLE.EMPLOYEE &&
                 role !== ROLE.VIEWER ? (
                   <IconButton
-                    color="success"
+                    color='success'
                     onClick={() => handleOpenApproveDialog(row.id)}
                   >
                     <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />
@@ -932,7 +932,7 @@ export default function InvoiceManagementContent() {
 
                 {row.code !== "TOTAL" ? (
                   <IconButton
-                    color="info"
+                    color='info'
                     onClick={() => handleOpenViewDrawer(row.id)}
                   >
                     <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
@@ -947,7 +947,7 @@ export default function InvoiceManagementContent() {
                 role !== ROLE.VIEWER ? (
                   // row.receiptStatusEnum === "COMPLETED"
                   <IconButton
-                    color="info"
+                    color='info'
                     onClick={() =>
                       handleOpenRepay(row.id, row.loan, row.repayment)
                     }
@@ -961,7 +961,7 @@ export default function InvoiceManagementContent() {
                 row.code !== null &&
                 row.code !== "TOTAL" ? (
                   <IconButton
-                    color="error"
+                    color='error'
                     onClick={() => handleOpenNoteDelete(row.id)}
                   >
                     <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
@@ -971,7 +971,7 @@ export default function InvoiceManagementContent() {
                 )}
                 {row.code === null ? (
                   <IconButton
-                    color="error"
+                    color='error'
                     onClick={() => handleOpenDeleteForm(row.id)}
                   >
                     <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
@@ -984,7 +984,7 @@ export default function InvoiceManagementContent() {
               <div>
                 {row.code !== "TOTAL" ? (
                   <IconButton
-                    color="info"
+                    color='info'
                     onClick={() => handleOpenViewDrawer(row.id)}
                   >
                     <VisibilityOutlinedIcon sx={{ fontSize: 20 }} />
@@ -1203,8 +1203,8 @@ export default function InvoiceManagementContent() {
           <div>
             {role !== ROLE.VIEWER ? (
               <Button
-                variant="contained"
-                size="small"
+                variant='contained'
+                size='small'
                 onClick={() => handleOpenInvoiceDraw()}
               >
                 Thêm Hóa Đơn
@@ -1220,17 +1220,17 @@ export default function InvoiceManagementContent() {
             }}
           >
             <Button
-              variant="contained"
-              size="small"
+              variant='contained'
+              size='small'
               onClick={() => handleOpenSearchDrawer()}
             >
               Tìm kiếm
             </Button>
             {role === ROLE.ADMIN && (
               <Button
-                variant="contained"
-                color="success"
-                size="small"
+                variant='contained'
+                color='success'
+                size='small'
                 onClick={() => downloadFileExcel()}
                 startIcon={<ArticleIcon />}
               >
