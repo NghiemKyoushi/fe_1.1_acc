@@ -661,7 +661,6 @@ export default function InvoiceManagementContent() {
         return getValueWithComma(params.value);
       },
     },
-
     {
       headerName: "Tên khách",
       field: "customerName",
@@ -890,6 +889,37 @@ export default function InvoiceManagementContent() {
         value: "input",
         label: "input",
       }),
+    },
+    {
+      headerName: "Ngày sửa gần nhất",
+      field: "lastModifiedDate",
+      headerAlign: "center",
+      width: 147,
+      valueGetter: ({ row }) => {
+        if (row.code === "TOTAL") {
+          return "";
+        }
+        return formatDateTime(row.lastModifiedDate);
+      },
+      hide: true,
+      filterable: false,
+      sortable: false,
+    },
+    {
+      headerName: "Người sửa gần nhất",
+      field: "lastModifiedBy",
+      width: 200,
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      filterable: false,
+      hide: true,
+      cellClassName: (params: GridCellParams<ColReceiptList>) => {
+        if (params.row.code !== "TOTAL") {
+          return "";
+        }
+        return "super-app-theme--cell";
+      },
     },
     {
       headerName: "Thao Tác",
