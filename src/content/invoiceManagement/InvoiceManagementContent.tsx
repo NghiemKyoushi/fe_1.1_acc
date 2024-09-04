@@ -237,6 +237,7 @@ export default function InvoiceManagementContent() {
         },
         noteInfo: "",
         noteDeleteInfo: "",
+        customerCardCombinedName: "",
       },
     });
   const handleCloseNoteDelete = () => {
@@ -403,6 +404,7 @@ export default function InvoiceManagementContent() {
       receiptCode,
       fromCreatedDate,
       toCreatedDate,
+      customerCardCombinedName,
     } = getValues();
 
     const fromDate = new Date(fromCreatedDate);
@@ -440,6 +442,7 @@ export default function InvoiceManagementContent() {
       employeeId: "",
       fromCreatedDate: fromDate.toISOString(),
       toCreatedDate: toDate.toISOString(),
+      customerCardCombinedName: customerCardCombinedName,
     };
     setSearchCondition(bodySend);
     dispatch(fetchInvoice(bodySend));
@@ -613,7 +616,7 @@ export default function InvoiceManagementContent() {
     },
     {
       headerName: "Tên thẻ",
-      field: "customerCardName",
+      field: "customerCardCombinedName",
       width: 200,
       headerAlign: "center",
       align: "left",
@@ -628,7 +631,42 @@ export default function InvoiceManagementContent() {
         );
       },
       sortable: false,
-      filterable: false,
+      filterOperators: Operators({
+        inputComponent: () => {
+          return (
+            <>
+              <StyleFilterContainer>
+                <StyleTitleSearch>Giá trị</StyleTitleSearch>
+                <TextFieldCustom
+                  type={"text"}
+                  variantshow='standard'
+                  textholder='Lọc giá trị'
+                  focus={"true"}
+                  {...register("customerCardCombinedName")}
+                />
+              </StyleFilterContainer>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  onClick={handleSearch}
+                  size='small'
+                  style={{ width: 81 }}
+                >
+                  xác nhận
+                </Button>
+              </div>
+            </>
+          );
+        },
+        value: "input",
+        label: "input",
+      }),
     },
 
     {
