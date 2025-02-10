@@ -319,6 +319,7 @@ export default function InvoiceManagementContent() {
     setReceiptsId(id);
     if (loan - repayment > 0 || loan - repayment === 0) {
       setValue("formRepay.loan", loan - repayment);
+      setValue("formRepay.repaidAmount", loan - repayment);
     } else {
       setValue("formRepay.loan", 0);
     }
@@ -707,7 +708,6 @@ export default function InvoiceManagementContent() {
       align: "center",
       sortable: false,
       filterable: false,
-      hide: true,
       cellClassName: (params: GridCellParams<ColReceiptList>) => {
         if (params.row.code !== "TOTAL") {
           return "";
@@ -751,6 +751,7 @@ export default function InvoiceManagementContent() {
       width: 130,
       headerAlign: "center",
       align: "center",
+      hide: true,
       cellClassName: (params: GridCellParams<ColReceiptList>) => {
         if (params.row.code !== "TOTAL") {
           return "";
@@ -842,7 +843,6 @@ export default function InvoiceManagementContent() {
       width: 130,
       headerAlign: "center",
       align: "center",
-      hide: true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
@@ -873,6 +873,7 @@ export default function InvoiceManagementContent() {
       headerAlign: "center",
       align: "center",
       width: 140,
+      hide: true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
