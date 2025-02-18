@@ -843,7 +843,7 @@ export default function InvoiceManagementContent() {
       width: 130,
       headerAlign: "center",
       align: "center",
-      hide: role === ROLE.EMPLOYEE ? true : false,
+      hide: role === ROLE.VIEWER ? true : false,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
@@ -874,7 +874,7 @@ export default function InvoiceManagementContent() {
       headerAlign: "center",
       align: "center",
       width: 140,
-      hide: role === ROLE.EMPLOYEE ? false : true,
+      hide: role === ROLE.VIEWER ? false : true,
       valueGetter: (params: GridValueGetterParams) => {
         return getValueWithComma(params.value);
       },
