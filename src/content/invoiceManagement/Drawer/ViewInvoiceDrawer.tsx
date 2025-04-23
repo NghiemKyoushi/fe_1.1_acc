@@ -326,6 +326,30 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
         },
       },
       {
+        headerName: "Lô",
+        field: "batchNo",
+        width: 120,
+        headerAlign: "left",
+        sortable: false,
+        // editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          if (params.row.check !== "TOTAL" && !_.isNumber(params.row.check)) {
+            return (
+              <>
+                <InputNumber
+                  InputWidth='100%'
+                  key={index}
+                  name={`invoices.${index}.batchNo`}
+                  control={control}
+                />
+              </>
+            );
+          }
+          return <></>;
+        },
+      },
+      {
         headerName: "Số tiền",
         field: "money",
         width: 120,
@@ -618,6 +642,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           posId: item?.posId?.key,
           moneyAmount: +item?.money,
           fee: restOfFee,
+          batchNo: item?.batchNo,
         });
       }
       return item;
@@ -769,7 +794,7 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
   }, [role, branchesCodeList]);
   return (
     <DrawerCustom
-      widthDrawer={750}
+      widthDrawer={970}
       isOpen={isOpen}
       title='Thông tin hóa đơn'
       handleClose={handleCloseDrawer}
@@ -1109,11 +1134,11 @@ const InfoBankCard = styled.div`
   min-width: 18.75rem;
 `;
 const StyleDataGrid = styled.div`
-  width: 683px;
+  width: 930px;
   padding: 0px 16px;
 `;
 const StyleDataGrid2 = styled.div`
-  width: 683px;
+  width: 910px;
   padding: 0px 16px;
 `;
 const PageContent = styled.div`

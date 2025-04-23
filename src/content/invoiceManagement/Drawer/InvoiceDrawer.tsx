@@ -342,6 +342,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           posId: item?.posId?.key,
           moneyAmount: +item?.money,
           fee: restOfFee,
+          batchNo: item?.batchNo,
         });
       }
       return item;
@@ -469,6 +470,36 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
         },
       },
       {
+        headerName: "Lô",
+        field: "batchNo",
+        width: 120,
+        headerAlign: "left",
+        sortable: false,
+        // editable: true,
+        renderCell: (params: GridRenderCellParams) => {
+          const index = params.api.getRowIndex(params.row.id);
+          if (params.row.check !== "TOTAL" && !_.isNumber(params.row.check)) {
+            return (
+              <>
+                <InputNumber
+                  InputWidth='100%'
+                  key={index}
+                  name={`invoices.${index}.batchNo`}
+                  control={control}
+                />
+              </>
+            );
+          }
+          return <></>;
+        },
+        cellClassName: (params: GridCellParams<InvoiceCreate>) => {
+          if (params.row.check !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
+        },
+      },
+      {
         headerName: "Số tiền",
         field: "money",
         width: 130,
@@ -491,7 +522,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             return (
               <>
                 <InputNumber
-                  InputWidth="100%"
+                  InputWidth='100%'
                   key={index}
                   name={`invoices.${index}.money`}
                   control={control}
@@ -619,7 +650,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           if (params.row.check !== "TOTAL") {
             return (
               <>
-                <IconButton color="error" onClick={() => remove(index)}>
+                <IconButton color='error' onClick={() => remove(index)}>
                   <DeleteOutlinedIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               </>
@@ -645,7 +676,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.intake`}
                 control={control}
@@ -664,7 +695,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.payout`}
                 control={control}
@@ -683,7 +714,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.loan`}
                 control={control}
@@ -702,7 +733,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
           return (
             <>
               <InputNumber
-                InputWidth="100%"
+                InputWidth='100%'
                 key={index}
                 name={`invoicesCalculate.${index}.repayment`}
                 control={control}
@@ -810,9 +841,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
   return (
     <>
       <DrawerCustom
-        widthDrawer={718}
+        widthDrawer={970}
         isOpen={isOpen}
-        title="Tạo Hóa đơn"
+        title='Tạo Hóa đơn'
         handleClose={() => {
           if (!isLoadingImage) {
             setValue("usingCardPrePayFee", false);
@@ -918,8 +949,8 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   />
                   <StyleButtonSpan>
                     <Button
-                      variant="contained"
-                      size="small"
+                      variant='contained'
+                      size='small'
                       onClick={handleOpenAddCard}
                     >
                       Thêm Thẻ
@@ -941,7 +972,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             </SearchContainer>
 
             <StyleDataGrid>
-              <Button variant="contained" size="small" onClick={onAdd}>
+              <Button variant='contained' size='small' onClick={onAdd}>
                 Thêm bill
               </Button>
               <br />
@@ -976,7 +1007,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 <div style={{ maxWidth: 250 }}>
                   <TextFieldCustom
                     type={"text"}
-                    disable="true"
+                    disable='true'
                     value={
                       _.isNumber(totalfee)
                         ? getValueWithComma(
@@ -1012,7 +1043,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                 >
                   <StyleCheckBoxTex>
                     <Controller
-                      name="usingCardPrePayFee"
+                      name='usingCardPrePayFee'
                       control={control}
                       render={({ field }) => <Checkbox {...field} />}
                     />
@@ -1022,7 +1053,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   </StyleCheckBoxTex>
                   <StyleCheckBoxTex>
                     <Controller
-                      name="acceptExceededFee"
+                      name='acceptExceededFee'
                       control={control}
                       render={({ field }) => (
                         <Checkbox
@@ -1043,7 +1074,7 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
                   </StyleCheckBoxTex>
                 </div>
                 <StyleInputContainer>
-                  <ImageUpload handleGetFile={handleGetFile} filePath="" />
+                  <ImageUpload handleGetFile={handleGetFile} filePath='' />
                 </StyleInputContainer>
               </ContainerSum>
 
@@ -1071,9 +1102,9 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             >
               <Button
                 disabled={isLoadingImage}
-                size="small"
-                variant="contained"
-                type="submit"
+                size='small'
+                variant='contained'
+                type='submit'
               >
                 Lưu Hóa Đơn
               </Button>
@@ -1133,11 +1164,11 @@ const InfoBankCard = styled.div`
   background-color: #d6f0ff;
 `;
 const StyleDataGrid = styled.div`
-  width: 683px;
+  width: 910px;
   padding: 0px 16px;
 `;
 const StyleDataGrid2 = styled.div`
-  width: 683px;
+  width: 910px;
   padding: 0px 16px;
 `;
 const PageContent = styled.div`

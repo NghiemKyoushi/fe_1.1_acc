@@ -102,6 +102,7 @@ export interface InvoiceCreate {
   estimatedReturnFromBank?: number;
   returnFromBank: number;
   calculatedProfit?: string;
+  batchNo?: string;
 }
 export interface PosDetail {
   key: string;

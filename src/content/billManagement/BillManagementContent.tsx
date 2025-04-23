@@ -353,7 +353,7 @@ export const BillManagementContent = () => {
                 >
                   <Button
                     onClick={handleSearch}
-                    size="small"
+                    size='small'
                     style={{ width: 81 }}
                   >
                     xác nhận
@@ -380,8 +380,8 @@ export const BillManagementContent = () => {
                   <StyleTitleSearch>Giá trị</StyleTitleSearch>
                   <TextFieldCustom
                     type={"text"}
-                    variantshow="standard"
-                    textholder="Lọc giá trị"
+                    variantshow='standard'
+                    textholder='Lọc giá trị'
                     focus={"true"}
                     {...register("code")}
                   />
@@ -396,7 +396,7 @@ export const BillManagementContent = () => {
                 >
                   <Button
                     onClick={handleSearch}
-                    size="small"
+                    size='small'
                     style={{ width: 81 }}
                   >
                     xác nhận
@@ -443,6 +443,23 @@ export const BillManagementContent = () => {
         filterable: false,
         valueGetter: ({ row }) => {
           return row.posCode;
+        },
+      },
+      {
+        headerName: "Lô",
+        field: "batchNo",
+        width: 100,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return params.value;
+        },
+        cellClassName: (params: GridCellParams) => {
+          if (params.row.createdBy !== "TOTAL") {
+            return "";
+          }
+          return "super-app-theme--cell";
         },
       },
       {
@@ -564,7 +581,7 @@ export const BillManagementContent = () => {
               )}
               {row.createdBy !== "TOTAL" && (
                 <IconButton
-                  color="info"
+                  color='info'
                   onClick={() =>
                     handleOpenModalEdit(
                       row.id,
@@ -673,17 +690,17 @@ export const BillManagementContent = () => {
           {role !== ROLE.VIEWER && (
             <div>
               <Button
-                variant="contained"
-                size="small"
+                variant='contained'
+                size='small'
                 onClick={() => handleOpenModal()}
               >
                 Tính toán khớp bill
               </Button>
               <Button
                 style={{ marginLeft: 10 }}
-                variant="contained"
-                size="small"
-                color="warning"
+                variant='contained'
+                size='small'
+                color='warning'
                 onClick={() => handleOpenPosFeeModal()}
               >
                 Chỉnh sửa phí POS
@@ -699,17 +716,17 @@ export const BillManagementContent = () => {
           }}
         >
           <Button
-            variant="contained"
-            size="small"
+            variant='contained'
+            size='small'
             onClick={() => handleOpenSearchDrawer()}
           >
             Tìm kiếm
           </Button>
           {role === ROLE.ADMIN && (
             <Button
-              variant="contained"
-              color="success"
-              size="small"
+              variant='contained'
+              color='success'
+              size='small'
               onClick={() => downloadFileExcel()}
               startIcon={<ArticleIcon />}
             >
@@ -773,9 +790,9 @@ export const BillManagementContent = () => {
       >
         {role !== ROLE.VIEWER && (
           <Button
-            size="small"
-            variant="contained"
-            type="submit"
+            size='small'
+            variant='contained'
+            type='submit'
             onClick={handleOpenConfirmBillDialog}
           >
             Xác nhận khớp bill
