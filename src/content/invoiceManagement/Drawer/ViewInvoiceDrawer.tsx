@@ -31,6 +31,7 @@ import { InputNumber } from "@/components/common/InputCustom";
 import { ROLE, cookieSetting, getValueWithComma } from "@/utils";
 import { enqueueSnackbar } from "notistack";
 import {
+  adjustConfirmedInvoice,
   fetchBranch,
   fetchImagePath,
   fetchSaveImage,
@@ -673,7 +674,11 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
           ? true
           : false,
     };
-    updateInvoice(rowInfo.id, request)
+
+    (rowInfo?.code && role === ROLE.ADMIN
+      ? adjustConfirmedInvoice(rowInfo.id, request)
+      : updateInvoice(rowInfo.id, request)
+    )
       .then((res) => {
         enqueueSnackbar("Cập nhật hóa đơn thành công!!", {
           variant: "success",
@@ -1070,7 +1075,8 @@ export const ViewInvoiceDrawer = (props: ViewInvoiceDrawerProps) => {
                 padding: "0px 16px 8px 16px",
               }}
             >
-              {rowInfo?.code === null && role !== ROLE.VIEWER && (
+              {((rowInfo?.code === null && role !== ROLE.VIEWER) ||
+                (role == ROLE.ADMIN && rowInfo?.code !== null)) && (
                 <Button size='small' variant='contained' type='submit'>
                   Cập nhật
                 </Button>

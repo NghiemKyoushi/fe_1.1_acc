@@ -25,6 +25,12 @@ export const fetchCreateInvoice = (params: ReceiptCreationParams) => {
 export const updateInvoice = (id: string, body: ReceiptCreationParams) => {
   return authApi.put(`/api/receipts/${id}`, body);
 };
+export const adjustConfirmedInvoice = (
+  id: string,
+  body: ReceiptCreationParams
+) => {
+  return authApi.put(`/api/receipts/adjustConfirmedReceipt/${id}`, body);
+};
 export const fetchSaveImage = async (oldId: string, file: any) => {
   const formDatas = new FormData();
   formDatas.append("file", file);

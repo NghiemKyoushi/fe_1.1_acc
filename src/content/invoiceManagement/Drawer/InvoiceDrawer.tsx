@@ -1021,17 +1021,21 @@ const InvoiceDrawer = (props: InvoiceDrawerProps) => {
             </StyleInputContainer2>
 
             <StyleDataGrid2>
-              <label style={{ fontSize: 16, fontWeight: "bold" }}>
-                Cân đối kế toán
-              </label>
-              <TableDataComponent
-                columns={columnsOther}
-                dataInfo={invoicesCalculateField}
-                disableFilter={true}
-                isPage={true}
-                rowCount={100}
-                getRowId={getRowId}
-              />
+              {role !== ROLE.VIEWER && (
+                <>
+                  <label style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Cân đối kế toán
+                  </label>
+                  <TableDataComponent
+                    columns={columnsOther}
+                    dataInfo={invoicesCalculateField}
+                    disableFilter={true}
+                    isPage={true}
+                    rowCount={100}
+                    getRowId={getRowId}
+                  />
+                </>
+              )}
 
               <ContainerSum>
                 <div
