@@ -372,6 +372,7 @@ export const BillManagementContent = () => {
         width: 165,
         headerAlign: "center",
         align: "center",
+        hide: true,
         filterOperators: Operators({
           inputComponent: () => {
             return (
@@ -408,6 +409,18 @@ export const BillManagementContent = () => {
           value: "input",
           label: "input",
         }),
+      },
+      {
+        headerName: "Tên thẻ",
+        field: "cardName",
+        width: 165,
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        filterable: false,
+        valueGetter: (params: GridValueGetterParams) => {
+          return params.value;
+        },
       },
       {
         headerName: "Mã hóa đơn",
@@ -502,6 +515,7 @@ export const BillManagementContent = () => {
         align: "center",
         sortable: false,
         filterable: false,
+        hide: true,
         valueGetter: (params: GridValueGetterParams) => {
           return getValueWithComma(+params.value);
         },
@@ -541,6 +555,7 @@ export const BillManagementContent = () => {
         align: "center",
         sortable: false,
         filterable: false,
+        hide: true,
         valueGetter: (params: GridValueGetterParams) => {
           if (params.row.createdBy === "TOTAL") {
             return "";

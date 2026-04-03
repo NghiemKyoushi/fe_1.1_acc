@@ -34,6 +34,7 @@ export interface ColBillInfo {
   timeStampOrder: number;
   posFeeStamp: number;
   estimateReturnFromBank: number;
+  cardName: string;
 }
 export interface receiptInfo {
   id: string;
