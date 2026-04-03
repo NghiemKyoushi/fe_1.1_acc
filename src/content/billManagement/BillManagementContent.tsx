@@ -413,13 +413,15 @@ export const BillManagementContent = () => {
       {
         headerName: "Tên thẻ",
         field: "cardName",
-        width: 165,
+        width: 220,
         headerAlign: "center",
         align: "center",
         sortable: false,
         filterable: false,
-        valueGetter: (params: GridValueGetterParams) => {
-          return params.value;
+        valueGetter: ({ row }: GridValueGetterParams) => {
+          if (row.createdBy === "TOTAL") return "";
+          const last4 = row.cardNumber ? row.cardNumber.slice(-4) : "";
+          return row.cardName ? `${row.cardName} - ${last4}` : "";
         },
       },
       {

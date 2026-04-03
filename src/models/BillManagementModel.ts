@@ -35,6 +35,7 @@ export interface ColBillInfo {
   posFeeStamp: number;
   estimateReturnFromBank: number;
   cardName: string;
+  cardNumber: string;
 }
 export interface receiptInfo {
   id: string;
